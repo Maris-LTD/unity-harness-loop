@@ -44,6 +44,17 @@ function sharedAgents() {
   }));
 }
 
+const HIDDEN_CHARACTER = /[\p{Mn}\p{Me}\p{Cf}\p{Co}\p{Cs}]|[^\P{Cc}\t\r\n]/u;
+
+function assertNoHiddenCharacters(file, source) {
+  source.split('\n').forEach((line, index) => {
+    const match = line.match(HIDDEN_CHARACTER);
+    if (!match) return;
+    const code = match[0].codePointAt(0).toString(16).toUpperCase().padStart(4, '0');
+    throw new Error(`${file}:${index + 1} contains hidden character U+${code}; Claude Code rejects workflow scripts with characters hidden in the approval dialog. Use a \\u escape instead.`);
+  });
+}
+
 function copySkills(target) {
   fs.cpSync(path.join(SHARED, 'skills'), path.join(target, 'skills'), { recursive: true });
 }
@@ -72,6 +83,7 @@ function buildClaude() {
   }));
   for (const file of fs.readdirSync(path.join(SHARED, 'workflows'))) {
     const source = fs.readFileSync(path.join(SHARED, 'workflows', file), 'utf8');
+    assertNoHiddenCharacters(file, source);
     write(path.join(dir, 'workflows', file), source.split('__AGENT_PREFIX__').join(CLAUDE_AGENT_PREFIX));
   }
 }

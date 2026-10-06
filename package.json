@@ -1,6 +1,6 @@
 {
   "name": "unity-harness-loop",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Verification harness for Unity projects driven by AI coding agents (Claude Code, Antigravity): rule check, recompile, EditMode tests, Play mode smoke with focus keeping, run logs and stop gates.",
   "bin": {
     "unity-harness": "bin/unity-harness.js"

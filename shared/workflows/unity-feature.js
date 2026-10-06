@@ -18,7 +18,7 @@ const MAX_FIX_ROUNDS = typeof input.maxFixRounds === 'number' ? input.maxFixRoun
 const MAX_LOG_FIXES = typeof input.maxLogFixes === 'number' ? input.maxLogFixes : 2
 const AGENT_PREFIX = typeof input.agentPrefix === 'string' ? input.agentPrefix : '__AGENT_PREFIX__'
 const agentType = name => AGENT_PREFIX + name
-const slug = input.task.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd')
+const slug = input.task.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\u0111/g, 'd')
   .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40) || 'task'
 
 const ROUTES = {
