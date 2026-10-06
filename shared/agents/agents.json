@@ -1,0 +1,29 @@
+{
+  "unity-verifier": {
+    "description": "Runs the project's Unity harness (rules, recompile, EditMode tests, Play mode smoke) against the open Editor and reports results. Strictly read-only — never edits code; any file change is detected by the workflow guard and voids the run. Use after an implementation step to get an independent pass/fail verdict.",
+    "targets": ["claude", "antigravity"],
+    "claude": { "tools": "Bash, Read, Grep, Glob", "model": "haiku" },
+    "antigravity": { "tools": ["view_file", "grep_search", "run_command"], "model": "flash", "commandExecutionPolicy": "auto" }
+  },
+  "unity-reviewer": {
+    "description": "Reviews the current C# diff against this project's Unity coding rules (SRP, file length, encapsulation with SerializeField, comment and Debug.Log rules when enabled, no LINQ/string concat/GetComponent in Update, CompareTag) and for correctness bugs. Read-only. Use after implementation, in parallel with unity-verifier.",
+    "targets": ["claude", "antigravity"],
+    "claude": { "tools": "Bash, Read, Grep, Glob" },
+    "antigravity": { "tools": ["view_file", "grep_search", "run_command"], "commandExecutionPolicy": "auto" }
+  },
+  "plan-loader": {
+    "description": "Reads an approved plan.md and converts it into the structured plan object. Read-only, has no shell and no write tools. Used by the unity-feature workflow when args.planFile is given.",
+    "targets": ["claude"],
+    "claude": { "tools": "Read", "model": "haiku" }
+  },
+  "run-log-writer": {
+    "description": "Writes the human-readable report.md for a harness run from deterministic data (changes.json, changes.diff, plan.md) plus run facts given in the prompt. Also rewrites the report when an audit lists discrepancies. Only writes inside the given run directory.",
+    "targets": ["claude"],
+    "claude": { "tools": "Bash, Read, Grep, Glob", "model": "sonnet" }
+  },
+  "run-log-auditor": {
+    "description": "Independently audits a harness run's report.md against the deterministic change data (changes.json, changes.diff, events) and the run facts, then writes audit.md. Never edits report.md or project files.",
+    "targets": ["claude"],
+    "claude": { "tools": "Bash, Read, Grep, Glob", "model": "sonnet" }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "unity-harness": {
+    "enabled": true,
+    "PreInvocation": [
+      {
+        "type": "command",
+        "command": "unity-harness hook antigravity turn-start",
+        "timeout": 30
+      }
+    ],
+    "Stop": [
+      {
+        "type": "command",
+        "command": "unity-harness hook antigravity stop",
+        "timeout": 600
+      }
+    ]
+  }
+}

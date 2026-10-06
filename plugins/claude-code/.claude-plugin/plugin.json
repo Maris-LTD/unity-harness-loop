@@ -1,0 +1,15 @@
+{
+  "name": "unity-harness",
+  "version": "0.1.0",
+  "description": "Unity verification loop for AI agents: rule check, recompile, EditMode tests, Play mode smoke with Editor focus keeping, stop gate and run logs. Requires the unity-harness CLI (npm i -g github:Maris-LTD/unity-harness-loop).",
+  "author": {
+    "name": "Maris-LTD"
+  },
+  "repository": "https://github.com/Maris-LTD/unity-harness-loop",
+  "keywords": [
+    "unity",
+    "testing",
+    "smoke-test",
+    "hooks"
+  ]
+}
