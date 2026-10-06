@@ -13,7 +13,7 @@ A verification loop for Unity projects worked on by AI coding agents. One CLI (`
 On top of that:
 - **Stop gate** (Claude Code and Antigravity): when the agent tries to finish a turn after editing `.cs` files, it runs `rules + compile` and sends the agent back to fix failures (up to `stopGate.maxBlocks` times).
 - **Agents**: `unity-verifier` (read-only pass/fail verdict) and `unity-reviewer` (diff review against Unity rules) for both agents.
-- **Workflow** (Claude Code only): `unity-feature` plans → implements → verifies and reviews → fixes → writes an audited run report under `.unity-harness/runs/`.
+- **Workflow** (Claude Code only): `unity-harness:unity-feature` plans → implements → verifies and reviews → fixes → writes an audited run report under `.unity-harness/runs/`.
 
 ## Requirements
 
@@ -69,7 +69,7 @@ To offer it to everyone who opens a project, add to the project's `.claude/setti
 }
 ```
 
-Run the workflow with the Workflow tool: `unity-feature` with `{ "task": "..." }` (options: `planOnly`, `planFile`, `smoke`, `assemblies`, `maxFixRounds`, `maxLogFixes`, `models`).
+Run the workflow with the Workflow tool: `unity-harness:unity-feature` with `{ "task": "..." }` (options: `planOnly`, `planFile`, `smoke`, `assemblies`, `maxFixRounds`, `maxLogFixes`, `models`).
 
 ### 3b. Antigravity plugin
 
