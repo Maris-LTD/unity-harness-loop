@@ -14,6 +14,7 @@ On top of that:
 - **Stop gate** (Claude Code and Antigravity): when the agent tries to finish a turn after editing `.cs` files, it runs `rules + compile` and sends the agent back to fix failures (up to `stopGate.maxBlocks` times).
 - **Agents**: `unity-verifier` (read-only pass/fail verdict) and `unity-reviewer` (diff review against Unity rules) for both agents.
 - **Workflow** (Claude Code only): `unity-harness:unity-feature` plans → implements → verifies and reviews → fixes → writes an audited run report under `.unity-harness/runs/`.
+- **Skill `unity-juicy-anim`**: recipes and reference C# for jelly-style DOTween animations (squash/stretch lift and land, punch, hop with a content swap, slot row shift, merge, shuffle into a container that pours them back), a procedural prop mesh script, and a way to verify animations in Play mode from the CLI. It came out of the Food Hunt boosters.
 
 ## Requirements
 
