@@ -1,29 +1,268 @@
 {
   "unity-verifier": {
     "description": "Runs the project's Unity harness (rules, recompile, EditMode tests, Play mode smoke) against the open Editor and reports results. Strictly read-only — never edits code; any file change is detected by the workflow guard and voids the run. Use after an implementation step to get an independent pass/fail verdict.",
-    "targets": ["claude", "antigravity"],
-    "claude": { "tools": "Bash, Read, Grep, Glob", "model": "haiku" },
-    "antigravity": { "tools": ["view_file", "grep_search", "run_command"], "model": "flash", "commandExecutionPolicy": "auto" }
+    "targets": [
+      "claude",
+      "antigravity"
+    ],
+    "claude": {
+      "tools": "Bash, Read, Grep, Glob",
+      "model": "haiku"
+    },
+    "antigravity": {
+      "tools": [
+        "view_file",
+        "grep_search",
+        "run_command"
+      ],
+      "model": "flash",
+      "commandExecutionPolicy": "auto"
+    }
   },
   "unity-reviewer": {
     "description": "Reviews the current C# diff against this project's Unity coding rules (SRP, file length, encapsulation with SerializeField, comment and Debug.Log rules when enabled, no LINQ/string concat/GetComponent in Update, CompareTag) and for correctness bugs. Read-only. Use after implementation, in parallel with unity-verifier.",
-    "targets": ["claude", "antigravity"],
-    "claude": { "tools": "Bash, Read, Grep, Glob" },
-    "antigravity": { "tools": ["view_file", "grep_search", "run_command"], "commandExecutionPolicy": "auto" }
+    "targets": [
+      "claude",
+      "antigravity"
+    ],
+    "claude": {
+      "tools": "Bash, Read, Grep, Glob"
+    },
+    "antigravity": {
+      "tools": [
+        "view_file",
+        "grep_search",
+        "run_command"
+      ],
+      "commandExecutionPolicy": "auto"
+    }
   },
   "plan-loader": {
     "description": "Reads an approved plan.md and returns its key facts (summary, complexity, test assemblies, smoke expectations) as structured data. Read-only, has no shell and no write tools. Used by the unity-feature workflow when args.planFile is given.",
-    "targets": ["claude"],
-    "claude": { "tools": "Read", "model": "haiku" }
+    "targets": [
+      "claude"
+    ],
+    "claude": {
+      "tools": "Read",
+      "model": "haiku"
+    }
   },
   "run-log-writer": {
     "description": "Writes the judgment parts of a harness run report (title, summary, plan notes, per-file descriptions, noise suggestions) as notes; the unity-harness CLI renders report.md from them plus changes.json and the run facts. Also fixes the notes when an audit lists discrepancies. Only writes inside the given run directory.",
-    "targets": ["claude"],
-    "claude": { "tools": "Bash, Read, Grep, Glob", "model": "sonnet" }
+    "targets": [
+      "claude"
+    ],
+    "claude": {
+      "tools": "Bash, Read, Grep, Glob",
+      "model": "sonnet"
+    }
   },
   "run-log-auditor": {
     "description": "Independently audits the judged parts of a harness run report.md (file descriptions, summary, plan notes, noise suggestions) against changes.diff and facts.json, then writes audit.md. Never edits report.md or project files.",
-    "targets": ["claude"],
-    "claude": { "tools": "Bash, Read, Grep, Glob", "model": "sonnet" }
+    "targets": [
+      "claude"
+    ],
+    "claude": {
+      "tools": "Bash, Read, Grep, Glob",
+      "model": "sonnet"
+    }
+  },
+  "creative-director": {
+    "description": "Highest creative authority for a Unity game: pillars, core fantasy, tone and scope arbitration; use for vision decisions, pillar conflicts and the CD-PILLARS gate.",
+    "targets": [
+      "claude",
+      "antigravity"
+    ],
+    "claude": {
+      "tools": "Read, Glob, Grep, Write, Edit, WebSearch",
+      "disallowedTools": "Bash",
+      "model": "opus",
+      "maxTurns": 30
+    }
+  },
+  "technical-director": {
+    "description": "Owns the technical vision of a Unity game: architecture, packages, render pipeline, performance budgets and technical risk; use for technology choices, cross-system conflicts and the TD-FEASIBILITY gate.",
+    "targets": [
+      "claude",
+      "antigravity"
+    ],
+    "claude": {
+      "tools": "Read, Glob, Grep, Write, Edit, Bash, WebSearch",
+      "model": "opus",
+      "maxTurns": 30
+    }
+  },
+  "producer": {
+    "description": "Owns schedule and scope for a Unity game: sprints, milestones, risks and cross-department coordination; use for planning questions and the PR-SCOPE, PR-EPIC and PR-SPRINT gates.",
+    "targets": [
+      "claude",
+      "antigravity"
+    ],
+    "claude": {
+      "tools": "Read, Glob, Grep, Write, Edit, Bash",
+      "model": "opus",
+      "maxTurns": 30
+    }
+  },
+  "game-designer": {
+    "description": "Designs the rules, loops, systems, balance and economy of a Unity game and writes the brief or GDDs; use for mechanics questions and design documents.",
+    "targets": [
+      "claude",
+      "antigravity"
+    ],
+    "claude": {
+      "tools": "Read, Glob, Grep, Write, Edit, WebSearch",
+      "disallowedTools": "Bash",
+      "maxTurns": 20
+    }
+  },
+  "art-director": {
+    "description": "Owns the visual identity of a Unity game: art direction, asset specs and import settings, UI visual design; use for visual decisions and the AD-CONCEPT-VISUAL gate.",
+    "targets": [
+      "claude",
+      "antigravity"
+    ],
+    "claude": {
+      "tools": "Read, Glob, Grep, Write, Edit, WebSearch",
+      "disallowedTools": "Bash",
+      "maxTurns": 20
+    }
+  },
+  "lead-programmer": {
+    "description": "Owns code-level architecture and review for a Unity project (assemblies, interfaces, standards, refactoring); use to plan a story implementation, review code, and for the LP-CODE-REVIEW gate.",
+    "targets": [
+      "claude",
+      "antigravity"
+    ],
+    "claude": {
+      "tools": "Read, Glob, Grep, Write, Edit, Bash",
+      "model": "sonnet",
+      "maxTurns": 20
+    }
+  },
+  "qa-lead": {
+    "description": "Owns test strategy and the test-evidence gate for a Unity project (EditMode tests, Play mode screenshots, bug severity); use for testability reviews and the QL-STORY-READY and QL-TEST-COVERAGE gates.",
+    "targets": [
+      "claude",
+      "antigravity"
+    ],
+    "claude": {
+      "tools": "Read, Glob, Grep, Write, Edit, Bash",
+      "maxTurns": 20
+    }
+  },
+  "qa-tester": {
+    "description": "Writes EditMode NUnit tests, manual test cases, regression checklists and bug reports for a Unity project; use when a story needs tests or a bug needs a report.",
+    "targets": [
+      "claude",
+      "antigravity"
+    ],
+    "claude": {
+      "tools": "Read, Glob, Grep, Write, Edit, Bash",
+      "maxTurns": 15
+    }
+  },
+  "gameplay-programmer": {
+    "description": "Implements gameplay mechanics in Unity C# from stories and design docs: data-driven, testable, verified with unity-harness; use for player systems, rules and game-loop features.",
+    "targets": [
+      "claude",
+      "antigravity"
+    ],
+    "claude": {
+      "tools": "Read, Glob, Grep, Write, Edit, Bash",
+      "maxTurns": 30
+    }
+  },
+  "ui-programmer": {
+    "description": "Implements Unity menus, HUD and screens (uGUI or UI Toolkit) from specs, with data binding, accessibility and localization readiness; use for UI stories.",
+    "targets": [
+      "claude",
+      "antigravity"
+    ],
+    "claude": {
+      "tools": "Read, Glob, Grep, Write, Edit, Bash",
+      "maxTurns": 30
+    }
+  },
+  "ai-programmer": {
+    "description": "Implements enemy and NPC behaviour in Unity: state machines or behaviour trees, AI Navigation, perception and group tactics; use for AI stories.",
+    "targets": [
+      "claude",
+      "antigravity"
+    ],
+    "claude": {
+      "tools": "Read, Glob, Grep, Write, Edit, Bash",
+      "maxTurns": 30
+    }
+  },
+  "engine-programmer": {
+    "description": "Implements the core framework of a Unity game: bootstrap, scene and resource loading, pooling, memory, profiling hooks and editor tooling; use for foundation and performance-critical stories.",
+    "targets": [
+      "claude",
+      "antigravity"
+    ],
+    "claude": {
+      "tools": "Read, Glob, Grep, Write, Edit, Bash",
+      "maxTurns": 30
+    }
+  },
+  "unity-specialist": {
+    "description": "Authority on Unity patterns, packages and project settings (MonoBehaviour vs DOTS, Input System, uGUI vs UI Toolkit, URP); use to review Unity-specific code or choose a subsystem, and to know which unity-*-specialist to bring in.",
+    "targets": [
+      "claude",
+      "antigravity"
+    ],
+    "claude": {
+      "tools": "Read, Glob, Grep, Write, Edit, Bash",
+      "maxTurns": 20
+    }
+  },
+  "unity-ui-specialist": {
+    "description": "Unity UI expert for UI Toolkit and uGUI architecture, data binding, screen stacks, gamepad/touch navigation and UI performance; use for complex UI work.",
+    "targets": [
+      "claude",
+      "antigravity"
+    ],
+    "claude": {
+      "tools": "Read, Glob, Grep, Write, Edit, Bash",
+      "model": "sonnet",
+      "maxTurns": 20
+    }
+  },
+  "unity-shader-specialist": {
+    "description": "Unity rendering expert for Shader Graph, HLSL, VFX Graph, URP/HDRP renderer features, post-processing and GPU budgets; use for shader, VFX and rendering work.",
+    "targets": [
+      "claude",
+      "antigravity"
+    ],
+    "claude": {
+      "tools": "Read, Glob, Grep, Write, Edit, Bash",
+      "model": "sonnet",
+      "maxTurns": 20
+    }
+  },
+  "unity-addressables-specialist": {
+    "description": "Unity Addressables expert for group layout, async loading and release, memory budgets, remote catalogs and content updates; use for asset loading and delivery work.",
+    "targets": [
+      "claude",
+      "antigravity"
+    ],
+    "claude": {
+      "tools": "Read, Glob, Grep, Write, Edit, Bash",
+      "model": "sonnet",
+      "maxTurns": 20
+    }
+  },
+  "unity-dots-specialist": {
+    "description": "Unity DOTS expert for Entities, Jobs, Burst, baking and Entities Graphics; use when a system needs ECS-scale performance.",
+    "targets": [
+      "claude",
+      "antigravity"
+    ],
+    "claude": {
+      "tools": "Read, Glob, Grep, Write, Edit, Bash",
+      "model": "sonnet",
+      "maxTurns": 20
+    }
   }
 }

@@ -11,6 +11,12 @@ Project setup:
   config                print the effective config as JSON
   where                 print the resolved project root and config path
 
+Studio workflow (skills studio-*):
+  studio config         print the resolved studio settings (rigor expansion, doc paths)
+  studio set k=v ...    write studio settings (rigor, automation, stage, docsRoot, ...)
+  studio status [--json]  scan brief, epics, stories, sprint and evidence (observations only)
+  studio protocol       print the always-on studio rules
+
 Run logs (used by the unity-feature workflow and run-log agents):
   run-log baseline --slug <slug>
   run-log changes <runDir>
@@ -49,6 +55,7 @@ function main(rawArgv) {
     return 0;
   }
   if (command === 'run-log') return require('../lib/run-log').runLog(rest);
+  if (command === 'studio') return require('../lib/studio').studio(rest);
   if (command === 'hook') return require('../lib/hooks').runHook(rest[0], rest[1]);
   const { verify } = require('../lib/verify');
   const code = verify(command, rest);

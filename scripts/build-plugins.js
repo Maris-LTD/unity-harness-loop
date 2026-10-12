@@ -8,7 +8,32 @@ const pkg = JSON.parse(fs.readFileSync(path.join(ROOT, 'package.json'), 'utf8'))
 
 const PLUGIN_NAME = 'unity-harness';
 const CLAUDE_AGENT_PREFIX = `${PLUGIN_NAME}:`;
-const DESCRIPTION = 'Unity verification loop for AI agents: rule check, recompile, EditMode tests, Play mode smoke with Editor focus keeping, stop gate and run logs. Requires the unity-harness CLI (npm i -g github:Maris-LTD/unity-harness-loop).';
+const DESCRIPTION = 'Unity verification loop and studio workflow for AI agents: rule check, recompile, EditMode tests, Play mode smoke with Editor focus keeping, stop gate, run logs, and a brief-to-story-to-done studio pipeline with director and specialist agents. Requires the unity-harness CLI (npm i -g github:Maris-LTD/unity-harness-loop).';
+
+const TARGET_TEXT = {
+  claude: {
+    platform: 'Claude Code',
+    ask: '`AskUserQuestion`',
+    spawn: name => `the \`Agent\` tool with \`subagent_type: "${CLAUDE_AGENT_PREFIX}${name}"\``,
+    agent: name => `${CLAUDE_AGENT_PREFIX}${name}`,
+  },
+  antigravity: {
+    platform: 'Antigravity',
+    ask: '`ask_question`',
+    spawn: name => `\`invoke_subagent\` with the \`${name}\` subagent`,
+    agent: name => name,
+  },
+};
+
+const ANTIGRAVITY_TOOLS = {
+  Read: 'view_file',
+  Glob: 'find_by_name',
+  Grep: 'grep_search',
+  Write: 'write_to_file',
+  Edit: 'edit_file',
+  Bash: 'run_command',
+  WebSearch: 'search_web',
+};
 
 function reset(dir) {
   fs.rmSync(dir, { recursive: true, force: true });
@@ -35,6 +60,29 @@ function frontmatter(fields) {
   return `---\n${rows.join('\n')}\n---\n`;
 }
 
+function render(file, source, target) {
+  const text = TARGET_TEXT[target];
+  const other = target === 'claude' ? 'antigravity' : 'claude';
+  const out = source
+    .replace(new RegExp(`\\{\\{#${other}\\}\\}[\\s\\S]*?\\{\\{/${other}\\}\\}\\n?`, 'g'), '')
+    .replace(new RegExp(`\\{\\{[#/]${target}\\}\\}\\n?`, 'g'), '')
+    .replace(/\{\{platform\}\}/g, text.platform)
+    .replace(/\{\{ask\}\}/g, text.ask)
+    .replace(/\{\{spawn ([a-z0-9-]+)\}\}/g, (_, name) => text.spawn(name))
+    .replace(/\{\{agent ([a-z0-9-]+)\}\}/g, (_, name) => text.agent(name));
+  const leftover = out.match(/\{\{[^}\n]*\}\}/);
+  if (leftover) throw new Error(`${file}: unknown template token ${leftover[0]}`);
+  return out;
+}
+
+function renderTree(dir, target) {
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) renderTree(full, target);
+    else if (entry.name.endsWith('.md')) fs.writeFileSync(full, render(full, fs.readFileSync(full, 'utf8'), target));
+  }
+}
+
 function sharedAgents() {
   const meta = JSON.parse(fs.readFileSync(path.join(SHARED, 'agents', 'agents.json'), 'utf8'));
   return Object.entries(meta).map(([name, m]) => ({
@@ -42,6 +90,11 @@ function sharedAgents() {
     ...m,
     body: fs.readFileSync(path.join(SHARED, 'agents', `${name}.md`), 'utf8').trim(),
   }));
+}
+
+function antigravityTools(agent) {
+  if (agent.antigravity && agent.antigravity.tools) return agent.antigravity.tools;
+  return agent.claude.tools.split(',').map(t => ANTIGRAVITY_TOOLS[t.trim()]).filter(Boolean);
 }
 
 const HIDDEN_CHARACTER = /[\p{Mn}\p{Me}\p{Cf}\p{Co}\p{Cs}]|[^\P{Cc}\t\r\n]/u;
@@ -55,8 +108,13 @@ function assertNoHiddenCharacters(file, source) {
   });
 }
 
-function copySkills(target) {
+function copySkills(target, platform) {
   fs.cpSync(path.join(SHARED, 'skills'), path.join(target, 'skills'), { recursive: true });
+  renderTree(path.join(target, 'skills'), platform);
+}
+
+function copyNotice(dir) {
+  fs.copyFileSync(path.join(ROOT, 'THIRD_PARTY_NOTICES.md'), path.join(dir, 'THIRD_PARTY_NOTICES.md'));
 }
 
 function buildClaude() {
@@ -68,12 +126,14 @@ function buildClaude() {
     description: DESCRIPTION,
     author: { name: 'Maris-LTD' },
     repository: 'https://github.com/Maris-LTD/unity-harness-loop',
-    keywords: ['unity', 'testing', 'smoke-test', 'hooks'],
+    keywords: ['unity', 'testing', 'smoke-test', 'hooks', 'studio', 'workflow'],
   }));
-  copySkills(dir);
+  copySkills(dir, 'claude');
+  copyNotice(dir);
   for (const agent of sharedAgents().filter(a => a.targets.includes('claude'))) {
-    const head = frontmatter({ name: agent.name, description: agent.description, tools: agent.claude.tools, model: agent.claude.model });
-    write(path.join(dir, 'agents', `${agent.name}.md`), `${head}\n${agent.body}`);
+    const c = agent.claude;
+    const head = frontmatter({ name: agent.name, description: agent.description, tools: c.tools, disallowedTools: c.disallowedTools, model: c.model, maxTurns: c.maxTurns });
+    write(path.join(dir, 'agents', `${agent.name}.md`), `${head}\n${render(agent.name, agent.body, 'claude')}`);
   }
   write(path.join(dir, 'hooks', 'hooks.json'), json({
     hooks: {
@@ -96,20 +156,22 @@ function buildAntigravity() {
     name: PLUGIN_NAME,
     description: DESCRIPTION,
   }));
-  copySkills(dir);
+  copySkills(dir, 'antigravity');
+  copyNotice(dir);
   for (const agent of sharedAgents().filter(a => a.targets.includes('antigravity'))) {
-    const ag = agent.antigravity;
+    const ag = agent.antigravity || {};
     const head = frontmatter({
       name: agent.name,
       description: agent.description,
-      tools: ag.tools,
+      tools: antigravityTools(agent),
       model: ag.model,
-      commandExecutionPolicy: ag.commandExecutionPolicy,
+      commandExecutionPolicy: ag.commandExecutionPolicy || 'auto',
       subagent: true,
       mainAgent: false,
     });
-    write(path.join(dir, 'agents', `${agent.name}.md`), `${head}\n# System Prompt\n\n${agent.body}`);
+    write(path.join(dir, 'agents', `${agent.name}.md`), `${head}\n# System Prompt\n\n${render(agent.name, agent.body, 'antigravity')}`);
   }
+  write(path.join(dir, 'rules', 'AGENTS.md'), fs.readFileSync(path.join(ROOT, 'lib', 'studio-protocol.md'), 'utf8'));
   write(path.join(dir, 'hooks.json'), json({
     [PLUGIN_NAME]: {
       enabled: true,
