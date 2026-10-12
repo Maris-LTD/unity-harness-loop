@@ -3,7 +3,7 @@ export const meta = {
   description: 'Write report.md for a harness run from git-based change data, audit it independently, and fix it until accurate',
   whenToUse: 'Called by unity-feature at the end of a run; can run alone with {runDir, runId, task, verdict, facts} when the run has a baseline',
   phases: [
-    { title: 'Log', detail: 'run-log-writer builds report.md from changes.json/changes.diff' },
+    { title: 'Log', detail: 'run-log-writer writes notes, the CLI renders report.md from changes.json + facts' },
     { title: 'Audit', detail: 'run-log-auditor checks report vs diff and facts, writer fixes' },
   ],
 }
@@ -15,7 +15,9 @@ const AGENT_PREFIX = typeof input.agentPrefix === 'string' ? input.agentPrefix :
 const agentType = name => AGENT_PREFIX + name
 const MAX_LOG_FIXES = typeof input.maxLogFixes === 'number' ? input.maxLogFixes : 2
 const verdict = input.verdict || 'unknown'
-const header = `runDir: ${input.runDir}\nrunId: ${input.runId || input.runDir}\ntask: ${input.task || ''}\nverdict: ${verdict}\n\nFacts:\n${JSON.stringify(input.facts || {}, null, 2)}`
+const runId = input.runId || input.runDir
+const header = `runDir: ${input.runDir}\nrunId: ${runId}\ntask: ${input.task || ''}\nverdict: ${verdict}`
+const facts = { runId, task: input.task || '', verdict, ...(input.facts || {}) }
 
 const AUDIT_SCHEMA = {
   type: 'object',
@@ -38,7 +40,7 @@ const AUDIT_SCHEMA = {
 }
 
 phase('Log')
-await agent(`Write the run report.\n\n${header}`, {
+await agent(`Write the run report.\n\n${header}\n\nFacts (pass verbatim as "facts"):\n${JSON.stringify(facts)}`, {
   label: 'log:write', phase: 'Log', agentType: agentType('run-log-writer'), ...(routes.write || {}),
 })
 
@@ -52,7 +54,7 @@ let result = await audit(1)
 while (result && !result.accurate && fixes < MAX_LOG_FIXES) {
   fixes += 1
   log(`Log audit found ${result.discrepancies.length} discrepancies, fix ${fixes}/${MAX_LOG_FIXES}`)
-  await agent(`Fix these audit discrepancies in report.md, nothing else.\n\n${header}\n\nDiscrepancies:\n${JSON.stringify(result.discrepancies, null, 2)}`, {
+  await agent(`Fix these audit discrepancies in the report notes, nothing else.\n\n${header}\n\nDiscrepancies:\n${JSON.stringify(result.discrepancies)}`, {
     label: `log:fix#${fixes}`, phase: 'Audit', agentType: agentType('run-log-writer'), ...(routes.write || {}),
   })
   result = await audit(fixes + 1)

@@ -28,7 +28,7 @@ const ROUTES = {
   plan: { effort: 'high' },
   implement: { low: { model: 'sonnet', effort: 'medium' }, medium: { model: 'sonnet', effort: 'high' }, high: { effort: 'high' } },
   verify: { model: 'haiku' },
-  review: { low: {}, medium: {}, high: { effort: 'high' } },
+  review: { low: { model: 'sonnet', effort: 'medium' }, medium: { model: 'sonnet', effort: 'high' }, high: { effort: 'high' } },
   fix: [{ model: 'sonnet', effort: 'high' }, { effort: 'high' }],
   logWrite: { model: 'sonnet', effort: 'medium' },
   logAudit: { model: 'sonnet', effort: 'medium' },
@@ -66,8 +66,7 @@ const PLAN_SCHEMA = obj({
   summary: str,
   complexity: { type: 'string', enum: ['low', 'medium', 'high'] },
   complexityReason: str,
-  files: { type: 'array', items: obj({ path: str, action: { type: 'string', enum: ['create', 'modify', 'move', 'delete'] }, responsibility: str }) },
-  steps: strList, testAssemblies: strList, needsSmoke: bool, smokeExpectations: str, risks: strList,
+  testAssemblies: strList, needsSmoke: bool, smokeExpectations: str,
 })
 const IMPLEMENT_SCHEMA = obj({ changedFiles: strList, compiled: bool, notes: str })
 const ISSUE = obj({ file: str, line: { type: 'number' }, message: str, probableCause: str }, ['message'])
@@ -86,7 +85,9 @@ const shell = (command, label, phaseName, schema) => agent(
 async function writeRunLog(logInput) {
   const routes = logInput.routes || {}
   const verdict = logInput.verdict || 'unknown'
-  const header = `runDir: ${logInput.runDir}\nrunId: ${logInput.runId || logInput.runDir}\ntask: ${logInput.task || ''}\nverdict: ${verdict}\n\nFacts:\n${JSON.stringify(logInput.facts || {}, null, 2)}`
+  const runId = logInput.runId || logInput.runDir
+  const header = `runDir: ${logInput.runDir}\nrunId: ${runId}\ntask: ${logInput.task || ''}\nverdict: ${verdict}`
+  const facts = { runId, task: logInput.task || '', verdict, ...(logInput.facts || {}) }
 
   const AUDIT_SCHEMA = {
     type: 'object',
@@ -108,7 +109,7 @@ async function writeRunLog(logInput) {
     required: ['accurate', 'discrepancies'],
   }
 
-  await agent(`Write the run report.\n\n${header}`, {
+  await agent(`Write the run report.\n\n${header}\n\nFacts (pass verbatim as "facts"):\n${JSON.stringify(facts)}`, {
     label: 'log:write', phase: 'Log', agentType: agentType('run-log-writer'), ...(routes.write || {}),
   })
 
@@ -121,7 +122,7 @@ async function writeRunLog(logInput) {
   while (result && !result.accurate && fixes < MAX_LOG_FIXES) {
     fixes += 1
     log(`Log audit found ${result.discrepancies.length} discrepancies, fix ${fixes}/${MAX_LOG_FIXES}`)
-    await agent(`Fix these audit discrepancies in report.md, nothing else.\n\n${header}\n\nDiscrepancies:\n${JSON.stringify(result.discrepancies, null, 2)}`, {
+    await agent(`Fix these audit discrepancies in the report notes, nothing else.\n\n${header}\n\nDiscrepancies:\n${JSON.stringify(result.discrepancies)}`, {
       label: `log:fix#${fixes}`, phase: 'Log', agentType: agentType('run-log-writer'), ...(routes.write || {}),
     })
     result = await audit(fixes + 1)
@@ -156,7 +157,7 @@ async function guard(tag, expect, phaseName) {
   lastTag = tag
   if (!res) {
     guardEvents.push({ kind: 'guard-unavailable', step: tag, since })
-    return { violation: false, changed: [] }
+    return { violation: false, changed: [], unavailable: true }
   }
   if (res.violation) {
     guardEvents.push({ kind: 'guard-violation', step: tag, since, changed: res.changed })
@@ -188,13 +189,14 @@ if (input.planFile) {
     `Produce a Vietnamese markdown plan with sections Mục tiêu, Độ phức tạp (+ lý do), File (path | create/modify/move/delete | trách nhiệm), Các bước, Test, Smoke (điều kiện kiểm được), Rủi ro.\n` +
     `Save it only with this Bash command and confirm it prints {"written": ...}; if the heredoc fails, write a draft under $TEMP and use --from <draft>:\n` +
     `unity-harness run-log write ${run.runDir} plan.md <<'__RUNLOG_EOF__'\n<markdown>\n__RUNLOG_EOF__\n\n` +
-    `Test assemblies are listed under testAssemblies in \`unity-harness config\`.needsSmoke = true if scenes, prefabs, UI or startup flow change.\n${PLAN_RULES}`,
+    `plan.md is the single source for files, steps and risks: do not repeat them in your structured result. summary is at most 2 sentences. ` +
+    `Test assemblies are listed under testAssemblies in \`unity-harness config\`. needsSmoke = true if scenes, prefabs, UI or startup flow change.\n${PLAN_RULES}`,
     { label: 'plan', phase: 'Plan', schema: PLAN_SCHEMA, ...routed('plan') },
   )
 }
 if (!plan) throw new Error('planning agent returned nothing')
 const planGuard = await guard('after-plan', 'readonly', 'Plan')
-log(`Plan: complexity=${plan.complexity}, ${plan.files.length} files, smoke=${plan.needsSmoke}`)
+log(`Plan: complexity=${plan.complexity}, smoke=${plan.needsSmoke}`)
 
 if (input.planOnly && !planGuard.violation) {
   return {
@@ -213,7 +215,8 @@ let stopReason = planGuard.violation ? 'plan step modified the working tree' : n
 if (!stopReason) {
   phase('Implement')
   impl = await agent(
-    `Implement this plan in the Unity project.\n\nTask: ${input.task}\n\nPlan (${planPath}):\n${JSON.stringify(plan, null, 2)}\n\n` +
+    `Implement the plan in ${planPath} in the Unity project. Read it first: it lists the files, steps, tests and risks.\n\n` +
+    `Task: ${input.task}\nSummary: ${plan.summary}\nComplexity: ${plan.complexity}\n\n` +
     `Edit code with your file tools (git mv is fine for moves). Never commit or push. Keep comments and Debug logs of moved content verbatim. ` +
     `When logic is testable, add EditMode tests in an existing test assembly. ` +
     `When done, run \`unity-harness compile\` from Bash and fix errors until it passes ` +
@@ -228,16 +231,41 @@ const verifyMode = (typeof input.smoke === 'boolean' ? input.smoke : plan.needsS
 const assemblies = (input.assemblies || plan.testAssemblies || []).filter(Boolean)
 const assemblyFlag = assemblies.length ? ` with \`--assemblies ${assemblies.join(',')}\`` : ''
 
-function verifyRound(n) {
+const openFindings = r => (r ? r.findings : []).filter(f => f.severity !== 'minor')
+
+function reviewPrompt(scope) {
+  if (!scope) return `Review the current C# diff for this task: ${input.task}`
+  return `Re-review after a fix round for this task: ${input.task}\n\n` +
+    `Limit the diff to these files: ${scope.files.join(', ') || 'none'}.\n` +
+    `Previous blocking findings: ${JSON.stringify(scope.open)}\n` +
+    `Report a previous finding again only if it is still present (re-check its file even when it is not listed). Report new issues only in the listed files.`
+}
+
+function mergeReview(previous, next, scope) {
+  if (!scope || !next || !previous) return next
+  const carried = previous.findings.filter(f => f.severity === 'minor' && !scope.files.includes(f.file))
+  return { findings: [...next.findings, ...carried] }
+}
+
+function verifyRound(n, scope) {
+  const reviewThunk = scope && !scope.files.length && !scope.open.length
+    ? () => Promise.resolve(review)
+    : () => agent(reviewPrompt(scope),
+      { label: `review#${n}`, phase: 'Verify', agentType: agentType('unity-reviewer'), schema: REVIEW_SCHEMA, ...routed('review', plan.complexity) })
+        .then(next => mergeReview(review, next, scope))
   return parallel([
     () => agent(
       `Verify the current working tree. Run mode \`${verifyMode}\`${assemblyFlag}.\n` +
       `Smoke expectations from the plan: ${plan.smokeExpectations || 'none stated'}\n` +
       `You are read-only: report failures as verdict fail, never fix them.`,
       { label: `verify#${n}`, phase: 'Verify', agentType: agentType('unity-verifier'), schema: VERIFY_SCHEMA, ...routed('verify') }),
-    () => agent(`Review the current C# diff for this task: ${input.task}`,
-      { label: `review#${n}`, phase: 'Verify', agentType: agentType('unity-reviewer'), schema: REVIEW_SCHEMA, ...routed('review', plan.complexity) }),
+    reviewThunk,
   ])
+}
+
+function reviewScopeAfterFix(fixGuard) {
+  if (fixGuard.unavailable || !review) return null
+  return { files: fixGuard.changed.filter(f => f.endsWith('.cs')), open: openFindings(review) }
 }
 
 function blockingOf(v, r) {
@@ -247,8 +275,8 @@ function blockingOf(v, r) {
   return [...fromVerify, ...fromReview]
 }
 
-async function verifyGuarded(n) {
-  ;[verify, review] = await verifyRound(n)
+async function verifyGuarded(n, scope) {
+  ;[verify, review] = await verifyRound(n, scope)
   blocking = blockingOf(verify, review)
   const g = await guard(`after-verify-${n}`, 'readonly', 'Verify')
   if (g.violation) {
@@ -269,8 +297,10 @@ if (!stopReason) {
       `Never commit. After editing, run \`unity-harness compile\` and make it pass.`,
       { label: `fix#${round}`, phase: 'Fix', ...fixRoute },
     )
-    await guard(`after-fix-${round}`, 'write', 'Fix')
-    await verifyGuarded(round)
+    const fixGuard = await guard(`after-fix-${round}`, 'write', 'Fix')
+    const scope = reviewScopeAfterFix(fixGuard)
+    if (scope && !scope.files.length && !scope.open.length) log(`Review skipped in round ${round}: fix changed no .cs file and no review finding was open`)
+    await verifyGuarded(round, scope)
   }
 }
 
@@ -279,9 +309,9 @@ const verdict = guardEvents.some(e => e.kind === 'guard-violation') ? 'guard-vio
     : verify && verify.verdict === 'pass' ? 'pass' : 'unverified'
 const logRoutes = { write: routed('logWrite'), audit: routed('logAudit'), finalize: routed('finalize') }
 const facts = {
-  plan: { summary: plan.summary, complexity: plan.complexity, complexityReason: plan.complexityReason, plannedFiles: plan.files, smokeExpectations: plan.smokeExpectations, risks: plan.risks },
+  plan: { summary: plan.summary, complexity: plan.complexity, complexityReason: plan.complexityReason, smokeExpectations: plan.smokeExpectations },
   implementNotes: impl.notes, filesClaimedByImplementer: impl.changedFiles,
-  verification: verify, review: review ? review.findings : [], fixRounds: round, remainingIssues: blocking,
+  verification: verify, review: (review ? review.findings : []).map(({ fix, ...f }) => f), fixRounds: round, remainingIssues: blocking,
   stopReason, guardEvents, modelsUsed,
 }
 

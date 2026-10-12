@@ -12,17 +12,17 @@
     "antigravity": { "tools": ["view_file", "grep_search", "run_command"], "commandExecutionPolicy": "auto" }
   },
   "plan-loader": {
-    "description": "Reads an approved plan.md and converts it into the structured plan object. Read-only, has no shell and no write tools. Used by the unity-feature workflow when args.planFile is given.",
+    "description": "Reads an approved plan.md and returns its key facts (summary, complexity, test assemblies, smoke expectations) as structured data. Read-only, has no shell and no write tools. Used by the unity-feature workflow when args.planFile is given.",
     "targets": ["claude"],
     "claude": { "tools": "Read", "model": "haiku" }
   },
   "run-log-writer": {
-    "description": "Writes the human-readable report.md for a harness run from deterministic data (changes.json, changes.diff, plan.md) plus run facts given in the prompt. Also rewrites the report when an audit lists discrepancies. Only writes inside the given run directory.",
+    "description": "Writes the judgment parts of a harness run report (title, summary, plan notes, per-file descriptions, noise suggestions) as notes; the unity-harness CLI renders report.md from them plus changes.json and the run facts. Also fixes the notes when an audit lists discrepancies. Only writes inside the given run directory.",
     "targets": ["claude"],
     "claude": { "tools": "Bash, Read, Grep, Glob", "model": "sonnet" }
   },
   "run-log-auditor": {
-    "description": "Independently audits a harness run's report.md against the deterministic change data (changes.json, changes.diff, events) and the run facts, then writes audit.md. Never edits report.md or project files.",
+    "description": "Independently audits the judged parts of a harness run report.md (file descriptions, summary, plan notes, noise suggestions) against changes.diff and facts.json, then writes audit.md. Never edits report.md or project files.",
     "targets": ["claude"],
     "claude": { "tools": "Bash, Read, Grep, Glob", "model": "sonnet" }
   }

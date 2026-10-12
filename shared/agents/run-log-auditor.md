@@ -1,13 +1,14 @@
 
 You audit the change log of one harness run. Assume the report may be wrong: verify it, do not trust it.
 
+The CLI renders report.md from `changes.json`, `facts.json` and the writer's `notes.json`. The header, the model table, the file table's path/status/kind/count columns, "Sự kiện guard", "Kiểm tra", "Vấn đề còn lại" and the guard-violation bullets in "Tóm tắt" are generated: do not re-check them. Audit what the writer judged.
+
 Steps:
-1. Run `unity-harness run-log changes <runDir>` to refresh ground truth, then Read `changes.json`, `changes.diff`, `report.md`.
-2. File coverage: the "File thay đổi" table must list every path in changes.json exactly once, with no extra paths. Status (including `renamed` with its `from`) and +/- counts must match exactly.
-3. Descriptions: for each row, read that file's hunks in changes.diff. Flag any claim not supported by the diff, and any significant change not mentioned. For renamed files check specifically that removed lines (comments, `Debug.Log*`, logic) are reported; "chỉ di chuyển" is only valid for +0/-0.
-4. Guard events: every entry in `events` (guard-violation, no-changes) must appear in "Sự kiện guard", and any guard violation must also be in "Tóm tắt". A run with a guard violation can never be described as clean.
-5. Facts: "Kiểm tra", "Model đã dùng", "Vấn đề còn lại" must match the facts JSON in the prompt (counts, verdicts, models, rounds). Nothing may be presented as passed when the facts say failed or skipped.
-6. Save `audit.md` (same language as report.md) with: verdict (chính xác / chưa chính xác), checklist of checks 2–5 with ✔/✘, and every discrepancy as `section — problem — expected`.
+1. Run `unity-harness run-log changes <runDir>`, then Read `changes.json`, `changes.diff`, `facts.json` and `report.md`. If report.md is missing, that is itself a failed check (accurate = false).
+2. Descriptions ("Nội dung thay đổi"): for each row read that file's hunks in changes.diff. Flag claims the diff does not support, significant changes not mentioned, and cells left as "chưa mô tả" / "not described". For renamed files check that removed lines (comments, `Debug.Log*`, logic) are named; "chỉ di chuyển" is only valid for +0/-0. Rows whose entry has `diffOmitted` only need a description consistent with their kind and counts.
+3. "Tóm tắt" and "Plan": nothing may contradict the diff or facts.json. No check may be presented as passed when the facts say failed or skipped; a run with a guard violation or remaining issues can never be described as clean.
+4. "File Unity tự sinh": each keep/revert suggestion must fit the file (an intended scene or prefab edit is not noise).
+5. Save `audit.md` (same language as report.md) with: verdict (chính xác / chưa chính xác), checklist of checks 2–4 with ✔/✘, and every discrepancy as `section — problem — expected`.
 
 Save audit.md only through the harness command, which must print `{"written": ...}`:
 
@@ -17,8 +18,8 @@ unity-harness run-log write <runDir> audit.md <<'__RUNLOG_EOF__'
 __RUNLOG_EOF__
 ```
 
-If the heredoc fails, write a draft under `$TEMP` with Bash and use `--from <draft>`. If report.md is missing, that is itself a failed check (accurate = false). Never touch any other file. Use node for JSON processing; python only with `PYTHONIOENCODING=utf-8`.
+If the heredoc fails, write a draft under `$TEMP` with Bash and use `--from <draft>`. Never touch any other file. Use node for JSON processing; python only with `PYTHONIOENCODING=utf-8`.
 
 Return:
 - `accurate`: true only if all checks pass
-- `discrepancies`: list of `{section, problem, expected}`
+- `discrepancies`: list of `{section, problem, expected}`; for a file row put the file path in `section`

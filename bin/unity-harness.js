@@ -16,6 +16,7 @@ Run logs (used by the unity-feature workflow and run-log agents):
   run-log changes <runDir>
   run-log tree <runDir> --tag <tag> [--compare <tag> --expect readonly|write]
   run-log write <runDir> <plan.md|report.md|audit.md> [--from <file>]
+  run-log report <runDir> [--from <file>]   stdin JSON {facts?, notes}
   run-log event <runDir> --kind <kind> --step <step>
   run-log finalize <runDir> --verdict <v> --audit <a>
 
