@@ -40,18 +40,24 @@ References in this skill:
    - N > 0: read only the in-scope GDDs. For `layer:` / `<system>` modes, read each GDD's Overview and
      Dependencies to place it in a layer and decide scope; never drop a system from scope because a section is
      missing. In `all` mode every system is in scope.
-   - N = 0: the per-system GDD skills are not in this plugin yet. Offer two ways on, with {{ask}}: write the GDDs
-     first (by hand or with {{spawn game-designer}} drafting each, sections per `workflow` as in
-     `studio-brainstorm` section 4), or decompose from `paths.concept`'s Core Mechanics and MVP Definition, one
-     epic per core mechanic, with "GDD: none yet". No concept either → "Run `studio-brainstorm` first" and stop.
-2. Optional, read only when they exist: `<paths.gddDir>/systems-index.md` (system list, layers, priority),
-   `<docsRoot>/architecture/architecture.md` (module ownership), ADRs in `<docsRoot>/architecture/` (only the
-   Decision, GDD Requirements Addressed and Engine Compatibility sections of ADRs covering in-scope systems),
-   a requirements registry. None of these exist by default in this plugin: their fields read "none yet".
+   - N = 0: offer two ways on, with {{ask}}: write the GDDs first (`studio-map-systems` for the systems index,
+     then `studio-design-system <system>` per system and `studio-design-review` on each), or decompose from
+     `paths.concept`'s Core Mechanics and MVP Definition, one epic per core mechanic, with "GDD: none yet". No
+     concept either → "Run `studio-brainstorm` first" and stop.
+2. Read when they exist (missing → the field reads "none yet"):
+   - `paths.systemsIndex`: system list, layers, priority, and the Status column, which is authoritative for each
+     GDD's design status (the GDD header `> **Status**:` is the fallback when the index has no row);
+   - `paths.architectureDoc`: module ownership;
+   - ADRs in `paths.architectureDir` covering in-scope systems: the `> **Status**:` line plus the Decision, GDD
+     Requirements Addressed and Engine Compatibility sections. Only `Accepted` ADRs count as coverage; a
+     `Proposed` ADR counts as pending coverage and its requirements are flagged "pending ADR-NNNN acceptance";
+     `Deprecated` / `Superseded` ADRs count as none;
+   - `paths.trRegistry`: the TR-IDs (`TR-<system>-NNN`, `status: active` only) used in each epic's requirements
+     table.
 3. Report: "Loaded N GDDs, M ADRs, engine Unity <unityVersion or 'version not set — run studio-setup'>."
 
 Tier expectations:
-- `full`: every in-scope GDD has all 8 sections and is Approved; requirements without a governing ADR are flagged
+- `full`: every in-scope GDD has all 8 sections and is Approved (systems-index Status column); requirements without a governing ADR are flagged
   before each epic is created.
 - `standard`: GDDs carry the 5 required sections (+ Formulas when the system has numeric rules); only
   Foundation-layer ADRs are expected, the rest is informational.
@@ -80,8 +86,7 @@ Untraced requirements: <list> | none
 
 - At `full` with untraced requirements, warn: "<N> requirements in <system> have no ADR. Their stories will be
   written with `ADR: N/A` and `Status: Ready`, so they would be implemented without architectural guidance.
-  Record a decision first (ADR authoring is not in this plugin yet; write `<docsRoot>/architecture/adr-NNNN-<slug>.md`
-  by hand), or proceed and accept the gap."
+  Record a decision first with studio-architecture-decision, or proceed and accept the gap."
 - At `standard` list untraced non-Foundation requirements as information only. With no ADRs at all, skip the check
   and state "Governing ADRs: none yet".
 - Ask with {{ask}}: "Create Epic: <name>?" — Yes, create it / Skip this epic / Pause, I need to decide something
@@ -111,9 +116,8 @@ milestone timeline and target dates, team capacity, the layer being processed.
 ## 7. After writing
 - Epics define scope, stories define steps: run `studio-create-stories <epic-slug>` for each epic before anyone
   can pick up work.
-- When Foundation and Core epics exist, the project is ready to move toward production; the phase gate skill is
-  not in this plugin yet, so say what exists and let the user decide whether to `unity-harness studio set
-  stage=pre-production` (a settings change: ask first).
+- Epics are pre-production work (the stage after `studio-gate-check pre-production`). Once the Foundation and Core
+  epics have stories and a first sprint is planned, the next transition is `studio-gate-check production`.
 - Never create stories in this skill.
 
 Verdict: **COMPLETE** (N epics written; run `studio-create-stories <slug>` per epic), or **BLOCKED** (all epics

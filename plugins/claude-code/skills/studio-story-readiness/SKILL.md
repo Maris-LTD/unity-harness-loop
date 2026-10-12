@@ -19,7 +19,7 @@ Reference: `references/checklist.md` holds the full checklist and the output for
   ADR that is missing / Proposed / Deprecated / Superseded, or an UNRESOLVED design question with no owner.
 - **NEEDS WORK**: one or more checklist items fail; fixable before assignment.
 - **NOT ASSESSED**: the story could not be evaluated: unreadable or unparseable file, a referenced ADR with no
-  readable `## Status`, a referenced design document that cannot be found. Never a synonym for BLOCKED.
+  readable Status line, a referenced design document that cannot be found. Never a synonym for BLOCKED.
 - **READY**: every item passes, is N/A with a stated reason, or is advisory at this tier (advisory gaps are still
   listed).
 
@@ -40,9 +40,12 @@ Precedence, first match wins: BLOCKED → NEEDS WORK → NOT ASSESSED → READY.
 
 ## 2. Load shared context once
 - `paths.gddDir` listing and `paths.brief` (minimal: the brief stands in for a GDD).
-- ADRs, a TR registry and a control manifest are optional in this plugin. If the project has none, every check that
-  depends on them auto-passes; say "no ADRs / TR registry / manifest in this project" once, not per story.
-- If ADR files exist (search `**/adr-*.md` under the docs root), collect every `## Status` with one search, not one
+- ADRs (`paths.architectureDir/adr-*.md`, studio-architecture-decision), the TR registry (`paths.trRegistry`,
+  studio-architecture-review) and the control manifest (`paths.controlManifest`, studio-create-control-manifest)
+  are optional. If the project has none, every check that depends on them auto-passes; say "no ADRs / TR registry /
+  manifest in this project" once, not per story.
+- If ADR files exist, take their statuses from `unity-harness studio status` (`architecture.adrsByStatus`) and, per
+  referenced ADR, its `> **Status**:` line (or a `## Status` section in a hand-written ADR) with one search, not one
   read per ADR. Zero status lines with N files present means malformed ADRs, not "none Accepted": report it once.
 - Sprint scope: hold the sprint's Must Have / Should Have tiers for escalation.
 

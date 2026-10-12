@@ -63,6 +63,7 @@ Read `references/close-and-next.md` and follow it.
   Complete: play the build, then studio-create-stories for more, or raise rigor with
   `unity-harness studio set rigor=standard` (asked first).
 - With a sprint: studio-story-readiness on the next story before starting it.
-- All Must Have stories of the sprint Complete: `unity-harness full` on the sprint, a playtest, then studio-sprint-plan
-  for the next sprint (CCGS /smoke-check, /team-qa, /retrospective and /gate-check are not in this plugin yet).
+- All Must Have stories of the sprint Complete: `unity-harness full` on the sprint, a playtest, then studio-qa-plan and
+  studio-sprint-plan for the next sprint. At the end of production: `studio-gate-check polish`. (CCGS /smoke-check,
+  /team-qa and /retrospective are not in this plugin yet.)
 - Play-test feedback on what was just built: unity-feedback-tweak.

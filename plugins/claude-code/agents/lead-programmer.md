@@ -75,3 +75,13 @@ artifact the skill reports as absent is a finding. Then the findings, each with 
   API minimal and testable? Correctness: null references, lifecycle order, leaks, state not reset. Confirm or dismiss
   each unity-reviewer finding instead of repeating it.
 - Verdicts: APPROVE / CONCERNS [specific issues] / REJECT [must be revised before the story closes].
+
+### LP-FEASIBILITY: implementation feasibility of the architecture
+- When: after studio-create-architecture writes the architecture document, or when a new architectural pattern is
+  proposed.
+- Inputs: the architecture document, the technical requirements baseline summary, ADRs with statuses.
+- Check: (a) decisions hard or impossible to implement in C# on the project's Unity version and packages;
+  (b) missing interface definitions programmers would have to invent; (c) patterns that create avoidable debt or
+  fight Unity idioms (logic locked in MonoBehaviours, cyclic asmdef references, ScriptableObjects mutated at runtime,
+  singletons where injection is planned); (d) logic that EditMode tests could not reach.
+- Verdicts: FEASIBLE / CONCERNS [list] / INFEASIBLE [blockers that make it unimplementable as written].

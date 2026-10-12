@@ -20,6 +20,7 @@ the words `Ready`, `In Progress`, `Blocked`, `Complete`. `studio-create-stories`
 > **Type**: [Logic | Integration | Visual/Feel | UI | Config/Data]
 > **Estimate**: [filled by studio-create-stories from scope: coarse 2-5 days, balanced 1-2 days, fine < 1 day]
 > **Last Updated**: [set by studio-dev-story when implementation begins]
+> **Manifest Version**: [date from the paths.controlManifest header | N/A (no control manifest)]
 
 ## Context
 
@@ -29,6 +30,11 @@ the words `Ready`, `In Progress`, `Blocked`, `Complete`. `studio-create-stories`
 **ADR Governing Implementation**: [ADR-NNNN: title | N/A — reason]
 **ADR Decision Summary**: [1-2 sentences | N/A]
 **ADR Version**: [the ADR's Last Verified date, else its Date, else `unversioned` | N/A]
+
+**Control Manifest Rules (this layer)**:
+- Required: [rules from the manifest's `## [Layer] Layer Rules` section | none (no control manifest)]
+- Forbidden: [...]
+- Guardrails: [performance or memory limits for this layer, if any]
 
 **Engine**: Unity [unityVersion] | **Risk**: [LOW / MEDIUM / HIGH / NOT ASSESSED]
 **Engine Notes**: [post-cutoff Unity APIs to verify against unity-engine-reference, or "none"]
@@ -98,6 +104,7 @@ No GDD, ADR or registry exists at `minimal`. Fill the template exactly like this
 - Design source → `[paths.brief]`.
 - Requirement → `Brief MVP feature N` (never a TR-ID).
 - ADR Governing Implementation / Decision Summary / Version → `N/A (minimal — no ADRs)`.
+- Manifest Version → `N/A (minimal — no control manifest)`; Control Manifest Rules → `none (minimal)`.
 - Engine → `Unity <unityVersion>` from studio config (`not set — run studio-setup` when empty).
 - Risk → the rating `unity-engine-reference` gives that Unity version. If it gives none, or the version is not set,
   write `NOT ASSESSED (no version risk rating)`; never guess. `studio-dev-story` treats NOT ASSESSED as HIGH when it

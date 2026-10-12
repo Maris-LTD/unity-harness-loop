@@ -95,3 +95,18 @@ findings.
 - Check: is the load realistic for the capacity, with the 20% buffer? Are stories ordered by dependency? Hidden
   dependencies that could block mid-sprint? Stories underestimated for their technical complexity?
 - Verdicts: REALISTIC / CONCERNS [specific risks] / UNREALISTIC [descope; name the stories to defer].
+
+### PR-PHASE-GATE: production readiness at a phase transition
+- When: every studio-gate-check panel (alone at minimal, with TD-PHASE-GATE at standard, with all four at full).
+- Panel: the caller (studio-gate-check) picks who sits by `workflow`: minimal -> producer only; standard ->
+  technical-director + producer; full -> creative-director, technical-director, producer, art-director, all
+  spawned in parallel. The strictest verdict wins.
+- Inputs: target phase and workflow tier, the gate's required and recommended artifacts at that tier, sprint and
+  milestone artifacts present (at minimal the brief's build order is the plan), sprint capacity if a sprint plan
+  exists, blocked story count.
+- Check: is the scope realistic for the timeline and team? Is the target phase's work planned to the depth this gate
+  needs (from Production on: a sprint plan at standard/full, the build order at minimal; before it, no sprint plan is
+  expected) and ordered by dependency? Which schedule risks could derail its first two sprints?
+  A required artifact passed as "none" is a finding; one passed as "not expected before <phase>" or "not
+  required at workflow <tier>" is not.
+- Verdicts: READY / CONCERNS [list] / NOT READY [blockers].

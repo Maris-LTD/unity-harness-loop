@@ -99,21 +99,22 @@ List all of them, in order:
 
 Design-first (the concept is well defined):
 1. `studio-setup`, if the Unity project or `unityVersion` is not configured yet.
-2. Art bible: not in this plugin yet. If visual assets will be produced, write `art-bible.md` in the `design/` folder beside `paths.brief`
+2. Art bible: not in this plugin yet. If visual assets will be produced, write `paths.artBible`
    by hand from the Visual Identity Anchor before asset work starts.
-3. Per-system GDDs: `/map-systems` and `/design-system` are not in this plugin yet. Write one GDD per system in
-   `paths.gddDir` (`<system>.md`) with the sections `workflow` requires: at `standard` Overview, Detailed Rules,
-   Edge Cases, Dependencies, Acceptance Criteria, plus Formulas when the system has numeric rules; at `full` also
-   Player Fantasy and Tuning Knobs. Spawn the game designer with the `Agent` tool with `subagent_type: "unity-harness:game-designer"` to draft each one.
-4. `studio-create-epics`: one epic per system from those GDDs.
-5. `studio-create-stories`, then `studio-sprint-plan`.
+3. `studio-design-review` on the concept, then `studio-map-systems`: decompose the concept into systems with a
+   dependency-ordered design order and MVP tiers (`paths.systemsIndex`), then `studio-gate-check systems-design`.
+4. `studio-design-system` per system in that order (sections set by `workflow`), `studio-design-review` per GDD,
+   then `studio-gate-check technical-setup`.
+5. `studio-create-architecture` → `studio-architecture-decision` per ADR → `studio-create-control-manifest` →
+   `studio-architecture-review` → `studio-gate-check pre-production`.
+6. `studio-create-epics`, `studio-create-stories`, then `studio-sprint-plan`.
 
 Prototype-first (the core mechanic is unproven):
 1. `studio-setup`.
 2. Build a throwaway prototype of the core mechanic first. `/prototype` is not in this plugin yet: use
    `unity-ref-to-prototype` when there is an HTML demo or reference images, otherwise build it on a scratch scene
    with a small `unity-harness:unity-feature` workflow run.
-3. If it proves fun, continue with design-first steps 2-5 using what the prototype taught. If not, run
+3. If it proves fun, continue with design-first steps 2-6 using what the prototype taught. If not, run
    `studio-brainstorm` again with the learnings.
 
 Then a summary: elevator pitch, pillars, primary player type, biggest risk, file path.

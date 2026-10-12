@@ -70,12 +70,16 @@ milestone").
   and repeat it at the write ask.
 
 ## 4. QA check
-Look for a QA plan (`qa-plan-*.md` naming this sprint) in the parent folder of `paths.evidenceDir`
-(`production/qa/`).
+Look for a QA plan in `paths.qaDir` (`qa-plan-<sprint-slug>-<date>.md`, written by studio-qa-plan) whose name or
+content references this sprint.
 - Found: add `QA plan: <path>` to the plan.
-- Not found: a sprint QA plan skill is not in this plugin yet. Do not block. Add to the plan: "No QA plan: each
-  story's acceptance criteria and evidence type (studio protocol) define done; `unity-harness all` must pass and
-  player-visible stories need a kept screenshot."
+- Not found: do not proceed silently. Say that without a QA plan the test requirements per story are undefined and
+  the production → polish gate will flag it, then ask with `AskUserQuestion` (a separate question from the write ask):
+  - A (recommended): run studio-qa-plan for this sprint before implementation starts → add to the plan
+    "QA plan: run studio-qa-plan before implementation begins."
+  - B: skip for now → add a warning block: "> **No QA plan**: this sprint started without one. Run studio-qa-plan
+    before the last story is implemented; until then each story's acceptance criteria and evidence type define
+    done, `unity-harness all` must pass and player-visible stories need a kept screenshot."
 
 ## 5. Write
 Ask "May I write `paths.sprintsDir/sprint-NNN.md`?" (per the studio protocol for the current `automation` mode;

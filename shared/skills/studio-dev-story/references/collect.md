@@ -74,7 +74,8 @@ Deviations from scope: none | <files outside the story's boundary>
 Engine risks flagged: none | <specialist finding>
 Blockers: none | <what>
 ```
-End with: `Next: studio-story-done <story-path>`.
+End with the next step by `workflow`: standard / full → `Next: studio-code-review <story-path>, then studio-story-done
+<story-path>`; minimal → `Next: studio-story-done <story-path>`.
 
 ## Session checkpoint
 Overwrite (never append) the block between `<!-- CHECKPOINT -->` and `<!-- /CHECKPOINT -->` in `paths.sessionState`.
@@ -86,7 +87,7 @@ Updated: <YYYY-MM-DD>
 Branch: <current git branch>
 Current story: <story path>
 Current task: studio-dev-story - <story title>
-Next step: studio-story-done <story path>
+Next step: <studio-code-review <story path> (standard/full) | studio-story-done <story path> (minimal)>
 Blocked on: nothing
 Files in progress: <changed files, test file included>
 Run result: <the Run result line, verbatim>

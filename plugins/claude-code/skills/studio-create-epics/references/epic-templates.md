@@ -29,7 +29,7 @@ responsibilities.]
 
 | ID | Requirement | ADR coverage |
 |----|-------------|--------------|
-| [TR-[system]-001, or AC-1 from the GDD when there is no registry] | [requirement text] | [ADR-NNNN ✅ / ❌ No ADR / n/a] |
+| [TR-[system]-001, or AC-1 from the GDD when there is no registry] | [requirement text] | [ADR-NNNN ✅ / ⏳ ADR-NNNN pending acceptance / ❌ No ADR / n/a] |
 
 ## Definition of Done
 
@@ -38,8 +38,8 @@ This epic is complete when:
 - All acceptance criteria from [the GDD / concept / brief] are verified.
 - Logic and Integration stories have passing EditMode tests in the asmdef listed in `testAssemblies`
   (`unity-harness config`), conventionally `Assets/[Game]/Tests/EditMode/`. At qaLevel minimal tests are advisory.
-- Visual/Feel and UI stories have screenshots kept in [paths.evidenceDir] (each screen touched for UI, plus a lead
-  sign-off for Visual/Feel).
+- Visual/Feel and UI stories have screenshots kept in [paths.evidenceDir] (each screen touched for UI; Visual/Feel
+  also needs the user's sign-off, given in studio-story-done).
 - `unity-harness all` passes.
 - [Any GDD sections still missing for the tier, if any.]
 

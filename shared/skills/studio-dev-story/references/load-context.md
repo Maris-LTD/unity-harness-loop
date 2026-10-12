@@ -6,9 +6,9 @@ Contents: required files by tier · story fields · governing ADR · dependencie
 | Input | full | standard | minimal |
 |---|---|---|---|
 | Design source | GDD in `paths.gddDir` named by the story; if the story or epic says `GDD: none yet`, `paths.concept` instead; neither present → STOP, route to the design step | same | `paths.brief`; missing → STOP, route to studio-brainstorm |
-| TR registry (if the project keeps one) | missing → WARN and continue (not in this plugin) | optional | not expected |
+| TR registry (`paths.trRegistry`, kept by studio-architecture-review) | missing → WARN and continue | optional | not expected |
 | Governing ADR the story names | missing / Proposed / Deprecated / Superseded → BLOCKED | same, only if the story names one | same, only if the story names one |
-| Control manifest | missing → WARN and continue | WARN | skip |
+| Control manifest (`paths.controlManifest`) | missing → WARN and continue | WARN | skip |
 
 A story whose ADR field reads `N/A (...)` references none: proceed. BLOCKED means: write `Blocked on` in the
 session checkpoint (see collect.md), set nothing else, spawn no agent, tell the user the unblocking action.
@@ -23,7 +23,8 @@ text quoted in the story.
 
 ## Governing ADR (only when the story names one)
 Do not read the ADR by default: the story's ADR Decision Summary and Implementation Notes are what the programmer
-reads instead of the ADR. Search the ADR for its `## Status`, `## Last Verified` and `## Date` lines only.
+reads instead of the ADR (`paths.architectureDir/adr-NNNN-*.md`). Search it for its Status (`> **Status**:` or
+`## Status`), Last Verified and Date lines only.
 - Status Proposed / Deprecated / Superseded → BLOCKED (point the story at the successor; studio-create-stories never
   rewrites an existing story).
 - Current version = Last Verified date, else Date, else `unversioned`. Compare with the story's ADR Version:

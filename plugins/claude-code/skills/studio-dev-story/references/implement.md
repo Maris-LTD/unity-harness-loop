@@ -6,12 +6,12 @@ Visual/Feel.
 ## Routing table (primary agent)
 | Story context | Primary agent |
 |---|---|
-| Foundation layer (bootstrap, scene flow, save/load, services, events, pooling, tooling), any type | engine-programmer |
-| Type UI (HUD, menus, panels, popups) | ui-programmer |
-| Type Visual/Feel (tweens, VFX triggers, camera feel, juice) | gameplay-programmer |
-| Core or Feature gameplay mechanics, rules, input, physics | gameplay-programmer |
-| Core or Feature AI: behaviour, pathfinding, NavMesh, perception | ai-programmer |
-| Networking / multiplayer | gameplay-programmer (no network agent yet; say so) |
+| Foundation layer (bootstrap, scene flow, save/load, services, events, pooling, tooling), any type | unity-harness:engine-programmer |
+| Type UI (HUD, menus, panels, popups) | unity-harness:ui-programmer |
+| Type Visual/Feel (tweens, VFX triggers, camera feel, juice) | unity-harness:gameplay-programmer |
+| Core or Feature gameplay mechanics, rules, input, physics | unity-harness:gameplay-programmer |
+| Core or Feature AI: behaviour, pathfinding, NavMesh, perception | unity-harness:ai-programmer |
+| Networking / multiplayer | unity-harness:gameplay-programmer (no network agent yet; say so) |
 | Config/Data, no code | none: edit the data asset (below) |
 
 ## Unity specialist (secondary, for code stories)

@@ -98,3 +98,35 @@ findings, per item.
   other? Do they differentiate the game from its closest comparables? Would they settle a real design
   disagreement, or are they too vague? Give specific feedback per pillar.
 - Verdicts: APPROVE (strong) / CONCERNS [list] (needs sharpening) / REJECT (pillars carry no weight).
+
+### CD-SYSTEMS: systems decomposition vision check
+- When: after studio-map-systems writes the systems index, before any GDD is authored.
+- Inputs: `paths.systemsIndex`, pillars and core fantasy (from `paths.concept` or `paths.pillars`; else the brief's
+  pitch and "what they feel" line, which has no pillars), priority tiers (MVP / Vertical Slice / Alpha / Full
+  Vision), high-risk or bottleneck systems from the dependency map.
+- Check: do the MVP-tier systems together deliver the core fantasy? Any system whose mechanics serve no pillar
+  (scope creep)? Any pillar-critical player experience with no system to deliver it? Any system the core loop
+  needs that is missing?
+- Verdicts: APPROVE / CONCERNS [gaps or misalignments with their pillar implications] / REJECT [the decomposition
+  misses critical design intent; revise before GDD authoring].
+
+### CD-GDD-ALIGN: GDD pillar alignment
+- When: after a system GDD is authored (studio-design-system) or revised.
+- Inputs: the GDD path, pillars (as above), the game's target aesthetics, the GDD's Player Fantasy section.
+- Check: does every section serve the pillars? Any rule that contradicts or weakens a pillar? Does the system's
+  Player Fantasy match the game's core fantasy?
+- Verdicts: APPROVE / CONCERNS [sections with issues] / REJECT [pillar violations to redesign before the system is
+  implementable].
+
+### CD-PHASE-GATE: creative readiness at a phase transition
+- When: studio-gate-check at workflow full only.
+- Panel: the caller (studio-gate-check) picks who sits by `workflow`: minimal -> producer only; standard ->
+  technical-director + producer; full -> creative-director, technical-director, producer, art-director, all
+  spawned in parallel. The strictest verdict wins.
+- Inputs: target phase and workflow tier, the gate's required and recommended artifacts at that tier, the list of
+  artifacts present, pillars and core fantasy.
+- Check: are the pillars faithfully carried by the artifacts this phase requires? Does the current state preserve
+  the core fantasy? Does any decision in the GDDs, architecture or build so far compromise the intended experience?
+  A required artifact passed as "none" is a finding; one passed as "not expected before <phase>" or "not
+  required at workflow <tier>" is not.
+- Verdicts: READY / CONCERNS [list] / NOT READY [blockers].

@@ -42,7 +42,12 @@ Verdicts:
 
 ## Phase 5: LP-CODE-REVIEW
 No implementation files → skip: "LP-CODE-REVIEW skipped - no implementation files".
-First run the review yourself: spawn `invoke_subagent` with the `unity-reviewer` subagent on the story's files (read-only; it checks the
+Reuse first: if `paths.sessionState` has a `Code review: <this story path> | ...` line, recompute `git hash-object`
+for each file it lists and compare. All unchanged, and the story's implementation files are all in that list → reuse
+its verdict and LP-CODE-REVIEW result instead of reviewing again ("Code review reused from studio-code-review on
+<date>: <verdict>"), and treat CHANGES REQUIRED as BLOCKING. Any file changed or missing from the list → review
+again as below.
+Otherwise run the review yourself: spawn `invoke_subagent` with the `unity-reviewer` subagent on the story's files (read-only; it checks the
 project's Unity rules and correctness). Then by `reviewMode`:
 - `solo`: report the unity-reviewer findings, no gate. Blocker findings are BLOCKING deviations; major / minor are
   advisory.

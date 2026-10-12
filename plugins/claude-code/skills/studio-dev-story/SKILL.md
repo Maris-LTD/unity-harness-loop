@@ -13,8 +13,8 @@ right agent, drives implementation to a verified result, and leaves the story re
 
 The loop per story:
 - `minimal`: studio-dev-story → studio-story-done (no readiness check, no sprint; story-done names the next story).
-- `standard` / `full`: studio-story-readiness → studio-dev-story → studio-story-done (unity-reviewer runs as the code
-  review; CCGS /code-review is not in this plugin yet).
+- `standard` / `full`: studio-story-readiness → studio-dev-story → studio-code-review → studio-story-done
+  (story-done also runs unity-reviewer as its LP-CODE-REVIEW input).
 
 References, read when the phase starts and again after a compaction:
 - `references/load-context.md`: phase 2 (story fields, ADR and dependency gates, In Progress).

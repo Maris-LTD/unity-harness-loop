@@ -9,13 +9,13 @@ path + requirement (or brief MVP feature), TR-ID, ADR references, Manifest Versi
 Scope, `## QA Test Cases`, Dependencies.
 
 Also read, bounded:
-- the TR registry entry for each TR-ID, if a registry exists (current `requirement` text wins over text quoted in the
+- the `paths.trRegistry` entry for each TR-ID, if the registry exists (current `requirement` text wins over text quoted in the
   story);
 - the referenced GDD section: its acceptance criteria and key rules only (at minimal: the brief's MVP feature and
   Player goal & fail state);
 - each referenced ADR: only `## Decision` and `## Consequences` (find headings first, then read those spans); hold
   them for phase 4;
-- the control manifest's `Manifest Version:` line, if a manifest exists;
+- the `Manifest Version:` line of `paths.controlManifest`, if it exists;
 - the `Run result:` line of `paths.sessionState`, only when its `Current story:` is this story.
 
 ## Run the harness (always)

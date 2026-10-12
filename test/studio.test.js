@@ -86,6 +86,30 @@ test('studio status counts stories by their Status line', () => {
   assert.deepStrictEqual(later.design.gdds, ['combat.md']);
 });
 
+test('studio status reports architecture artifacts and ADRs by status', () => {
+  const dir = makeProject();
+  run(dir, 'init');
+  run(dir, 'studio', 'set', 'rigor=standard');
+  write(dir, 'Docs/design/gdd/systems-index.md', '# Systems\n');
+  write(dir, 'Docs/architecture/architecture.md', '# Architecture\n');
+  write(dir, 'Docs/architecture/adr-0001-events.md', '# ADR-0001\n> **Status**: Accepted\n');
+  write(dir, 'Docs/architecture/adr-0002-save.md', '# ADR-0002\n> **Status**: Proposed\n');
+  write(dir, 'Docs/architecture/architecture-review-2026-10-12.md', '# Review\n');
+  const status = JSON.parse(run(dir, 'studio', 'status', '--json').out);
+  assert.strictEqual(status.design.systemsIndex, 'Docs/design/gdd/systems-index.md');
+  assert.strictEqual(status.architecture.doc, 'Docs/architecture/architecture.md');
+  assert.deepStrictEqual(status.architecture.adrsByStatus, { Accepted: 1, Proposed: 1 });
+  write(dir, 'Docs/architecture/adr-0003-input.md', '# ADR-0003\n> **Status**: Superseded by ADR-0004\n');
+  write(dir, 'Docs/design/gdd/gdd-cross-review-2026-10-12.md', '# Cross review\n');
+  const later = JSON.parse(run(dir, 'studio', 'status', '--json').out);
+  assert.deepStrictEqual(later.architecture.adrsByStatus, { Accepted: 1, Proposed: 1, 'Superseded by ADR-0004': 1 });
+  assert.deepStrictEqual(later.design.gdds, []);
+  assert.strictEqual(status.architecture.controlManifest, '');
+  const config = JSON.parse(run(dir, 'studio', 'config').out);
+  assert.strictEqual(config.paths.controlManifest, 'Docs/architecture/control-manifest.md');
+  assert.strictEqual(config.paths.techDebt, 'Docs/production/tech-debt-register.md');
+});
+
 test('claude session-start injects the protocol only for studio projects', () => {
   const dir = makeProject();
   run(dir, 'init');

@@ -112,8 +112,8 @@ MANUAL step ask: "I can't tell if <step> is done; has it been completed?"
 
 ## Step 7: Phase transition (standard / full only)
 If every required step of the current phase is complete or nearly so, add: "You're close to the <current> → <next>
-transition. The CCGS gate check is not in this plugin yet; when you're satisfied, the stage moves with
-`unity-harness studio set stage=<next>` (I'll ask before running it)." Skip when several required steps remain.
+transition. Run `studio-gate-check <next>` to validate it; on PASS it moves the stage (after asking)." Skip when
+several required steps remain.
 
 ## Step 8: When the user is lost
 Only if the user sounds confused ("stuck", "lost", "không biết"), add:

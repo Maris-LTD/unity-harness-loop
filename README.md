@@ -32,16 +32,20 @@ A brief → stories → done pipeline with director, lead and specialist agents,
 | `studio-start` | Onboarding: where you are, then rigor (`minimal`/`standard`/`full`) and automation (`collaborative`/`guided`/`autonomous`) |
 | `studio-setup` | Records Unity version, render pipeline, input system, platforms and budgets; checks the EditMode test asmdef |
 | `studio-brainstorm` | One-page game brief (minimal) or full game concept (standard/full) |
+| `studio-map-systems`, `studio-design-system`, `studio-design-review` | Systems index, one GDD per system (sections per tier), GDD review |
+| `studio-create-architecture`, `studio-architecture-decision`, `studio-create-control-manifest`, `studio-architecture-review` | Architecture doc mapped to asmdefs/services/ScriptableObjects, ADRs, the per-layer rules sheet, GDD→ADR traceability |
+| `studio-gate-check` | Phase transition check with the director panel; advances `stage` on PASS |
 | `studio-create-epics` | Epics from GDDs or the concept (standard/full) |
 | `studio-create-stories` | Implementable stories with type, acceptance criteria and evidence |
 | `studio-story-readiness` | READY / NEEDS WORK / BLOCKED check before implementation |
 | `studio-dev-story` | Implements one story through the harness |
 | `studio-story-done` | Verifies criteria and evidence, reviews, closes the story, names the next one |
+| `studio-code-review`, `studio-qa-plan` | Architectural review on top of `unity-reviewer` and the harness; sprint QA plan |
 | `studio-sprint-plan`, `studio-sprint-status` | Sprint plan and a read-only burndown snapshot |
 | `studio-help` | Reads the project state and names the next step |
 | `unity-engine-reference` | Unity 6.x API changes, deprecations and best practices to check before using an unfamiliar API |
 
-Agents: `creative-director`, `technical-director`, `producer`, `game-designer`, `art-director`, `lead-programmer`, `qa-lead`, `qa-tester`, `gameplay-programmer`, `ui-programmer`, `ai-programmer`, `engine-programmer`, `unity-specialist` and the `unity-ui`/`shader`/`addressables`/`dots` specialists. Review gates (CD-PILLARS, PR-EPIC, QL-STORY-READY, LP-CODE-REVIEW, ...) live in the owning agent and run according to the review mode that rigor implies (`minimal` → none).
+Agents: `creative-director`, `technical-director`, `producer`, `game-designer`, `art-director`, `lead-programmer`, `qa-lead`, `qa-tester`, `gameplay-programmer`, `ui-programmer`, `ai-programmer`, `engine-programmer`, `unity-specialist` and the `unity-ui`/`shader`/`addressables`/`dots` specialists. The 22 review gates (CD-PILLARS, TD-ARCHITECTURE, PR-EPIC, QL-STORY-READY, LP-CODE-REVIEW, the four phase gates, ...) live in the owning agent and run according to the review mode that rigor implies (`minimal` → none).
 
 Settings live in the `studio` block of `.unity-harness/config.json`, written only through the CLI:
 
@@ -51,9 +55,9 @@ unity-harness studio set rigor=standard automation=guided
 unity-harness studio status            # brief, epics, stories by status, sprint, evidence
 ```
 
-Documents go to `Docs/` (outside `Assets/`, change with `docsRoot`): `design/game-brief.md`, `design/gdd/`, `production/epics/<epic>/story-NNN-*.md`, `production/sprints/`, `production/qa/evidence/`, `production/session-state/active.md`. The always-on rules (collaboration loop, automation modes, gates, evidence) are `lib/studio-protocol.md`: Claude Code gets them from the session-start hook in studio projects, Antigravity from the plugin's `rules/AGENTS.md`.
+Documents go to `Docs/` (outside `Assets/`, change with `docsRoot`): `design/game-brief.md`, `design/gdd/`, `architecture/` (architecture doc, `adr-NNNN-*.md`, control manifest, TR registry), `production/epics/<epic>/story-NNN-*.md`, `production/sprints/`, `production/qa/evidence/`, `production/session-state/active.md`. The always-on rules (collaboration loop, automation modes, gates, evidence) are `lib/studio-protocol.md`: Claude Code gets them from the session-start hook in studio projects, Antigravity from the plugin's `rules/AGENTS.md`.
 
-Not ported yet: GDD authoring per system, architecture/ADRs, gate-check, prototype/vertical slice, art bible, UX, QA plan, team orchestration, release. The skills name a fallback where one of these would come next.
+Not ported yet: prototype/vertical slice, art bible, UX, cross-GDD review, team orchestration, release, localization. The skills name a fallback where one of these would come next.
 
 ## Requirements
 

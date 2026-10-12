@@ -118,22 +118,25 @@ at any level."
 4. `studio-dev-story` ↔ `studio-story-done`: first line of game code, then close each story with evidence.
 
 **standard**
-- Concept: `studio-setup` → `studio-brainstorm` (concept doc at `paths.concept`). Art bible and systems map are
-  optional here (recommended at full) and not in this plugin yet; see `studio-help` for the fallbacks.
-- Systems design: not in this plugin yet (CCGS `/map-systems`, `/design-system`, `/review-all-gdds`). Fallback:
-  write one GDD per system in `paths.gddDir` with Overview, Detailed Rules, Edge Cases, Dependencies, Acceptance
-  Criteria (+ Formulas when it has numeric rules), or let `unity-ref-to-prototype` produce GDD plus prototype.
-- Architecture: not in this plugin yet (CCGS `/create-architecture`, ADRs, control manifest). Fallback: note key
-  technical decisions in the concept doc; studio skills treat ADR fields as optional.
-- Pre-production and production: `studio-create-epics` → `studio-create-stories` → `studio-sprint-plan` →
-  `studio-story-readiness` → `studio-dev-story` → `studio-story-done`; `studio-sprint-status` any time.
+- Concept: `studio-setup` → `studio-brainstorm` (concept doc at `paths.concept`) → `studio-design-review` on the
+  concept → `studio-map-systems` (systems index) → `studio-gate-check systems-design`. Art bible is optional here
+  (recommended at full) and not in this plugin yet; see `studio-help` for the fallback.
+- Systems design: `studio-design-system` per system (Overview, Detailed Rules, Edge Cases, Dependencies, Acceptance
+  Criteria, + Formulas when it has numeric rules) → `studio-design-review` per GDD → `studio-gate-check
+  technical-setup`. Cross-GDD review (CCGS `/review-all-gdds`) is not in this plugin yet.
+- Technical setup: `studio-create-architecture` → `studio-architecture-decision` per ADR →
+  `studio-create-control-manifest` → `studio-architecture-review` → `studio-gate-check pre-production`.
+- Pre-production: `studio-create-epics` → `studio-create-stories` → `studio-sprint-plan` → `studio-qa-plan sprint` →
+  `studio-gate-check production`.
+- Production: `studio-story-readiness` → `studio-dev-story` → `studio-code-review` → `studio-story-done`;
+  `studio-sprint-status` any time.
 
 **full**: everything in standard, with all 8 GDD sections per system, director review on every gated step, and a
 vertical slice plus playtest report before production (CCGS `/vertical-slice`, `/playtest-report`, not in this
 plugin yet: build the slice with `studio-dev-story` and write the playtest notes by hand).
 
 **Existing work (D with docs or stories)**: `studio-help` for the next step; at standard/full fill missing GDD
-sections by hand before `studio-create-epics`.
+sections with `studio-design-system` (it can retrofit an existing GDD) before `studio-create-epics`.
 
 Do not present minimal as lesser: its floor (Unity project, recorded setup, a filled brief) is the documented
 minimum. Do not oversell it either: there are no GDDs to catch design problems before code.

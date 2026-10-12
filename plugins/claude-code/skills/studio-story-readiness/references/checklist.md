@@ -30,10 +30,10 @@ auto-pass. When they exist:
   - file missing → BLOCKED: referenced ADR is missing.
   - Deprecated / Superseded by ADR-XXXX → BLOCKED: point the story's ADR field at the successor (studio-create-stories
     never rewrites an existing story).
-  - file exists, no readable `## Status` → NOT ASSESSED for this check; name the file.
-- **TR-ID valid** (only if the story has one and a registry exists): active → pass; deprecated / superseded → NEEDS
+  - file exists, no readable Status line (`> **Status**:` or `## Status`) → NOT ASSESSED for this check; name the file.
+- **TR-ID valid** (only if the story has one and `paths.trRegistry` exists): active → pass; deprecated / superseded → NEEDS
   WORK (point to the current ID); not found → NEEDS WORK.
-- **Manifest version current** (only if both the story field and a manifest exist): older → NEEDS WORK.
+- **Manifest version current** (only if both the story field and `paths.controlManifest` exist): older → NEEDS WORK.
 - **Engine notes present**: for any Unity API that changed in Unity 6 or is new to the project (check
   unity-engine-reference), the story carries implementation notes or a verification requirement; or
   "N/A - no engine API involved" for pure data/config work.

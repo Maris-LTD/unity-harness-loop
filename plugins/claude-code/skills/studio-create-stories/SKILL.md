@@ -56,8 +56,12 @@ References in this skill:
 - the epic's GDD if it has one: all 8 sections at `full`; at `standard` the 5 required ones plus Formulas. Always
   prioritise Acceptance Criteria, Formulas and Edge Cases. No GDD ("none yet"): work from the epic overview and the
   concept's MVP definition;
-- governing ADRs, if any: only Summary/Decision (with Implementation Guidelines), Engine Compatibility, Status and
-  Last Verified (or Date). The Status decides Ready vs Blocked; the date becomes the story's ADR Version stamp.
+- governing ADRs, if any (`paths.architectureDir/adr-NNNN-*.md`): only Summary/Decision (with Implementation
+  Guidelines), Engine Compatibility, Status (`> **Status**:` line) and Last Verified (or Date). The Status decides Ready vs Blocked; the date becomes the story's ADR Version stamp.
+- `paths.trRegistry`, if it exists: the `active` entries for this epic's system, which give each story its
+  `TR-<system>-NNN` requirement ID;
+- `paths.controlManifest`, if it exists: only the header date (the stories' Manifest Version) and the
+  `## <Layer> Layer Rules` section for this epic's layer (the stories' Control Manifest Rules).
 
 ADR existence (only for ADRs the epic names):
 - `full`: any named ADR file missing → stop before decomposing: "Epic references <ADR> but its file was not found.
@@ -66,7 +70,7 @@ ADR existence (only for ADRs the epic names):
   `Status: Blocked` until the ADR exists.
 - An epic with "Governing ADRs: none yet" has nothing to validate.
 
-Report the real situation: "Loaded epic <name>, GDD <file|none>, N ADRs (<present / missing>)."
+Report the real situation: "Loaded epic <name>, GDD <file|none>, N ADRs (<present / missing>), manifest <date|none>."
 
 ## 3. Classify by type
 | Type | When the criteria reference |
@@ -84,7 +88,7 @@ Mixed: pick the type with the highest implementation risk. The type sets the evi
 For each acceptance criterion (GDD ACs, or the brief's player goal & fail state applied to the MVP item):
 1. group criteria that need the same core implementation; each group is one story;
 2. order: foundational behaviour first, edge cases later, UI last;
-3. for each story fix: the requirement it covers (TR-ID from a registry if one exists, else `AC-n` of the GDD, else
+3. for each story fix: the requirement it covers (TR-ID from `paths.trRegistry` if it has one for this requirement, else `AC-n` of the GDD, else
    `Brief MVP feature N`); governing ADR (Accepted → embed; Proposed → `Status: Blocked`, "BLOCKED: ADR-NNNN is
    Proposed — accept it once decided"; Deprecated/Superseded → Blocked, "point the story at the successor";
    several → list all, primary first; none → `ADR: N/A — <reason>`, never blank); type; engine risk (from the ADR,

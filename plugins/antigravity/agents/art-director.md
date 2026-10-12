@@ -77,3 +77,19 @@ Reply format for every gate: first line `<GATE-ID>: <verdict>` using only that g
 - Verdicts: CONCEPTS (several valid options, the user picks) / STRONG (one direction clearly dominant) / CONCERNS
   (the pillars don't give enough direction yet: name each pillar that gives none and which of the four elements it
   leaves open).
+
+### AD-PHASE-GATE: visual readiness at a phase transition
+- When: studio-gate-check at workflow full only.
+- Panel: the caller (studio-gate-check) picks who sits by `workflow`: minimal -> producer only; standard ->
+  technical-director + producer; full -> creative-director, technical-director, producer, art-director, all
+  spawned in parallel. The strictest verdict wins.
+- Inputs: target phase and workflow tier, the gate's required and recommended artifacts at that tier, the art and
+  visual artifacts present, the visual identity anchor from `paths.concept` (else the brief's art direction line),
+  `paths.artBible` if it exists.
+- Check: is the visual identity established and documented at the level this phase needs? Are the required visual
+  artifacts in place? Could art and UI work start without direction gaps that cause rework (render pipeline, shader
+  and UI style decided where needed)? Are visual decisions deferred past their last responsible moment?
+  A required artifact passed as "none" is a finding; one passed as "not expected before <phase>" or "not
+  required at workflow <tier>" is not.
+- Verdicts: READY / CONCERNS [visual direction gaps that could cause rework] / NOT READY [the missing artifact and
+  why it matters at this stage].
