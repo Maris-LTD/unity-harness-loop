@@ -1,0 +1,6 @@
+System.Func<string,UnityEngine.Sprite> S = n => UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Sprite>(n.Contains("/")?n:__SPRITE_DIR__+"/"+n+".png");
+System.Action<UnityEngine.Transform,float,float,float,float> R = (t,x,y,w,h) => { var r=(UnityEngine.RectTransform)t; r.anchorMin=r.anchorMax=r.pivot=new UnityEngine.Vector2(.5f,.5f); r.localRotation=UnityEngine.Quaternion.identity; r.anchoredPosition=new UnityEngine.Vector2(x,y); r.sizeDelta=new UnityEngine.Vector2(w,h); };
+System.Action<UnityEngine.Transform,float,float,float,float> P = (t,x,y,w,h) => { var r=(UnityEngine.RectTransform)t; r.anchoredPosition=new UnityEngine.Vector2(x,y); r.sizeDelta=new UnityEngine.Vector2(w,h); };
+System.Action<UnityEngine.Transform> Fill = t => { var r=(UnityEngine.RectTransform)t; r.anchorMin=UnityEngine.Vector2.zero; r.anchorMax=UnityEngine.Vector2.one; r.offsetMin=r.offsetMax=UnityEngine.Vector2.zero; r.localRotation=UnityEngine.Quaternion.identity; };
+System.Action<UnityEngine.Transform,string,bool> I = (t,n,sliced) => { var i=t.GetComponent<UnityEngine.UI.Image>(); i.sprite=S(n); i.type=sliced?UnityEngine.UI.Image.Type.Sliced:UnityEngine.UI.Image.Type.Simple; i.preserveAspect=!sliced; };
+System.Func<string,UnityEngine.Transform> F = p => { var t=root.transform.Find(p); if (t==null) throw new System.Exception("missing: "+p); return t; };

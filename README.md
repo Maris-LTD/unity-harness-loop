@@ -15,6 +15,7 @@ On top of that:
 - **Agents**: `unity-verifier` (read-only pass/fail verdict) and `unity-reviewer` (diff review against Unity rules) for both agents.
 - **Workflow** (Claude Code only): `unity-harness:unity-feature` plans → implements → verifies and reviews → fixes → writes an audited run report under `.unity-harness/runs/`.
 - **Skill `unity-juicy-anim`**: recipes and reference C# for jelly-style DOTween animations (squash/stretch lift and land, punch, hop with a content swap, slot row shift, merge, shuffle into a container that pours them back), a procedural prop mesh script, and a way to verify animations in Play mode from the CLI. It came out of the Food Hunt boosters.
+- **Skill `unity-ui-reskin`**: reskin or rebuild uGUI prefabs to match a mockup with a given sprite folder, sync sibling prefabs (page vs popup), and verify the result before reporting: a numeric audit (stretched art, crushed 9-slices, text overflow) against a baseline, plus real Game view captures at phone, 16:9 and tablet resolutions. Ships Bash + `unity command eval` scripts for prefab dump/edit, audit, Game view sizing/capture, and image crop/stack.
 
 ## Requirements
 
