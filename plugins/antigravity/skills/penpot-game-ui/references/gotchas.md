@@ -11,6 +11,7 @@
 - Drop-shadow blur lớn (60–90) gần như không hiện khi export. Dải bóng mờ dài thì dùng rect gradient (`ui.shade`).
 - Instance component resize bị méo nếu main component không có constraints. `ui.button` đã đặt sẵn: Edge/Face = leftright+topbottom, Gloss = leftright+top, Label = leftright+center.
 - Flex layout: đổi thứ tự con bằng `child.setParentIndex(i)`. Con cần vị trí tự do trong flex: `child.layoutChild.absolute = true`.
+- Stroke của board được vẽ đè lên các con, nên icon tab active nổi lên sẽ bị viền navbar cắt ngang. Đặt stroke lên rect `Nav Shadow` nằm dưới, còn `Bottom Nav` để `strokes = []`.
 - Icon nổi lên khỏi tab hoặc board cha: đặt `clipContent = false` cho cha.
 - Thêm nhiều phần tử vào board flex: chờ ~300ms để layout tính xong rồi mới đọc vị trí và đặt con bên trong.
 - Card sprite trong các board "UI Pack" có dạng `Card - <file>.png`; ảnh là shape có `fillImage` bên trong card (`ui.spriteSrc`). Một số card có thể trống: xuất board pack ra xem trước khi gán.
