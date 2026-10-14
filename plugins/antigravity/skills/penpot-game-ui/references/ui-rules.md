@@ -12,9 +12,9 @@ Nếu project có luật riêng mâu thuẫn với file này, luật của proje
 Normal = xanh lá, Hard = tím, Super Hard = đỏ. Dùng component `Play Button` (Difficulty).
 
 ## 2. Nút trong popup theo mức độ muốn người chơi bấm
-- Primary (muốn bấm nhiều nhất) = xanh lá, glow mạnh
-- Secondary (bấm vừa) = xanh dương, glow vừa
-- Negative (không muốn người chơi bấm: đóng, từ chối, huỷ) = đỏ, glow nhẹ. Nút X đóng popup cũng tính là Negative.
+- Primary (muốn bấm nhiều nhất) = xanh lá, có thể to hơn (luật 7)
+- Secondary (bấm vừa) = xanh dương
+- Negative (không muốn người chơi bấm: đóng, từ chối, huỷ) = đỏ. Nút X đóng popup cũng tính là Negative.
 
 ## 3. Chữ trong nút
 Chữ trắng, outline cùng màu nền nút nhưng đậm hơn một chút (`btn.<màu>.outline`), kèm drop-shadow cùng màu lệch xuống. Chữ đặt trên khung navy thì outline `theme.ink`.
@@ -36,8 +36,11 @@ Header và navbar có dải bóng mờ khá dài đổ vào nền: header từ t
 ## 8. Không trùng màu nút trong một popup
 Mỗi popup tối đa một nút mỗi màu. `ui.audit` kiểm tra luật này.
 
-## 9. Dùng glow nhiều
-Nút PLAY, nút Primary, phần thưởng (quầng radial vàng sau icon), tab hoặc icon đang chọn, badge thông báo, avatar, khung popup. Cường độ glow cũng thể hiện thứ bậc (Primary > Secondary > Negative).
+## 9. Glow chỉ để nhấn mạnh icon, không đặt trên nút
+- **Dùng glow** ở những icon cần làm nổi: icon chính trên popup (phần thưởng, vật phẩm), icon coin/gem trong gói shop, icon nhân vật hoặc vật phẩm được giới thiệu. Dùng `ui.iconGlow(icon)`. Số lượng thưởng đi kèm icon được glow nhẹ theo.
+- **Không glow** ở chỗ cần rõ ràng: mọi button (PLAY, nút popup, nút X, tab, nút bên, nhãn trên nút), chữ tiêu đề, khung popup, avatar. Thứ bậc nút thể hiện bằng màu (luật 2) và kích thước (luật 7), không bằng glow.
+- Badge thông báo (chấm đỏ, "!") được glow nhẹ vì là tín hiệu chú ý, không phải vùng bấm.
+- `ui.audit` báo lỗi khi một nút hoặc phần tử con của nút có glow.
 
 ## Nền màn
 Mặc định không dùng ảnh phong cảnh: gradient dọc cùng tông, quầng sáng giữa màn, vài bokeh trắng 6%, lưới chấm tròn so le trắng 9% (`ui.backgroundFX`). Nếu có ảnh nền thì ẩn đi, không xoá.

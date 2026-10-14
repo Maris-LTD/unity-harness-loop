@@ -1,6 +1,6 @@
 ---
 name: penpot-game-ui
-description: Design mobile game UI screens and popups (home, shop, settings, inventory, reward/confirm popups, buttons, top bar, bottom nav) directly in Penpot through the Penpot MCP, from a sprite/asset pack and optionally a demo image, following the user's fixed game UI/UX rules (button colors by intent, text outline, optical icon sizing, synced theme, shadows, glow). Builds design tokens and reusable button components, then verifies every screen by export and audit. Use when the user asks to "dựng/thiết kế màn hình", "làm popup", "tạo UI game trong Penpot", "dựa theo demo / dựa theo assets", "review UI Penpot", or to add screens to an existing Penpot game UI file.
+description: Design mobile game UI screens and popups (home, shop, settings, inventory, reward/confirm popups, buttons, top bar, bottom nav) directly in Penpot through the Penpot MCP, from a sprite/asset pack and optionally a demo image, following the user's fixed game UI/UX rules (button colors by intent, text outline, optical icon sizing, synced theme, shadows, glow only on emphasized icons, never on buttons). Builds design tokens and reusable button components, then verifies every screen by export and audit. Use when the user asks to "dựng/thiết kế màn hình", "làm popup", "tạo UI game trong Penpot", "dựa theo demo / dựa theo assets", "review UI Penpot", or to add screens to an existing Penpot game UI file.
 ---
 
 # Penpot game UI
@@ -30,20 +30,20 @@ Cần biết: nguồn asset (board sprite trong Penpot hoặc file ảnh), demo 
 
 ## Bước 3: Component dùng chung
 Nếu chưa có board `UI Kit - Buttons` thì dựng:
-- `Play Button` (Difficulty: Normal/green, Hard/purple, Super Hard/red), 420×200, `radius.button.lg`, chữ `font.display`, emphasis high.
-- `Popup Button` (Type: Primary/green high, Secondary/blue mid, Negative/red low), 400×140, `radius.button.md`, chữ `font.button`.
-- Tạo bằng `await ui.button(kit, {name, x, y, w, h, color, label, size, radius, emphasis})`, sau đó `ui.makeVariants([{shape, properties}], 'Play Button')`.
+- `Play Button` (Difficulty: Normal/green, Hard/purple, Super Hard/red), 420×200, `radius.button.lg`, chữ `font.display`.
+- `Popup Button` (Type: Primary/green, Secondary/blue, Negative/red), 400×140, `radius.button.md`, chữ `font.button`.
+- Tạo bằng `await ui.button(kit, {name, x, y, w, h, color, label, size, radius})`, sau đó `ui.makeVariants([{shape, properties}], 'Play Button')`.
 - Dùng instance qua `ui.variant('Popup Button', { Type: 'Primary' })`, đổi chữ qua child `Label`, resize thoải mái vì constraints đã đặt sẵn.
 
 ## Bước 4: Dựng màn hình
 `const s = ui.screen(name, x, y)`. Đặt ở chỗ trống bên phải các board đã có, không đè lên board khác. Thứ tự lớp từ dưới lên:
 1. `ui.backgroundFX(s)` (hoặc ảnh nền nếu user muốn)
 2. `Header Shade`: `ui.shade(s, 'Header Shade', s.x, headerBottom + 8, 1080, 170, true)`
-3. `Top Bar`: gradient sky → primary, cao khoảng 330 (gồm vùng an toàn 150), viền cứng dưới `ui.drop('#0D47A1', 8)`. Bên trong là bộ đếm tiền tệ (pill `theme.deep`, icon `ui.optical(…, 96)`, nút +) và avatar tròn có glow.
+3. `Top Bar`: gradient sky → primary, cao khoảng 330 (gồm vùng an toàn 150), viền cứng dưới `ui.drop('#0D47A1', 8)`. Bên trong là bộ đếm tiền tệ (pill `theme.deep`, icon `ui.optical(…, 96)`, nút +) và avatar tròn (không glow).
 4. Nội dung: nút bên trái/phải là khung sprite đặt trong **rect `Frame` riêng** (không đặt shadow lên board), CTA chính và các phần khác.
-5. `Nav Shade`, rồi `Nav Shadow` (rect cùng kích thước navbar, mang viền cứng `ui.drop(ink, -6)`), rồi `Bottom Nav`: board flex row, gap 4, padding dưới 66, các tab `horizontalSizing='fill'`. Tab active nền vàng (`btn.yellow.*`) và icon to nổi lên trên (`clipContent=false`, glow). Tab thường chỉ có icon.
+5. `Nav Shade`, rồi `Nav Shadow` (rect cùng kích thước navbar, mang viền cứng `ui.drop(ink, -6)`), rồi `Bottom Nav`: board flex row, gap 4, padding dưới 66, các tab `horizontalSizing='fill'`. Tab active nền vàng (`btn.yellow.*`) và icon to nổi lên trên (`clipContent=false`, không glow). Tab thường chỉ có icon.
 
-Popup: thêm `Dim Overlay` (#06173A, 70%) rồi board `Popup` gồm `Frame` (gradient primary → deep, viền ink, glow sky), `Title Ribbon` (sky → primary), `Body` (surface), nội dung, rồi các nút theo luật 2, 7, 8. Nút đóng X là nút đỏ nhỏ, radius sm. Phần thưởng có `Reward Glow` (ellipse radial vàng) phía sau.
+Popup: thêm `Dim Overlay` (#06173A, 70%) rồi board `Popup` gồm `Frame` (gradient primary → deep, viền ink, không glow), `Title Ribbon` (sky → primary), `Body` (surface), nội dung, rồi các nút theo luật 2, 7, 8. Nút đóng X là nút đỏ nhỏ, radius sm. Icon chính của popup (phần thưởng) được nhấn bằng `ui.iconGlow(icon)` (quầng radial vàng phía sau và glow nhẹ quanh icon).
 
 Đặt tên layer rõ nghĩa (`Coin Counter`, `Btn - Events`, `Tab - Home`…) để dev Unity map được.
 

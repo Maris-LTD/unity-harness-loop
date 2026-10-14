@@ -112,14 +112,22 @@ ui.optical = (shape, target, anchor = 'center') => {
   return shape;
 };
 
-ui.GLOW = { high: [40, 6, 0.85], mid: [26, 2, 0.5], low: [20, 0, 0.35] };
+ui.isGlow = s => s.offsetX === 0 && s.offsetY === 0 && s.blur > 0;
+ui.iconGlow = (icon, o = {}) => {
+  const color = o.color || '#FFE082', strength = o.strength ?? 0.95;
+  const d = Math.round(Math.max(icon.width, icon.height) * (o.scale || 1.9));
+  const halo = ui.ellipse(icon.parent, icon.name + ' Glow', icon.x + icon.width / 2, icon.y + icon.height / 2, d,
+    ui.radial([{ color: o.core || '#FFF59D', opacity: strength, offset: 0 }, { color, opacity: strength * 0.45, offset: 0.45 }, { color, opacity: 0, offset: 1 }]));
+  halo.setParentIndex(icon.parentIndex);
+  icon.shadows = [...(icon.shadows || []).filter(s => !ui.isGlow(s)), ui.glow(color, 30, 0, 0.9)];
+  return halo;
+};
 ui.button = async (parent, o) => {
   const c = k => ui.tok(`btn.${o.color}.${k}`);
   const depth = Math.round(o.h * 0.08);
   const radius = o.radius ?? ui.num('radius.button.md');
   const b = ui.board(parent, o.name, o.x, o.y, o.w, o.h);
-  const [blur, spread, op] = ui.GLOW[o.emphasis || 'high'];
-  b.shadows = [ui.glow(c('top'), blur, spread, op), ui.drop('#000000', 8, 14, 0, 0.25)];
+  b.shadows = [ui.drop('#000000', 8, 14, 0, 0.25)];
   const edge = ui.rect(b, 'Edge', o.x, o.y, o.w, o.h, ui.solid(c('edge')), radius);
   const face = ui.rect(b, 'Face', o.x, o.y, o.w, o.h - depth, ui.vgrad([c('top'), c('base')]), radius);
   face.strokes = ui.stroke(c('edge'), ui.num('stroke.button'));
@@ -173,6 +181,10 @@ ui.audit = screen => {
       if (Number(s.fontSize) < minFont) issues.push(`Chữ quá nhỏ (${s.fontSize}px): "${s.characters}"`);
       const inButton = s.parent?.children?.some(c => c.name === 'Face');
       if (inButton && !s.strokes?.length) issues.push(`Chữ trong nút thiếu outline: "${s.characters}"`);
+    }
+    if (/Button|Btn|^Tab - /.test(s.name) || s.children?.some(c => c.name === 'Face')) {
+      const glowing = [s, ...penpotUtils.findShapes(() => true, s)].filter(x => !/Badge|Dot|Notify/.test(x.name) && x.shadows?.some(ui.isGlow));
+      if (glowing.length) issues.push(`Nút có glow (luật 9, nút phải rõ ràng): ${s.name} → ${glowing.map(x => x.name).join(', ')}`);
     }
     const interactive = s.type === 'text' || /Icon|Button|Btn/.test(s.name);
     if (interactive && (s.y < top || s.y + s.height > bottom)) issues.push(`Nằm trong vùng an toàn: ${s.name}`);
