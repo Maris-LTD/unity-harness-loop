@@ -67,4 +67,4 @@ Read `references/stage-and-next.md` and follow it.
   other artifact. Questions they would have answered (is the core loop fun? has anyone played it?) are still asked.
 - **The verdict only decides whether this skill writes the new stage.** It never stops the user from working.
   CONCERNS can advance only on an explicit acceptance of each listed risk; FAIL and NOT ASSESSED never advance.
-- Do not run two harness commands at once; smoke steals window focus while it runs (warn the user).
+- Do not run two harness commands at once; smoke takes over Play mode in the open Editor while it runs.

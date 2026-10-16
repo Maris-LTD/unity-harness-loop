@@ -49,7 +49,7 @@ the verdict turns on it.
 ## Build health (production and later, and wherever a gate asks for tests)
 Run, one at a time:
 1. `unity-harness all` (rules + compile + EditMode tests).
-2. `unity-harness smoke` when the gate asks for build health or playability. Warn first that it steals window focus.
+2. `unity-harness smoke` when the gate asks for build health or playability. Warn first that it takes over Play mode.
    Open the capture (`smoke.capturePath`) and describe what is on screen.
 Outcomes:
 - Exit `0`: pass. Note the test totals; `0/0` tests right after a compile means the domain was reloading: rerun once.

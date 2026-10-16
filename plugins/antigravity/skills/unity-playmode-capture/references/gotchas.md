@@ -9,8 +9,12 @@
   real case was a vertical gradient background that never showed.
 - **The panel does not show on the first try:** Play mode was entered right after a recompile, so the eval ran during
   the domain reload. Run `play.sh` again and send the eval after it reports the type found.
-- **Eval timeouts (5000 ms on the main thread):** the Editor is not in the foreground. The scripts call
-  `editor_focus`; if it still times out, run it again.
+- **Eval timeouts (5000 ms on the main thread):** the Editor did not answer in time, usually because it is busy or
+  throttled in the background. On a timeout the scripts call `editor_focus` once and retry; if it still times out,
+  run it again.
+- **Play mode frozen while the Editor is unfocused** (`Time.frameCount` does not advance): `PlayerSettings.runInBackground`
+  is off. `play.sh` turns it on and `stop.sh` restores it, so always leave Play mode with `stop.sh`. If game code
+  turns it off again, re-run `eval.sh -e 'UnityEditor.PlayerSettings.runInBackground = true; return 0;'`.
 - **Line comments break evals:** `_eval.sh` joins lines with spaces, so a `//` comment swallows the rest of the
   code. Do not put comments in eval files.
 - **The wrong level loads:** saved progress (e.g. `PlayerPrefs` level key) decides what Play mode starts on. A smoke

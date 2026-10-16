@@ -8,7 +8,7 @@ const pkg = JSON.parse(fs.readFileSync(path.join(ROOT, 'package.json'), 'utf8'))
 
 const PLUGIN_NAME = 'unity-harness';
 const CLAUDE_AGENT_PREFIX = `${PLUGIN_NAME}:`;
-const DESCRIPTION = 'Unity verification loop and studio workflow for AI agents: rule check, recompile, EditMode tests, Play mode smoke with Editor focus keeping, stop gate, run logs, and a brief-to-story-to-done studio pipeline with director and specialist agents. Requires the unity-harness CLI (npm i -g github:Maris-LTD/unity-harness-loop).';
+const DESCRIPTION = 'Unity verification loop and studio workflow for AI agents: rule check, recompile, EditMode tests, Play mode smoke that runs with the Editor in the background, stop gate, run logs, and a brief-to-story-to-done studio pipeline with director and specialist agents. Requires the unity-harness CLI (npm i -g github:Maris-LTD/unity-harness-loop).';
 
 const TARGET_TEXT = {
   claude: {

@@ -72,7 +72,9 @@ Body helpers for `edit_prefab.sh`:
 ### 3. Verify (required before reporting)
 1. Run `ui_audit.sh … baseline.txt`. Every new issue must be fixed, or explained as intentional.
 2. Check the Game view in context, with real data:
-   1. `unity command editor_play`, then wait until the screen's manager exists.
+   1. Turn on `UnityEditor.PlayerSettings.runInBackground` by eval (note the old value) so Play mode keeps running
+      while the Editor is unfocused, then `unity command editor_play` and wait until the screen's manager exists.
+      After `editor_stop`, set it back if it was `false`.
    2. Navigate as a player would, and confirm the screen actually changed.
    3. For each resolution — tall phone 1080x2340, 16:9 phone 1080x1920, tablet 1536x2048 — run `gameview_size.sh`
       then `capture_game_view.sh`. Capture the top, middle and end of every scroll list, and every variant of the

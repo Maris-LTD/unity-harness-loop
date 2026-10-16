@@ -7,7 +7,7 @@ A verification loop for Unity projects worked on by AI coding agents. One CLI (`
 | `rules` | Static check of the `.cs` lines you added (rename-aware): no new comments, no new `Debug.Log*`, `CompareTag`, max file length. Each rule can be switched off. |
 | `compile` | Asks the open Editor to recompile and waits for the result. |
 | `tests` | Runs EditMode test assemblies. |
-| `smoke` | Enters Play mode, waits for a scene, checks that components exist, scans for missing scripts and console errors, saves a Game view capture. Keeps the Editor window in the foreground for the whole run (Windows), because an unfocused Editor stalls Play mode. |
+| `smoke` | Enters Play mode, waits for a scene, checks that components exist, scans for missing scripts and console errors, saves a Game view capture. Runs with the Editor in the background: it turns on `PlayerSettings.runInBackground` for the run and restores it afterwards, because with it off an unfocused Editor stops ticking Play mode. |
 | `all` / `full` | `rules + compile + tests` / `all + smoke`. |
 
 On top of that:
@@ -91,6 +91,8 @@ This creates `.unity-harness/config.json` (commit it so the team shares it) and 
 - `smoke.waitForScene`: scene that must be loaded for smoke to pass
 - `smoke.expectTypes`: component type names that must exist once it is loaded
 - `smoke.ignoreErrorPatterns`: regexes for console errors that are expected in the Editor
+- `smoke.runInBackground` (default `true`): turn on `PlayerSettings.runInBackground` during smoke so Play mode keeps running while the Editor is unfocused; restored after the run
+- `smoke.keepFocus` (default `false`, Windows only): fallback that refocuses the Editor window every `smoke.focusIntervalMs` while smoke runs, for projects whose game code turns `runInBackground` off again
 
 `unity-harness config` prints the effective config. The stop gate only runs in projects that have this file.
 
@@ -131,7 +133,7 @@ Update with `git pull` and the same install command.
 
 ```bash
 unity-harness all          # rules + compile + tests
-unity-harness smoke        # Play mode smoke (steals window focus while it runs)
+unity-harness smoke        # Play mode smoke (the Editor can stay in the background)
 unity-harness full --json  # everything, machine-readable
 ```
 

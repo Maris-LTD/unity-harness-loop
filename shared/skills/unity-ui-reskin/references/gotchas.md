@@ -13,5 +13,7 @@
 - Python here has no PIL, so image crop/stack runs inside Unity (`image_tool.cs`).
 - Placeholders in the scripts are written as `__NAME__`. Plain words like `CH` also match inside other identifiers
   (`STRETCH`).
-- Eval timeouts (5000ms on the main thread) mean the Editor is not in the foreground. The scripts call
-  `editor_focus`; if a timeout still happens, run it again.
+- Eval timeouts (5000ms on the main thread) mean the Editor did not answer in time (busy, or throttled in the
+  background). On a timeout the scripts call `editor_focus` once and retry; if it still times out, run it again.
+- Play mode frozen while the Editor is unfocused means `PlayerSettings.runInBackground` is off. Turn it on before
+  `editor_play` and restore it after (see the Verify step).

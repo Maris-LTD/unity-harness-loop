@@ -6,9 +6,11 @@ compile, tests and smoke. This file covers the animation itself.
 
 ## Ground rules
 
-- **Keep the Editor focused.** Without focus, Play mode can stall on loading. Run the harness focus keeper
-  (`lib/focus-unity.ps1 -UnityPid <pid> -Seconds N`, pid from `unity status --json`) in the background for the length
-  of the test.
+- **Keep Play mode running while the Editor is unfocused.** With `PlayerSettings.runInBackground` off, an unfocused
+  Editor stops ticking Play mode (stuck on loading, `Time.frameCount` frozen). Before `editor_play`, read it and set it
+  to `true` by eval, and set it back after the test if it was `false`. In the Editor, `Application.runInBackground`
+  writes the same setting. Only if game code turns it off again, fall back to the harness focus keeper
+  (`lib/focus-unity.ps1 -UnityPid <pid> -Seconds N`, pid from `unity status --json`).
 - **One eval round trip takes about 2 seconds.** That is too slow to sample a 1–3 second animation by calling eval
   repeatedly. Schedule everything inside the eval that starts the animation, and read the results back afterwards.
 - **Wait until the board is idle** before triggering: no item `DOTween.IsTweening`, level intro finished. Otherwise

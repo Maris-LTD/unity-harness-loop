@@ -25,7 +25,7 @@ Config lives in `.unity-harness/config.json` of the Unity project; `unity-harnes
 
 Requirements: Node 18+, the Unity CLI (`unity`) on PATH, and an open Editor whose project has the `com.unity.pipeline` package (`unity status --json --no-banner` must list it as `ready`).
 
-Smoke keeps the Editor in the foreground by itself on Windows: it refocuses the Editor window every `smoke.focusIntervalMs` and stops when smoke ends, because an unfocused Editor stalls Play mode (typically on a loading screen). Do not add a separate focus loop. Warn the user that smoke steals window focus while it runs.
+Smoke runs with the Editor in the background. An unfocused Editor stops ticking Play mode (typically stuck on a loading screen) when `PlayerSettings.runInBackground` is off, so smoke turns it on for the run and restores it afterwards (`smoke.runInBackground`, default `true`). The user can keep working in other windows. Only if a project's own code turns it off again does smoke stall unfocused; then set `smoke.keepFocus: true`, which refocuses the Editor every `smoke.focusIntervalMs` during smoke (Windows), and warn the user that it steals window focus.
 
 ## Procedure
 

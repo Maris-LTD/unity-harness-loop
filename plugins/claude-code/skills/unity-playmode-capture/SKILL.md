@@ -17,10 +17,10 @@ otherwise. Read `references/gotchas.md` when something looks wrong.
 | Script | Purpose |
 |---|---|
 | `gameview_size.sh <w> <h>` | Set the Game view to a fixed resolution (added as a custom size if missing) |
-| `play.sh <Full.Type> [timeoutSec]` | Enter Play mode and wait until an object of that type exists, then settle `SETTLE` seconds (default 1.5) |
+| `play.sh <Full.Type> [timeoutSec]` | Turn on `PlayerSettings.runInBackground` (so Play mode runs while the Editor is unfocused), enter Play mode and wait until an object of that type exists, then settle `SETTLE` seconds (default 1.5) |
 | `eval.sh <file.cs>` / `eval.sh -e '<code>'` | Run C# statements in the Editor (must end with `return`) and print the result |
 | `capture.sh <out.png> [w h]` | Capture what the Game window shows (default 1080x1920) to a file outside `Assets/` |
-| `stop.sh` | Leave Play mode and confirm it stopped |
+| `stop.sh` | Leave Play mode, confirm it stopped, and restore `runInBackground` if `play.sh` turned it on |
 
 ## Before you start
 - **Ask first if the user may be playing.** Entering Play mode takes over their session. Never clear saved progress

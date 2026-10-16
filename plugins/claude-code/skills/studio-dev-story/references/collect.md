@@ -19,7 +19,7 @@ A test count of `0/0` right after a compile means the domain was still reloading
 ## Run and look
 A compile is not a run. For every story that changes something a player can see (every Visual/Feel and UI story, and
 any Logic / Integration / Config/Data story with a visible surface):
-1. `unity-harness smoke` (warn the user it takes window focus). It enters Play mode on `smoke.scene`, checks
+1. `unity-harness smoke` (warn the user it takes over Play mode). It enters Play mode on `smoke.scene`, checks
    `expectTypes`, missing scripts and console errors, and saves `smoke.capturePath` (default
    `Temp/harness/smoke.png`).
 2. If the smoke frame does not show the state the story changed (a panel, a level, a peak moment), use

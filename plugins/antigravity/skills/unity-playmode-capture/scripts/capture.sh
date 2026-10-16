@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 . "$(dirname "$0")/_eval.sh"
 if [ -z "$1" ]; then echo "usage: capture.sh <out.png> [width height]  (default 1080 1920)"; exit 64; fi
-unity command editor_focus --json --no-banner --result-only >/dev/null 2>&1
 tmp=$(mktemp)
 unity command capture_game_view --width "${2:-1080}" --height "${3:-1920}" --json --no-banner --result-only > "$tmp"
 python -c "

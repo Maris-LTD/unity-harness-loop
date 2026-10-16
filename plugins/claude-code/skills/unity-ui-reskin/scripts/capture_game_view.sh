@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-unity command editor_focus --json --no-banner --result-only >/dev/null 2>&1
 tmp=$(mktemp)
 unity command capture_game_view --width "$2" --height "$3" --json --no-banner --result-only > "$tmp"
 python -c "
