@@ -14,39 +14,39 @@ On top of that:
 - **Stop gate** (Claude Code and Antigravity): when the agent tries to finish a turn after editing `.cs` files, it runs `rules + compile` and sends the agent back to fix failures (up to `stopGate.maxBlocks` times). On Antigravity, it respects `terminationReason` (`USER_CANCELED`, `ERROR`, etc.) and only blocks normal completions (`NO_TOOL_CALL`).
 - **Read-only guard** (Claude Code): a `PreToolUse` hook denies `Write`/`Edit` and file-writing Bash commands (redirection outside `$TEMP`, `rm`/`mv`/`cp`/`tee`, `sed -i`, tree-changing `git`, asset-saving `unity command`) to `unity-verifier`, `unity-reviewer`, `run-log-auditor` and `plan-loader`. (Note: on Antigravity, `PreToolUse` is intentionally excluded because Antigravity's PreToolUse IPC payload does not identify the calling agent, avoiding unsafe blanket permission grants).
 - **Agents**: `unity-verifier` (read-only pass/fail verdict), `unity-reviewer` (diff review against Unity rules), and specialized studio/engineering subagents for both platforms.
-- **Workflow & Feature Loop**: `unity-feature` plans → implements → verifies and reviews → fixes → writes an audited run report under `.unity-harness/runs/`. Supported as a Claude Code workflow (`unity-harness:unity-feature`) and an Antigravity skill (`unity-feature`, with dynamic Python runner `workflows/unity_feature.py`).
-- **Skill `unity-juicy-anim`**: recipes and reference C# for jelly-style DOTween animations (squash/stretch lift and land, punch, hop with a content swap, slot row shift, merge, shuffle into a container that pours them back), a procedural prop mesh script, and a way to verify animations in Play mode from the CLI. It came out of the Food Hunt boosters.
+- **Workflow & Feature Loop**: `unity-dev` plans → implements → verifies and reviews → fixes → writes an audited run report under `.unity-harness/runs/`. Supported as a Claude Code workflow (`unity-harness:unity-dev`) and an Antigravity skill (`unity-dev`, with dynamic Python runner `workflows/unity_dev.py`).
+- **Skill `unity-anim`**: recipes and reference C# for jelly-style DOTween animations (squash/stretch lift and land, punch, hop with a content swap, slot row shift, merge, shuffle into a container that pours them back), a procedural prop mesh script, and a way to verify animations in Play mode from the CLI. It came out of the Food Hunt boosters.
 - **Skill `unity-ui-reskin`**: reskin or rebuild uGUI prefabs to match a mockup with a given sprite folder, sync sibling prefabs (page vs popup), and verify the result before reporting: a numeric audit (stretched art, crushed 9-slices, text overflow) against a baseline, plus real Game view captures at phone, 16:9 and tablet resolutions. Ships Bash + `unity command eval` scripts for prefab dump/edit, audit, Game view sizing/capture, and image crop/stack.
-- **Skill `penpot-game-ui`**: design mobile game screens and popups directly in Penpot through the Penpot MCP, from a sprite pack and an optional demo image, under fixed UI/UX rules: button color by intent (Primary green / Secondary blue / Negative red, Play by difficulty), text outline matching the button, optical icon sizing, one theme across header/navbar/popups, soft shade under header and navbar, glow. Ships a JS helper library for `execute_code` (design tokens, 3D button components with variants, gradient + dot background, shades, an `audit` for the rules), the rules sheet and a gotchas list. Does not need the Unity Editor.
-- **Skill `unity-ref-to-prototype`**: turn a `References/` folder (target image, HTML/JS demo, pasted brief) into a Vietnamese gameplay-only GDD plus a playable prototype built by `unity-feature`. Ships the GDD prompt template, the workflow brief template, and the test patterns that tie every GDD number to the tuning class and prove every level solvable. It came out of Snap Jam 3D.
-- **Skill `unity-harness-project-setup`**: create a Unity project with the CLI, also into a folder that already holds references; add `com.unity.pipeline` and `com.unity.ai.assistant`; set up git and `unity-harness init` with the real names; wait for the Editor to be ready; commit a clean baseline. Ships scripts for project creation, manifest edits, harness config and the Editor ready wait.
-- **Skill `project-memory-in-repo`**: keep agent project memory in `.claude/memory/` under git, link Claude Code's memory folder to it (junction/symlink scripts that merge existing files and stop on conflicts), and fix `.gitignore` rules that hide it.
-- **Skill `unity-playmode-capture`**: enter Play mode, wait for a component, force a state with an eval (peak interaction, win/lose panel), capture the Game view at a phone resolution, then leave Play mode. Ships Bash scripts plus a gotchas list.
-- **Skill `unity-feedback-tweak`**: apply a play-test feedback round without rerunning the workflow, keeping rule code, tests, tuning, GDD and memory in sync, with an on-screen check for each change.
+- **Skill `unity-ui-penpot`**: design mobile game screens and popups directly in Penpot through the Penpot MCP, from a sprite pack and an optional demo image, under fixed UI/UX rules: button color by intent (Primary green / Secondary blue / Negative red, Play by difficulty), text outline matching the button, optical icon sizing, one theme across header/navbar/popups, soft shade under header and navbar, glow. Ships a JS helper library for `execute_code` (design tokens, 3D button components with variants, gradient + dot background, shades, an `audit` for the rules), the rules sheet and a gotchas list. Does not need the Unity Editor.
+- **Skill `unity-prototype`**: turn a `References/` folder (target image, HTML/JS demo, pasted brief) into a Vietnamese gameplay-only GDD plus a playable prototype built by `unity-dev`. Ships the GDD prompt template, the workflow brief template, and the test patterns that tie every GDD number to the tuning class and prove every level solvable. It came out of Snap Jam 3D.
+- **Skill `unity-init`**: create a Unity project with the CLI, also into a folder that already holds references; add `com.unity.pipeline` and `com.unity.ai.assistant`; set up git and `unity-harness init` with the real names; wait for the Editor to be ready; commit a clean baseline. Ships scripts for project creation, manifest edits, harness config and the Editor ready wait.
+- **Skill `game-memory`**: keep agent project memory in `.claude/memory/` under git, link Claude Code's memory folder to it (junction/symlink scripts that merge existing files and stop on conflicts), and fix `.gitignore` rules that hide it.
+- **Skill `unity-capture`**: enter Play mode, wait for a component, force a state with an eval (peak interaction, win/lose panel), capture the Game view at a phone resolution, then leave Play mode. Ships Bash scripts plus a gotchas list.
+- **Skill `unity-tweak`**: apply a play-test feedback round without rerunning the workflow, keeping rule code, tests, tuning, GDD and memory in sync, with an on-screen check for each change.
 - **Developer skill `audit-agent-plugin`**: in `.agents/skills/`, a 6-point audit runbook (IPC fidelity, permission safety, lifecycle termination, type robustness, semantic skill portability, subagent tool compatibility) for plugin developers.
 - **Studio workflow** (skills `studio-*`, both agents): a Unity-only port of [Claude Code Game Studios](https://github.com/Donchitos/Claude-Code-Game-Studios) — see [Studio workflow](#studio-workflow).
 
 ## Studio workflow
 
-A brief → stories → done pipeline with director, lead and specialist agents, adapted from Claude Code Game Studios (MIT, see `THIRD_PARTY_NOTICES.md`) to Unity and to both Claude Code and Antigravity. Implementation and verification go through this harness: `studio-dev-story` runs the `unity-feature` workflow on Claude Code and the programmer agents plus `unity-harness all` on Antigravity; `studio-story-done` closes a story only with passing harness checks and, for anything the player sees, a kept screenshot.
+A brief → stories → done pipeline with director, lead and specialist agents, adapted from Claude Code Game Studios (MIT, see `THIRD_PARTY_NOTICES.md`) to Unity and to both Claude Code and Antigravity. Implementation and verification go through this harness: `game-dev` runs the `unity-dev` workflow on Claude Code and the programmer agents plus `unity-harness all` on Antigravity; `game-done` closes a story only with passing harness checks and, for anything the player sees, a kept screenshot.
 
 | Skill | Does |
 |---|---|
-| `studio-start` | Onboarding: where you are, then rigor (`minimal`/`standard`/`full`) and automation (`collaborative`/`guided`/`autonomous`) |
-| `studio-setup` | Records Unity version, render pipeline, input system, platforms and budgets; checks the EditMode test asmdef |
-| `studio-brainstorm` | One-page game brief (minimal) or full game concept (standard/full) |
-| `studio-map-systems`, `studio-design-system`, `studio-design-review` | Systems index, one GDD per system (sections per tier), GDD review |
-| `studio-create-architecture`, `studio-architecture-decision`, `studio-create-control-manifest`, `studio-architecture-review` | Architecture doc mapped to asmdefs/services/ScriptableObjects, ADRs, the per-layer rules sheet, GDD→ADR traceability |
-| `studio-gate-check` | Phase transition check with the director panel; advances `stage` on PASS |
-| `studio-create-epics` | Epics from GDDs or the concept (standard/full) |
-| `studio-create-stories` | Implementable stories with type, acceptance criteria and evidence |
-| `studio-story-readiness` | READY / NEEDS WORK / BLOCKED check before implementation |
-| `studio-dev-story` | Implements one story through the harness |
-| `studio-story-done` | Verifies criteria and evidence, reviews, closes the story, names the next one |
-| `studio-code-review`, `studio-qa-plan` | Architectural review on top of `unity-reviewer` and the harness; sprint QA plan |
-| `studio-sprint-plan`, `studio-sprint-status` | Sprint plan and a read-only burndown snapshot |
-| `studio-help` | Reads the project state and names the next step |
-| `unity-engine-reference` | Unity 6.x API changes, deprecations and best practices to check before using an unfamiliar API |
+| `game-start` | Onboarding: where you are, then rigor (`minimal`/`standard`/`full`) and automation (`collaborative`/`guided`/`autonomous`) |
+| `game-setup` | Records Unity version, render pipeline, input system, platforms and budgets; checks the EditMode test asmdef |
+| `game-concept` | One-page game brief (minimal) or full game concept (standard/full) |
+| `game-systems`, `game-design`, `game-design-review` | Systems index, one GDD per system (sections per tier), GDD review |
+| `game-architecture`, `game-adr`, `game-manifest`, `game-architecture-review` | Architecture doc mapped to asmdefs/services/ScriptableObjects, ADRs, the per-layer rules sheet, GDD→ADR traceability |
+| `game-gate` | Phase transition check with the director panel; advances `stage` on PASS |
+| `game-epics` | Epics from GDDs or the concept (standard/full) |
+| `game-tasks` | Implementable stories with type, acceptance criteria and evidence |
+| `game-readiness` | READY / NEEDS WORK / BLOCKED check before implementation |
+| `game-dev` | Implements one story through the harness |
+| `game-done` | Verifies criteria and evidence, reviews, closes the story, names the next one |
+| `game-code-review`, `game-qa-plan` | Architectural review on top of `unity-reviewer` and the harness; sprint QA plan |
+| `game-sprint-plan`, `game-sprint-status` | Sprint plan and a read-only burndown snapshot |
+| `game-help` | Reads the project state and names the next step |
+| `unity-reference` | Unity 6.x API changes, deprecations and best practices to check before using an unfamiliar API |
 
 Agents: `creative-director`, `technical-director`, `producer`, `game-designer`, `art-director`, `lead-programmer`, `qa-lead`, `qa-tester`, `gameplay-programmer`, `ui-programmer`, `ai-programmer`, `engine-programmer`, `unity-specialist` and the `unity-ui`/`shader`/`addressables`/`dots` specialists. The 22 review gates (CD-PILLARS, TD-ARCHITECTURE, PR-EPIC, QL-STORY-READY, LP-CODE-REVIEW, the four phase gates, ...) live in the owning agent and run according to the review mode that rigor implies (`minimal` → none).
 
@@ -118,7 +118,7 @@ To offer it to everyone who opens a project, add to the project's `.claude/setti
 }
 ```
 
-Run the workflow with the Workflow tool: `unity-harness:unity-feature` with `{ "task": "..." }` (options: `planOnly`, `planFile`, `smoke`, `assemblies`, `maxFixRounds`, `maxLogFixes`, `models`).
+Run the workflow with the Workflow tool: `unity-harness:unity-dev` with `{ "task": "..." }` (options: `planOnly`, `planFile`, `smoke`, `assemblies`, `maxFixRounds`, `maxLogFixes`, `models`).
 
 ### 3b. Antigravity plugin
 
@@ -131,10 +131,10 @@ agy plugin install unity-harness-loop/plugins/antigravity
 
 Update with `git pull` and the same install command.
 
-Run the feature loop via the `unity-feature` skill (or invoke the `run_workflow` tool):
+Run the feature loop via the `unity-dev` skill (or invoke the `run_workflow` tool):
 ```python
 run_workflow(
-    ScriptPath="workflows/unity_feature.py",
+    ScriptPath="workflows/unity_dev.py",
     Args={"task": "Implement ...", "smoke": True},
     Description="Unity feature loop"
 )

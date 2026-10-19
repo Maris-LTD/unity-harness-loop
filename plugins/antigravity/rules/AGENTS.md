@@ -64,7 +64,7 @@ outcome in the document header: `> **<Agent> review (<GATE-ID>)**: APPROVED|CONC
 - Gameplay values are data (ScriptableObject or config asset), never literals in logic.
 - Logic sits in plain C# classes that EditMode tests can construct; inject dependencies instead of adding
   singletons. MonoBehaviours stay thin.
-- Unity 6 changed many APIs. Check `unity-engine-reference` before using an API you are not sure exists in the
+- Unity 6 changed many APIs. Check `unity-reference` before using an API you are not sure exists in the
   project's Unity version.
 
 ## Proof
@@ -76,7 +76,7 @@ outcome in the document header: `> **<Agent> review (<GATE-ID>)**: APPROVED|CONC
 |---|---|---|
 | Logic (rules, formulas, state machines) | EditMode test that passes | qaLevel standard/full (advisory at minimal) |
 | Integration (several systems) | EditMode/PlayMode test or a written playtest note | qaLevel standard/full |
-| Visual/Feel, UI | Screenshot kept in `paths.evidenceDir/<story-slug>/` (`unity-harness smoke` capture or `unity-playmode-capture`); Visual/Feel also needs the user's sign-off in `studio-story-done` | every level |
+| Visual/Feel, UI | Screenshot kept in `paths.evidenceDir/<story-slug>/` (`unity-harness smoke` capture or `unity-capture`); Visual/Feel also needs the user's sign-off in `game-done` | every level |
 | Config/Data (tuning) | `unity-harness smoke` passes | advisory |
 
 - Anything the player sees is launched in Play mode and looked at before the story closes, at every rigor level.

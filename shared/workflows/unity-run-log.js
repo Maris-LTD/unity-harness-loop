@@ -1,7 +1,7 @@
 export const meta = {
   name: 'unity-run-log',
   description: 'Write report.md for a harness run from git-based change data, audit it independently, and fix it until accurate',
-  whenToUse: 'Called by unity-feature at the end of a run; can run alone with {runDir, runId, task, verdict, facts} when the run has a baseline',
+  whenToUse: 'Called by unity-dev at the end of a run; can run alone with {runDir, runId, task, verdict, facts} when the run has a baseline',
   phases: [
     { title: 'Log', detail: 'run-log-writer writes notes, the CLI renders report.md from changes.json + facts' },
     { title: 'Audit', detail: 'run-log-auditor checks report vs diff and facts, writer fixes' },

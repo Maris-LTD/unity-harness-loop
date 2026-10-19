@@ -249,8 +249,8 @@ function buildAntigravity() {
     write(path.join(dir, 'agents', `${agent.name}.md`), `${head}\n# System Prompt\n\n${render(agent.name, agent.body, 'antigravity')}`);
   }
   write(path.join(dir, 'rules', 'AGENTS.md'), fs.readFileSync(path.join(ROOT, 'lib', 'studio-protocol.md'), 'utf8'));
-  const pyWorkflow = path.join(SHARED, 'workflows', 'unity_feature.py');
-  if (fs.existsSync(pyWorkflow)) write(path.join(dir, 'workflows', 'unity_feature.py'), fs.readFileSync(pyWorkflow, 'utf8'));
+  const pyWorkflow = path.join(SHARED, 'workflows', 'unity_dev.py');
+  if (fs.existsSync(pyWorkflow)) write(path.join(dir, 'workflows', 'unity_dev.py'), fs.readFileSync(pyWorkflow, 'utf8'));
   write(path.join(dir, 'hooks.json'), json({
     [PLUGIN_NAME]: {
       enabled: true,
