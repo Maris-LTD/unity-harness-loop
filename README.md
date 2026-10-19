@@ -11,10 +11,10 @@ A verification loop for Unity projects worked on by AI coding agents. One CLI (`
 | `all` / `full` | `rules + compile + tests` / `all + smoke`. |
 
 On top of that:
-- **Stop gate** (Claude Code and Antigravity): when the agent tries to finish a turn after editing `.cs` files, it runs `rules + compile` and sends the agent back to fix failures (up to `stopGate.maxBlocks` times).
-- **Read-only guard** (Claude Code): a `PreToolUse` hook denies `Write`/`Edit` and file-writing Bash commands (redirection outside `$TEMP`, `rm`/`mv`/`cp`/`tee`, `sed -i`, tree-changing `git`, asset-saving `unity command`) to `unity-verifier`, `unity-reviewer`, `run-log-auditor` and `plan-loader`. It is a pattern check, so `unity-feature` still fingerprints the tree around those steps; `unity-harness fingerprint save|compare <name>` does the same for skills such as `studio-code-review`.
-- **Agents**: `unity-verifier` (read-only pass/fail verdict) and `unity-reviewer` (diff review against Unity rules) for both agents.
-- **Workflow** (Claude Code only): `unity-harness:unity-feature` plans → implements → verifies and reviews → fixes → writes an audited run report under `.unity-harness/runs/`.
+- **Stop gate** (Claude Code and Antigravity): when the agent tries to finish a turn after editing `.cs` files, it runs `rules + compile` and sends the agent back to fix failures (up to `stopGate.maxBlocks` times). On Antigravity, it respects `terminationReason` (`USER_CANCELED`, `ERROR`, etc.) and only blocks normal completions (`NO_TOOL_CALL`).
+- **Read-only guard** (Claude Code): a `PreToolUse` hook denies `Write`/`Edit` and file-writing Bash commands (redirection outside `$TEMP`, `rm`/`mv`/`cp`/`tee`, `sed -i`, tree-changing `git`, asset-saving `unity command`) to `unity-verifier`, `unity-reviewer`, `run-log-auditor` and `plan-loader`. (Note: on Antigravity, `PreToolUse` is intentionally excluded because Antigravity's PreToolUse IPC payload does not identify the calling agent, avoiding unsafe blanket permission grants).
+- **Agents**: `unity-verifier` (read-only pass/fail verdict), `unity-reviewer` (diff review against Unity rules), and specialized studio/engineering subagents for both platforms.
+- **Workflow & Feature Loop**: `unity-feature` plans → implements → verifies and reviews → fixes → writes an audited run report under `.unity-harness/runs/`. Supported as a Claude Code workflow (`unity-harness:unity-feature`) and an Antigravity skill (`unity-feature`, with dynamic Python runner `workflows/unity_feature.py`).
 - **Skill `unity-juicy-anim`**: recipes and reference C# for jelly-style DOTween animations (squash/stretch lift and land, punch, hop with a content swap, slot row shift, merge, shuffle into a container that pours them back), a procedural prop mesh script, and a way to verify animations in Play mode from the CLI. It came out of the Food Hunt boosters.
 - **Skill `unity-ui-reskin`**: reskin or rebuild uGUI prefabs to match a mockup with a given sprite folder, sync sibling prefabs (page vs popup), and verify the result before reporting: a numeric audit (stretched art, crushed 9-slices, text overflow) against a baseline, plus real Game view captures at phone, 16:9 and tablet resolutions. Ships Bash + `unity command eval` scripts for prefab dump/edit, audit, Game view sizing/capture, and image crop/stack.
 - **Skill `penpot-game-ui`**: design mobile game screens and popups directly in Penpot through the Penpot MCP, from a sprite pack and an optional demo image, under fixed UI/UX rules: button color by intent (Primary green / Secondary blue / Negative red, Play by difficulty), text outline matching the button, optical icon sizing, one theme across header/navbar/popups, soft shade under header and navbar, glow. Ships a JS helper library for `execute_code` (design tokens, 3D button components with variants, gradient + dot background, shades, an `audit` for the rules), the rules sheet and a gotchas list. Does not need the Unity Editor.
@@ -23,6 +23,7 @@ On top of that:
 - **Skill `project-memory-in-repo`**: keep agent project memory in `.claude/memory/` under git, link Claude Code's memory folder to it (junction/symlink scripts that merge existing files and stop on conflicts), and fix `.gitignore` rules that hide it.
 - **Skill `unity-playmode-capture`**: enter Play mode, wait for a component, force a state with an eval (peak interaction, win/lose panel), capture the Game view at a phone resolution, then leave Play mode. Ships Bash scripts plus a gotchas list.
 - **Skill `unity-feedback-tweak`**: apply a play-test feedback round without rerunning the workflow, keeping rule code, tests, tuning, GDD and memory in sync, with an on-screen check for each change.
+- **Skill `audit-agent-plugin`**: a 6-point audit runbook (IPC fidelity, permission safety, lifecycle termination, type robustness, semantic skill portability, subagent tool compatibility) for agent plugins.
 - **Studio workflow** (skills `studio-*`, both agents): a Unity-only port of [Claude Code Game Studios](https://github.com/Donchitos/Claude-Code-Game-Studios) — see [Studio workflow](#studio-workflow).
 
 ## Studio workflow
@@ -129,6 +130,11 @@ agy plugin install unity-harness-loop/plugins/antigravity
 ```
 
 Update with `git pull` and the same install command.
+
+Run the feature loop via the `unity-feature` skill or dynamic Python runner:
+```bash
+python workflows/unity_feature.py --task "Implement ..." --smoke
+```
 
 ## Usage
 
