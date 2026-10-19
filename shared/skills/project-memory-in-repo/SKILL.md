@@ -1,6 +1,6 @@
 ---
 name: project-memory-in-repo
-description: Keep an agent's project memory (architecture, goals, work in progress, user preferences) inside the repo at .claude/memory/ so git versions it and teammates and other agents get it. Links Claude Code's auto-memory folder to it with a junction or symlink, and fixes .gitignore rules that hide it. Use when starting work in a project that has no saved context, or when the user says "tạo bộ nhớ ngữ cảnh", "lưu context dự án", "đưa memory vào git", "cập nhật context". Also use when memory and the repo have drifted apart, or a past session's memory landed in the wrong folder.
+description: Keep the agent's project memory in .claude/memory/ under git and link Claude Code's memory folder to it. Use when a project has no saved context, or for "tạo bộ nhớ ngữ cảnh", "lưu context dự án", "đưa memory vào git".
 ---
 
 # Project memory in the repo

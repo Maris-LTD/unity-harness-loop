@@ -1,6 +1,6 @@
 ---
 name: studio-story-readiness
-description: Check whether Unity studio stories are ready to implement before anyone starts coding - testable acceptance criteria, declared story type, scope boundary, dependencies, open questions, referenced assets and test evidence location. Gives READY / NEEDS WORK / BLOCKED / NOT ASSESSED per story for one story, an epic, the current sprint or all stories, and never edits story files. Port of CCGS /story-readiness. Use before studio-dev-story at standard/full rigor, before a sprint starts, or when the user asks "is this story ready", "story readiness", "kiểm tra story sẵn sàng chưa", "story này code được chưa", "check story trước khi làm".
+description: Check whether Unity stories are ready to implement (READY / NEEDS WORK / BLOCKED) without editing them. Use for "is this story ready", "story readiness", "kiểm tra story sẵn sàng chưa", "story này code được chưa".
 ---
 
 # Story readiness

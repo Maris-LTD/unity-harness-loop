@@ -1,6 +1,6 @@
 ---
 name: unity-ui-reskin
-description: Reskin or rebuild Unity uGUI prefabs to match a mockup/demo image with a given sprite folder, sync UI between sibling prefabs (e.g. Shop page vs MiniShop popup), and verify the result in the real Game view before reporting. Use when asked to "thay art / reskin / làm giống demo / cập nhật UI prefab theo ảnh", or to check a UI prefab for misalignment, cropping, stretching or text overflow.
+description: Reskin or rebuild uGUI prefabs to match a mockup with a sprite folder, sync sibling prefabs, and verify in the Game view. Use for "reskin", "thay art", "làm giống demo", "cập nhật UI prefab theo ảnh".
 ---
 
 # Unity UI reskin and verification

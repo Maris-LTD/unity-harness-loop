@@ -1,6 +1,6 @@
 ---
 name: studio-create-architecture
-description: Author the master architecture document for a Unity studio project before code is written - map every system to a layer and an asmdef module, define ownership, data flow, initialisation order and API boundaries, audit existing ADRs against the technical requirements extracted from the GDDs, list the ADRs still to write, and flag Unity 6 knowledge-gap risks from unity-engine-reference. Writes the architecture doc from `unity-harness studio config` paths. Port of CCGS /create-architecture. Use at standard/full rigor after the systems index and GDDs exist, when the user says "create architecture", "architecture doc", "thiết kế kiến trúc", "viết tài liệu kiến trúc", "chia layer module", "kiến trúc tổng thể".
+description: Write the master architecture document for a Unity studio project - layers, asmdef modules, data flow, ADRs still needed. Use for "create architecture", "architecture doc", "thiết kế kiến trúc", "kiến trúc tổng thể".
 ---
 
 # Create architecture

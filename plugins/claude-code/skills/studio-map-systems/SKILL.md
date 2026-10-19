@@ -1,6 +1,6 @@
 ---
 name: studio-map-systems
-description: Decompose a Unity game's concept into its individual systems, map their dependencies into four layers (Foundation, Core, Feature, Presentation), assign priority tiers (MVP, Vertical Slice, Alpha, Full Vision), set the GDD design order, and write the systems index; with `next` it picks the highest-priority undesigned system and hands it to studio-design-system. Port of CCGS /map-systems. Required before per-system GDDs at rigor standard/full, optional at minimal. Use when the user says "map systems", "systems index", "break the concept into systems", "what systems does this game need", "chia hệ thống", "liệt kê hệ thống", "lập systems index", "hệ thống nào thiết kế tiếp".
+description: Split a Unity game concept into systems, map dependencies and priorities, and write the systems index; `next` picks the next system to design. Use for "map systems", "systems index", "chia hệ thống", "hệ thống nào thiết kế tiếp".
 ---
 
 # studio-map-systems

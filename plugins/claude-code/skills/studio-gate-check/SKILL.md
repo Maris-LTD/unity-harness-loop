@@ -1,6 +1,6 @@
 ---
 name: studio-gate-check
-description: Validate whether a Unity studio project is ready to move to its next phase (concept → systems-design → technical-setup → pre-production → production → polish → release) - check the required artifacts for the target phase at the project's workflow tier with unity-harness studio status, run the build-health checks with the unity-harness CLI (rules, compile, EditMode tests, Play mode smoke), run the director phase-gate panel per review mode, return PASS / CONCERNS / NOT ASSESSED / FAIL with blockers, and on approval advance the stage with unity-harness studio set. Port of CCGS /gate-check. Use when the user asks "can we move to production?", "gate check", "ready for the next phase?", "qua phase", "kiểm tra cổng", "đủ điều kiện sang production chưa", "chuyển giai đoạn".
+description: Check whether a Unity studio project is ready for its next phase (concept to release) and advance the stage on PASS. Use for "gate check", "ready for the next phase?", "kiểm tra cổng", "đủ điều kiện sang production chưa".
 ---
 
 # Gate check

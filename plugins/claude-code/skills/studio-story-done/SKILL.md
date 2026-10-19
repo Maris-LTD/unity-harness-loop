@@ -1,6 +1,6 @@
 ---
 name: studio-story-done
-description: Close a Unity studio story only when it is proven done - check every acceptance criterion against evidence, run the unity-harness CLI (rules, compile, EditMode tests, Play mode smoke) and keep screenshots for anything the player sees, check deviations from the design, run the lead-programmer code review and qa-lead coverage gates per review mode, then mark the story Complete with completion notes after the user approves, update the epic, sprint and session checkpoint, and name the next story. Port of CCGS /story-done. Use when the user says "story done", "close story", "đóng story", "story xong chưa", "nghiệm thu story", "mark story complete", or after studio-dev-story finishes.
+description: Close a Unity studio story only when acceptance criteria, harness checks and screenshots prove it done, then name the next story. Use for "story done", "close story", "đóng story", "nghiệm thu story".
 ---
 
 # Story done

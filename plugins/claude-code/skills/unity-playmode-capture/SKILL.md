@@ -1,6 +1,6 @@
 ---
 name: unity-playmode-capture
-description: See a Unity game running before saying a visual change works. Enters Play mode from the CLI, waits until a given component exists, pushes the game into the state to check (peak tension, win panel, lose panel, a given level) with an eval, sets the Game view to a phone resolution, captures PNGs, then leaves Play mode. Use after changing visuals, VFX, materials, backgrounds, HUD or panels, when the smoke capture does not show the state that changed, or when the user asks "chụp màn hình game", "xem thử trong play mode", "kiểm tra hiển thị", "check UI thắng/thua", "xem glow/outline/nền".
+description: Enter Play mode, force a game state (win, lose, a level) and capture Game view PNGs to check a visual change. Use after visual changes or for "chụp màn hình game", "xem thử trong play mode", "check UI thắng/thua".
 ---
 
 # Play mode capture

@@ -1,6 +1,6 @@
 ---
 name: studio-sprint-plan
-description: Create or update a sprint plan for a Unity studio project from the Ready stories, the previous sprint's carryover and the available capacity, with an optional producer feasibility review (gate PR-SPRINT). Writes `production/sprints/sprint-NNN.md` under the studio docs root; story files stay the single source of story status. Port of CCGS /sprint-plan. Use when the user says "plan a sprint", "new sprint", "update the sprint", "sprint plan", "lên kế hoạch sprint", "tạo sprint mới", "cập nhật sprint".
+description: Create or update a Unity studio sprint plan from Ready stories, carryover and capacity. Use for "plan a sprint", "new sprint", "sprint plan", "lên kế hoạch sprint", "tạo sprint mới".
 ---
 
 # studio-sprint-plan

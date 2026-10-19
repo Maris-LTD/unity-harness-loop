@@ -1,6 +1,6 @@
 ---
 name: unity-ref-to-prototype
-description: Turn a References folder (target-look images, an HTML/JS gameplay demo, a pasted game brief) into a Vietnamese gameplay-only GDD plus a playable Unity prototype that the unity-feature workflow builds and verifies. Tests tie every GDD number to code, and a solver test proves every level can be cleared. Use when the user says "làm game từ ref", "dựng prototype theo thư mục References", "port demo HTML sang Unity", "viết GDD rồi làm game", pastes a GDD prompt ("Bạn là một Lead Game Designer...") for a new game, or wants a hybrid-casual prototype from scratch.
+description: Turn a References folder (images, HTML demo, brief) into a Vietnamese gameplay GDD and a playable Unity prototype built by unity-feature. Use for "làm game từ ref", "port demo HTML sang Unity", "viết GDD rồi làm game".
 ---
 
 # References → GDD → playable prototype

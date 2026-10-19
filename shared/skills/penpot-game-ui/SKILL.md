@@ -1,6 +1,6 @@
 ---
 name: penpot-game-ui
-description: Design mobile game UI screens and popups (home, shop, settings, inventory, reward/confirm popups, buttons, top bar, bottom nav) directly in Penpot through the Penpot MCP, from a sprite/asset pack and optionally a demo image, following the user's fixed game UI/UX rules (button colors by intent, text outline, optical icon sizing, synced theme, shadows, glow only on emphasized icons, never on buttons). Builds design tokens and reusable button components, then verifies every screen by export and audit. Use when the user asks to "dựng/thiết kế màn hình", "làm popup", "tạo UI game trong Penpot", "dựa theo demo / dựa theo assets", "review UI Penpot", or to add screens to an existing Penpot game UI file.
+description: Design mobile game UI screens and popups in Penpot via the Penpot MCP from a sprite pack or demo image, following fixed game UI rules. Use for "thiết kế màn hình", "làm popup", "tạo UI game trong Penpot", "review UI Penpot".
 ---
 
 # Penpot game UI

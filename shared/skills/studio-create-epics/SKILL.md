@@ -1,6 +1,6 @@
 ---
 name: studio-create-epics
-description: Turn the game's design (per-system GDDs, else the game concept) into epics for a Unity project, port of CCGS /create-epics. One epic per system, processed in dependency layer order (Foundation, Core, Feature, Presentation), with a producer feasibility gate, written to EPIC.md files plus an epics index; never overwrites an existing epic. Used at rigor standard/full; at minimal the epic is implicit and studio-create-stories builds it from the brief. Use when the user says "create epics", "break the game into epics", "tạo epic", "chia epic", "lên danh sách epic".
+description: Turn the GDDs or game concept of a Unity game into epics, one per system, in dependency order. Use for "create epics", "break the game into epics", "tạo epic", "chia epic".
 ---
 
 # studio-create-epics

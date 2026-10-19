@@ -1,6 +1,6 @@
 ---
 name: unity-juicy-anim
-description: Recipes and reference code for juicy, jelly-style DOTween animations in Unity casual or puzzle games. Covers squash and stretch lift/lower, a punch on receive, a hop that swaps content at its peak, a row of slots sliding over in a wave as a new one slides in, merging items that fly into one and count up, and a shuffle that gathers items into a container (bucket, pot, hat), churns them and pours them back. Also covers a procedural container mesh made in the Editor, how to keep the game paused or state-correct while these play, and how to verify them in Play mode from the CLI. Use this whenever the user wants booster animations, "jelly", "bouncy", "juicy", "game feel" or "tween" polish on boxes, tiles, slots, blocks or cards, or asks for an add-slot, merge, shuffle, swap, pour, gather or "into a bucket" animation, even if they do not mention DOTween.
+description: Jelly-style DOTween animation recipes for casual Unity games - squash and stretch, punch, hop swap, slot row shift, merge, shuffle into a bucket. Use for "juicy", "jelly", "bouncy", "game feel", "tween" polish or booster animations.
 ---
 
 # Unity juicy animations

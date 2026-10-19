@@ -1,6 +1,6 @@
 ---
 name: studio-help
-description: Read-only "what do I do next?" for the studio workflow in a Unity project - reads the studio settings, the project state from unity-harness studio status and the session checkpoint, finds where the project is on the minimal path or the phase ladder, and names exactly one next skill plus what is optional and what comes after. Use when the user is stuck, lost, just finished a step, or asks what's next. Port of CCGS /help. Triggers: "help", "what's next", "what should I do next", "tiếp theo làm gì", "giờ làm gì", "đang ở bước nào", "bí rồi", "stuck".
+description: Read the studio project state and name the one next skill to run. Use when the user is stuck or asks "what's next", "help", "tiếp theo làm gì", "đang ở bước nào", "bí rồi".
 ---
 
 # Studio help

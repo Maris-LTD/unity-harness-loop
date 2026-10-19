@@ -1,6 +1,6 @@
 ---
 name: studio-brainstorm
-description: Guided game-concept ideation for a Unity project, port of CCGS /brainstorm. At rigor minimal it writes the one-page game brief (pitch, core loop, goal and fail state, MVP, out of scope, build order); at standard/full it runs the full ideation walk (creative discovery, three concepts, core loop, pillars, player types, scope and feasibility, with director gates) and writes the game concept document. Use when the user has no idea yet, a vague idea, or a clear concept that is not written down, or says "brainstorm", "game idea", "write the game brief", "nghĩ ý tưởng game", "brainstorm game", "viết game brief", "lên concept game".
+description: Turn a vague or missing game idea into a one-page game brief (minimal rigor) or a full game concept. Use for "brainstorm", "game idea", "write the game brief", "nghĩ ý tưởng game", "lên concept game".
 ---
 
 # studio-brainstorm

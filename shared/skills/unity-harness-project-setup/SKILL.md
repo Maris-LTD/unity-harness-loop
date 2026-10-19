@@ -1,6 +1,6 @@
 ---
 name: unity-harness-project-setup
-description: Prepare a Unity project for the unity-harness loop. Create it with the Unity CLI (even into a folder that already holds References or docs), add com.unity.pipeline and com.unity.ai.assistant, trim template packages, set up .gitignore and git, run unity-harness init and fill config.json (test assembly, rule paths, smoke scene, expected types), open the Editor, wait until it is ready, compile and commit a clean baseline. Use when the user says "tạo project Unity mới", "setup project cho harness", "khởi tạo project từ thư mục ref", "init unity-harness", or before running the unity-feature workflow on a folder that has no Unity project yet.
+description: Create or prepare a Unity project for the unity-harness loop - packages, git, harness config, Editor ready, clean baseline commit. Use for "tạo project Unity mới", "setup project cho harness", "init unity-harness".
 ---
 
 # Unity project setup for the harness loop

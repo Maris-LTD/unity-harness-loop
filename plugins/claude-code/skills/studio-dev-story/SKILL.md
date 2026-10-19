@@ -1,6 +1,6 @@
 ---
 name: studio-dev-story
-description: Implement one Unity studio story end to end - load the story and its design context, check dependencies and ADRs, mark it In Progress, route it to the right programmer or Unity specialist agent, write the code plus its EditMode test, verify with the unity-harness CLI (rules, compile, tests, Play mode smoke) and keep the session checkpoint current. Does not close the story; studio-story-done does. Port of CCGS /dev-story. Use when the user wants to start or continue a story, says "implement story", "dev story", "làm story tiếp theo", "code story này", "bắt đầu story", "tiếp tục story đang dở".
+description: Implement one Unity studio story end to end - code, EditMode test and harness verification - without closing it. Use for "implement story", "dev story", "làm story tiếp theo", "code story này", "tiếp tục story đang dở".
 ---
 
 # Dev story

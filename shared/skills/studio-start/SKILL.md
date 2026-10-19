@@ -1,6 +1,6 @@
 ---
 name: studio-start
-description: First-time onboarding for the studio workflow in a Unity project - detects what already exists (Unity project, harness config, brief, stories), asks where the user is with their game idea, sets rigor (how much process), automation (how often to ask) and stage in the studio settings, then names the one next skill. Use at the start of a new game, when a project has no studio settings yet, or when the user does not know where to begin. Port of CCGS /start. Triggers: "start", "bắt đầu", "bắt đầu làm game", "onboarding", "tôi nên bắt đầu từ đâu", "setup studio", "làm game mới theo quy trình".
+description: First-time onboarding for the Unity studio workflow - detect what exists, set rigor and automation, name the next skill. Use for a new game or "start", "bắt đầu làm game", "tôi nên bắt đầu từ đâu", "làm game mới theo quy trình".
 ---
 
 # Studio start

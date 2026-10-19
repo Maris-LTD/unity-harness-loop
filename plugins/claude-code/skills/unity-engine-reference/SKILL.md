@@ -1,6 +1,6 @@
 ---
 name: unity-engine-reference
-description: Version-pinned Unity 6.x reference (pinned to Unity 6.3 LTS) for API changes the model may not know - breaking changes since 2022 LTS, deprecated APIs and their replacements, current best practices, and per-module notes (input, UI Toolkit/UGUI, rendering/URP, physics, animation, audio, navigation, networking) plus optional packages (Addressables, Cinemachine, Entities/DOTS). Use before writing or reviewing Unity C# that touches an API you are not sure exists in the project's Unity version, when an API fails to compile after an upgrade, or when choosing between old and new Unity systems. Ported from CCGS docs/engine-reference/unity. Triggers: "Unity 6 API", "API này còn dùng được không", "deprecated", "breaking change", "Input System mới", "UI Toolkit hay UGUI", "Cinemachine 3", "Entities 1.x".
+description: Unity 6.3 LTS reference for API changes, deprecations and best practices the model may not know. Use before using an unfamiliar Unity API, after an upgrade breaks compile, or for "Unity 6 API", "deprecated", "API này còn dùng được không".
 ---
 
 # Unity engine reference

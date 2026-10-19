@@ -1,6 +1,6 @@
 ---
 name: studio-code-review
-description: Architectural code review of Unity C# changes - runs the unity-reviewer agent (house rules, correctness, Unity performance) and unity-harness all (rules, compile, EditMode tests) first, then checks what they do not cover - ADR compliance, control manifest rules, module and asmdef boundaries, testability, data-driven values, story acceptance criteria - with Unity specialist and qa-tester second opinions and the lead-programmer LP-CODE-REVIEW gate at full review mode. Read-only; verdict APPROVED / APPROVED WITH SUGGESTIONS / CHANGES REQUIRED / NOT ASSESSED. Port of CCGS /code-review. Use when the user says "code review", "review code", "review story này", "review thay đổi", "kiểm tra code trước khi đóng story", or before studio-story-done.
+description: Architectural review of Unity C# changes against ADRs, the control manifest, asmdef boundaries and story criteria, on top of unity-reviewer and the harness. Use for "code review", "review story này", "kiểm tra code trước khi đóng story".
 ---
 
 # Code review

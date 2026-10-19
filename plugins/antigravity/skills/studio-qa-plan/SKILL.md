@@ -1,6 +1,6 @@
 ---
 name: studio-qa-plan
-description: Write the QA plan for a Unity sprint, feature, epic or single story before implementation starts - classify each story Logic / Integration / Visual/Feel / UI / Config/Data, list the EditMode tests to automate (file path in the test asmdef, cases from GDD formulas and edge cases), the manual Play mode checks and screenshots to keep, the smoke scope for unity-harness smoke, playtest needs and the sprint's definition of done, then optionally back-fill each story's QA Test Cases. Port of CCGS /qa-plan. Use when the user says "qa plan", "test plan", "kế hoạch test", "lên kế hoạch QA cho sprint", "cần test gì cho sprint này", or after studio-sprint-plan.
+description: Write the QA plan for a Unity sprint, epic or story - EditMode tests to automate, Play mode checks, smoke scope, definition of done. Use for "qa plan", "test plan", "kế hoạch test", "lên kế hoạch QA cho sprint".
 ---
 
 # QA plan

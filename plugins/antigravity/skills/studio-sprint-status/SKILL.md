@@ -1,6 +1,6 @@
 ---
 name: studio-sprint-status
-description: Fast read-only sprint snapshot for a Unity studio project — story status table, days remaining, burndown verdict, stale and blocked stories, Must Haves at risk and one recommended next action. At minimal rigor (no sprints) it reports progress through the brief's build order instead. Reads `unity-harness studio status --json`, the current sprint file and story Status lines; never writes. Port of CCGS /sprint-status. Use when the user asks "how is the sprint going", "sprint status", "what's next", "build order progress", "sprint thế nào rồi", "tiến độ sprint", "tiến độ build order", "còn story nào".
+description: Read-only sprint or build-order snapshot - story status, burndown, blocked stories, one next action. Use for "sprint status", "how is the sprint going", "tiến độ sprint", "còn story nào".
 ---
 
 # studio-sprint-status

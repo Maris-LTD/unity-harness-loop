@@ -1,6 +1,6 @@
 ---
 name: studio-setup
-description: Record a Unity project's technical setup for the studio workflow - installed Unity version, render pipeline, input system, test framework, target platforms and performance budgets - into the studio settings; make sure the unity-harness config and an EditMode test assembly exist; and warn about the gap between the installed Unity version and the unity-engine-reference pin. Also handles a Unity version upgrade (pre-upgrade audit of deprecated APIs). Use after studio-start, when a Unity project has no recorded setup, after changing Unity version, or when the user says "setup engine". Port of CCGS /setup-engine (Unity only). Triggers: "setup engine", "setup unity", "cấu hình dự án", "ghi lại phiên bản Unity", "nâng cấp Unity", "upgrade unity", "đặt target platform", "performance budget".
+description: Record the Unity version, render pipeline, input system, platforms and budgets for the studio workflow, and handle Unity upgrades. Use for "setup engine", "setup unity", "cấu hình dự án", "nâng cấp Unity", "performance budget".
 ---
 
 # Studio setup (Unity)

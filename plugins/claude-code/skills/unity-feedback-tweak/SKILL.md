@@ -1,6 +1,6 @@
 ---
 name: unity-feedback-tweak
-description: Apply a round of the user's play-test feedback to a Unity prototype (feel, thresholds, colors/theme, VFX, background, small rule changes) without rerunning the whole unity-feature workflow. Keeps rule code, tests, tuning, GDD and project memory in sync, and shows each change on screen before reporting. Use when the user has played the build and says things like "sửa thành...", "đổi tông màu", "kéo tới ngưỡng thì tự bật", "glow chỉ là outline thôi", "background gradient", "chỉnh lại cho đẹp hơn", or sends a list of small changes.
+description: Apply a round of play-test feedback (feel, colors, VFX, thresholds, small rules) to a Unity prototype without rerunning unity-feature, keeping tests and GDD in sync. Use for "sửa thành...", "đổi tông màu", "chỉnh lại cho đẹp hơn".
 ---
 
 # Play-test feedback round

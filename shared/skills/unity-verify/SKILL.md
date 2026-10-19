@@ -1,6 +1,6 @@
 ---
 name: unity-verify
-description: Verify Unity changes end to end with the unity-harness CLI — coding-rule check on changed .cs files, recompile, EditMode tests, and a Play mode smoke run with a Game view capture and console error scan. Use after implementing or fixing anything in C#/scenes/prefabs, before saying work is done, or when the user asks to "verify", "kiểm tra", "chạy test", "smoke test", "chạy thử game", "check compile và test".
+description: Verify Unity changes with the unity-harness CLI - rule check, recompile, EditMode tests, Play mode smoke. Use after C#/scene/prefab changes, before saying work is done, or for "verify", "chạy test", "smoke test", "check compile".
 ---
 
 # unity-verify

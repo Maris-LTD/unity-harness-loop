@@ -1,6 +1,6 @@
 ---
 name: studio-create-stories
-description: Break one epic into implementable story files for a Unity project, port of CCGS /create-stories. Each story carries its type (Logic, Integration, Visual/Feel, UI, Config/Data), testable acceptance criteria, the evidence studio-story-done will demand, Unity file and test-asmdef hints, and qa-lead test cases when the QL-STORY-READY gate runs. At rigor minimal it builds the implicit epic straight from the game brief's MVP list and build order. Use when the user says "create stories", "break the epic into stories", "tạo story", "chia story", "viết story cho epic".
+description: Break one epic (or the brief's MVP list) into implementable Unity stories with type, acceptance criteria and required evidence. Use for "create stories", "break the epic into stories", "tạo story", "chia story".
 ---
 
 # studio-create-stories

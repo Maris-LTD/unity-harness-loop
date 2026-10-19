@@ -1,6 +1,6 @@
 ---
 name: studio-design-review
-description: Review one design document (a system GDD, or the game concept) of a Unity game for completeness against the workflow tier, internal consistency, implementability and cross-system conflicts, with adversarial specialist reviewers and a creative-director verdict in full review mode; verdict APPROVED / NEEDS REVISION / MAJOR REVISION NEEDED / NOT ASSESSED, saved as a dated review report and reflected in the systems index. Read-only until the user approves the tracking writes. Port of CCGS /design-review. Run in a fresh session after studio-design-system. Use when the user says "review this GDD", "design review", "check the design doc", "review thiết kế", "duyệt GDD", "kiểm tra GDD".
+description: Review one GDD or the game concept for completeness, consistency and implementability, with an APPROVED / NEEDS REVISION verdict. Use for "review this GDD", "design review", "duyệt GDD", "kiểm tra GDD".
 ---
 
 # studio-design-review

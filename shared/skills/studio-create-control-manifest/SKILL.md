@@ -1,6 +1,6 @@
 ---
 name: studio-create-control-manifest
-description: Build the control manifest for a Unity studio project - a flat must-do / never-do rules sheet per architecture layer, extracted from Accepted ADRs, the harness house rules (`unity-harness config` rules), the studio budgets and the Unity version's deprecated APIs, each rule with its source. Programmers and studio-create-stories read it; ADRs explain why, the manifest says what. Port of CCGS /create-control-manifest. Use after ADRs are Accepted (re-run with `update` when ADRs change), when the user says "control manifest", "rules sheet", "tạo control manifest", "cập nhật manifest", "bảng luật lập trình".
+description: Build the control manifest, a per-layer must-do / never-do rules sheet from Accepted ADRs and house rules. Use for "control manifest", "rules sheet", "tạo control manifest", "cập nhật manifest".
 ---
 
 # Create control manifest

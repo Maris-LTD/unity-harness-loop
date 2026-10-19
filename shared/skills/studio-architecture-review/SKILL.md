@@ -1,6 +1,6 @@
 ---
 name: studio-architecture-review
-description: Review the Unity project's architecture as a whole - extract the technical requirements from every GDD, give them stable TR-<system>-NNN IDs in the TR registry, build the traceability matrix GDD requirement → ADR (and → story → EditMode test in rtm mode), find cross-ADR conflicts and dependency cycles, check every ADR against the project's Unity version with unity-engine-reference, and write the review report with a PASS / CONCERNS / NOT ASSESSED / FAIL verdict. The gate between technical setup and pre-production. Port of CCGS /architecture-review. Use when the user says "architecture review", "review ADRs", "traceability matrix", "rà soát kiến trúc", "kiểm tra ADR có phủ hết GDD chưa", "ma trận truy vết", or after writing ADRs with studio-architecture-decision.
+description: Review the whole Unity architecture - GDD requirement to ADR traceability, ADR conflicts, Unity version checks - with a PASS/FAIL verdict. Use for "architecture review", "review ADRs", "rà soát kiến trúc", "ma trận truy vết".
 ---
 
 # Architecture review

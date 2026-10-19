@@ -1,6 +1,6 @@
 ---
 name: studio-architecture-decision
-description: Write, accept or retrofit an Architecture Decision Record (ADR) for a Unity studio project - check the architecture registry for locked stances, load Unity 6 context from unity-engine-reference, guide the decision with 2-3 alternatives, have unity-specialist validate it, run the TD-ADR review, write `adr-NNNN-<slug>.md` as Proposed under the studio architecture folder, and update the registry. `accept ADR-NNNN` is the only route to Accepted and unblocks stories waiting on it. Port of CCGS /architecture-decision. Use when the user says "write an ADR", "architecture decision", "accept ADR-0003", "retrofit ADR", "ghi quyết định kiến trúc", "viết ADR", "duyệt ADR", "chốt quyết định kỹ thuật".
+description: Write, accept or retrofit an Architecture Decision Record (ADR) for a Unity studio project. Use for "write an ADR", "accept ADR-0003", "viết ADR", "duyệt ADR", "chốt quyết định kỹ thuật".
 ---
 
 # Architecture decision

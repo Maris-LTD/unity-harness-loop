@@ -1,6 +1,6 @@
 ---
 name: studio-design-system
-description: Author one system's GDD for a Unity game section by section - gathers the concept, systems index, dependency GDDs, entity registry and Unity engine constraints first, creates the file skeleton, then walks each section required by the workflow tier (Overview, Player Fantasy, Detailed Design, Formulas, Edge Cases, Dependencies, Tuning Knobs as ScriptableObject fields, Acceptance Criteria testable in EditMode or by screenshot), writing each one as soon as it is approved, then runs the CD-GDD-ALIGN pillar gate and updates the registry and systems index. Also fills gaps in an existing GDD (retrofit). Port of CCGS /design-system. Use when the user says "design system X", "write the GDD for", "thiết kế hệ thống", "viết GDD cho", "bổ sung GDD", "retrofit GDD".
+description: Write or retrofit one system's GDD for a Unity game, section by section, with tuning knobs and testable acceptance criteria. Use for "design system X", "write the GDD for", "thiết kế hệ thống", "viết GDD cho".
 ---
 
 # studio-design-system
