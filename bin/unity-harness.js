@@ -11,6 +11,7 @@ Project setup:
   init [--force]        create .unity-harness/config.json for this Unity project
   config                print the effective config as JSON
   where                 print the resolved project root and config path
+  fingerprint save|compare <name>   snapshot the working tree (HEAD + dirty file hashes) / list what changed since; exit 1 when changed
 
 Studio workflow (skills studio-*):
   studio config         print the resolved studio settings (rigor expansion, doc paths)
@@ -28,7 +29,7 @@ Run logs (used by the unity-feature workflow and run-log agents):
   run-log finalize <runDir> --verdict <v> --audit <a>
 
 Agent hooks (stdin = hook payload):
-  hook <claude|antigravity> <session-start|turn-start|stop>
+  hook <claude|antigravity> <session-start|turn-start|stop|pre-tool-use>
 
 Exit codes: 0 pass, 1 blocking failures, 2 Editor not ready, 64 bad usage.`;
 
@@ -56,6 +57,16 @@ function main(rawArgv) {
     return 0;
   }
   if (command === 'run-log') return require('../lib/run-log').runLog(rest);
+  if (command === 'fingerprint') {
+    try {
+      const result = require('../lib/tree-guard').fingerprint(rest[0], rest[1]);
+      process.stdout.write(JSON.stringify(result, null, 2) + '\n');
+      return result.unchanged === false ? 1 : 0;
+    } catch (error) {
+      process.stderr.write(`${error.message}\n`);
+      return 64;
+    }
+  }
   if (command === 'studio') return require('../lib/studio').studio(rest);
   if (command === 'hook') return require('../lib/hooks').runHook(rest[0], rest[1]);
   const { verify } = require('../lib/verify');

@@ -57,3 +57,18 @@ test('files Unity rewrites on its own during verification are noise, not a viola
   assert.deepStrictEqual(result.serious, []);
   assert.deepStrictEqual(result.noise, ['Assets/Font SDF.asset', 'Assets/Main.unity.meta', 'Packages/packages-lock.json', 'ProjectSettings/ProjectSettings.asset']);
 });
+
+test('fingerprint compare lists what changed since save and exits 1', () => {
+  const dir = makeRepo();
+  const run = (...args) => spawnSync(process.execPath, [CLI, '--project', dir, 'fingerprint', ...args], { encoding: 'utf8' });
+  fs.appendFileSync(path.join(dir, 'Assets/Ui.prefab'), 'user edit: 1\n');
+  assert.strictEqual(run('save', 'review').status, 0);
+  assert.strictEqual(run('compare', 'review').status, 0);
+  fs.appendFileSync(path.join(dir, 'Assets/Ui.prefab'), 'reviewer edit: 1\n');
+  fs.writeFileSync(path.join(dir, 'Assets/New.cs'), 'class New {}\n');
+  const changed = run('compare', 'review');
+  assert.strictEqual(changed.status, 1);
+  assert.deepStrictEqual(JSON.parse(changed.stdout).changed, ['Assets/New.cs', 'Assets/Ui.prefab']);
+  assert.strictEqual(run('compare', 'missing').status, 64);
+  assert.strictEqual(run('save', '../escape').status, 64);
+});

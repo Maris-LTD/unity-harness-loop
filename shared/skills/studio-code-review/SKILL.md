@@ -10,7 +10,8 @@ If this session's context has no "Unity Studio protocol" (it started before the 
 `unity-harness studio protocol` once and follow it.
 {{/claude}}
 
-Read-only: writes no files. Argument: file paths and/or folders, optionally followed by a story path
+Read-only: changes no project file; its one write is the review line in Phase 8. Every agent it spawns reviews
+only, and the working tree is fingerprinted around them. Argument: file paths and/or folders, optionally followed by a story path
 (`<paths.epicsDir>/<epic>/story-NNN-<slug>.md`). No files given → the changed C# in the working tree
 (`git diff HEAD -M --name-only -- '*.cs'` plus untracked `.cs`), limited to `rules.includePaths`.
 
@@ -30,7 +31,9 @@ Read the target files in full and the project's CLAUDE.md / AGENTS.md. With a st
 QA Test Cases, Context (GDD, ADR, TR-IDs) and Implementation Notes.
 
 ## Phase 2: Harness and rule review (run first, do not repeat their checks)
-In parallel:
+First run `unity-harness fingerprint save code-review`. Tell every agent spawned from here on: review only, never
+create, edit, move or delete a file, report findings instead.
+Then in parallel:
 - `unity-harness all --files <comma-separated targets>` (rules on these files, compile, EditMode tests). Exit 2 →
   compile and tests are `NOT ASSESSED — Editor not ready`; ask the user to open the Editor, do not loop.
 - Spawn the unity-reviewer with {{spawn unity-reviewer}}, limited to the target files. It covers correctness
@@ -93,6 +96,11 @@ dropped, never promoted to a defect because it sounds confident.
   findings. Apply its verdict per the studio protocol.
 - solo / lean: note `LP-CODE-REVIEW skipped (<mode>)`; the review below stands on its own.
 
+Then run `unity-harness fingerprint compare code-review`. Exit 1 lists the changed paths. Changes only to `.meta`,
+`ProjectSettings/` or `Packages/packages-lock.json` are Unity noise: name them under Suggestions. Any other change
+means a spawned agent edited the project: the verdict is NOT ASSESSED, list the paths, and ask the user whether to keep
+or revert them; never revert them yourself.
+
 ## Phase 8: Output
 
 ```
@@ -113,8 +121,8 @@ dropped, never promoted to a defect because it sounds confident.
 
 Verdict, first match wins:
 - **CHANGES REQUIRED**: anything under Required changes, or LP-CODE-REVIEW REJECT.
-- **NOT ASSESSED**: nothing to review, compile or tests did not run, a referenced ADR could not be read, or a
-  specialist that applied could not be spawned; name which. It ranks below CHANGES REQUIRED and above both approvals.
+- **NOT ASSESSED**: nothing to review, compile or tests did not run, a referenced ADR could not be read, a
+  specialist that applied could not be spawned, or a spawned agent changed project files; name which. It ranks below CHANGES REQUIRED and above both approvals.
 - **APPROVED WITH SUGGESTIONS**: only suggestions (or LP-CODE-REVIEW CONCERNS the user accepted).
 - **APPROVED**: nothing required, nothing suggested.
 

@@ -139,6 +139,7 @@ function buildClaude() {
   write(path.join(dir, 'hooks', 'hooks.json'), json({
     hooks: {
       SessionStart: [{ matcher: 'startup|clear|resume|compact', hooks: [{ type: 'command', command: 'unity-harness hook claude session-start', timeout: 30 }] }],
+      PreToolUse: [{ matcher: 'Bash|Write|Edit|MultiEdit|NotebookEdit', hooks: [{ type: 'command', command: 'unity-harness hook claude pre-tool-use', timeout: 10 }] }],
       Stop: [{ hooks: [{ type: 'command', command: 'unity-harness hook claude stop', timeout: 600 }] }],
     },
   }));
