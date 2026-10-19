@@ -47,7 +47,7 @@ Nếu chưa có board `UI Kit - Buttons` thì dựng:
 - `Play Button` (Difficulty: Normal/green, Hard/purple, Super Hard/red), 420×200, `radius.button.lg`, chữ `font.display`.
 - `Popup Button` (Type: Primary/green, Secondary/blue, Negative/red), 400×140, `radius.button.md`, chữ `font.button`.
 - Tạo bằng `await ui.button(kit, {name, x, y, w, h, color, label, size, radius})`, sau đó `ui.makeVariants([{shape, properties}], 'Play Button')`.
-- Dùng instance qua `ui.variant('Popup Button', { Type: 'Primary' })`, đổi chữ qua child `Label`, resize thoải mái vì constraints đã đặt sẵn.
+- Dùng instance qua `ui.variant('Popup Button', { Type: 'Primary' })`, đổi chữ qua child `Label` (viết hoa chữ cái đầu mỗi từ, luật 10; đổi chữ xong chạy lại `ui.centerY` để giữ căn giữa), resize thoải mái vì constraints đã đặt sẵn.
 
 ## Bước 4: Dựng màn hình
 `const s = ui.screen(name, x, y)`. Đặt ở chỗ trống bên phải các board đã có, không đè lên board khác. Thứ tự lớp từ dưới lên:
@@ -58,13 +58,15 @@ Nếu chưa có board `UI Kit - Buttons` thì dựng:
 5. `Nav Shade`, rồi `Nav Shadow` (rect cùng kích thước navbar, mang viền cứng `ui.drop(ink, -6)`), rồi `Bottom Nav`: board flex row, gap 4, padding dưới 66, các tab `horizontalSizing='fill'`. Tab active nền vàng (`btn.yellow.*`) và icon to nổi lên trên (`clipContent=false`, không glow). Tab thường chỉ có icon.
 
 Popup: thêm `Dim Overlay` (#06173A, 70%) rồi board `Popup` gồm `Frame` (gradient primary → deep, viền ink, không glow), `Title Ribbon` (sky → primary), `Body` (surface), nội dung, rồi các nút theo luật 2, 7, 8. Nút đóng X là nút đỏ nhỏ, radius sm. Icon chính của popup (phần thưởng) được nhấn bằng `ui.iconGlow(icon)` (quầng radial vàng phía sau và glow nhẹ quanh icon).
+- Nội dung ưu tiên ảnh minh hoạ to ở giữa, chữ ít (luật 11). Chữ chỉ có `Title` (header, được `shadow: true`) rồi `Description` ngắn, tối đa 3 cấp chữ (luật 12, 14).
+- Tâm popup ở giữa hoặc hơi thấp hơn giữa màn, các nút hành động ở nửa dưới màn (luật 13).
 
 Đặt tên layer rõ nghĩa (`Coin Counter`, `Btn - Events`, `Tab - Home`…) để dev Unity map được.
 
 ## Bước 5: Kiểm tra (bắt buộc)
 1. `export_shape` theo id board màn hình, rồi tự xem ảnh: lệch, tràn khung, chữ đè nhau, mảng tối lạ do shadow, chỗ nào chìm vào nền.
 2. `ui.audit(screen)` → `issues` phải rỗng. So `iconOpticalSizes` giữa các icon cùng cấp.
-3. Rà theo checklist ở `references/ui-rules.md` (đặc biệt luật 2, 3, 6, 7, 8, 9).
+3. Rà theo checklist ở `references/ui-rules.md` (đặc biệt luật 2, 3, 6, 7, 8, 9, 10 và các luật popup 11–14).
 4. Sửa, xuất ảnh lại, lặp đến khi sạch. Chỉ báo xong khi ảnh cuối cùng đã được xem.
 
 ## Báo cáo

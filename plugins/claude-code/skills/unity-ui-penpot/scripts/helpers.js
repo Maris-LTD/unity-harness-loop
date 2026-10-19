@@ -87,6 +87,7 @@ ui.text = (parent, name, chars, o) => {
     t.strokes = ui.stroke(o.outline, o.outlineWidth || Math.max(4, Math.round(o.size * 0.07)), 'outer');
     t.shadows = [ui.drop(o.outline, Math.max(3, Math.round(o.size * 0.06)))];
   }
+  if (o.shadow) t.shadows = [...(t.shadows || []), ui.drop(o.shadowColor || '#0A2A5E', Math.round(o.size * 0.1), Math.round(o.size * 0.18), 0, 0.5)];
   if (o.w) { t.resize(o.w, Math.round(o.size * 1.3)); t.growType = 'auto-height'; }
   else t.growType = 'auto-width';
   t.align = o.align || 'center';
@@ -172,6 +173,38 @@ ui.backgroundFX = (screen, p = {}) => {
   return fx;
 };
 
+ui.keepCase = w => /\d/.test(w) || (w.length <= 3 && w === w.toUpperCase());
+ui.titleCase = str => str.replace(/[^\s\-/]+/g, w => ui.keepCase(w) ? w : w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
+ui.isTitleCase = str => ui.titleCase(str) === str;
+
+ui.auditPopup = (pop, screen, issues) => {
+  const colors = penpotUtils.findShapes(s => s.name === 'Face', pop).map(f => f.fills?.[0]?.fillColorGradient?.stops?.[1]?.color || f.fills?.[0]?.fillColor);
+  const dup = colors.filter((c, i) => colors.indexOf(c) !== i);
+  if (dup.length) issues.push(`Popup "${pop.name}" có nút trùng màu: ${[...new Set(dup)].join(', ')}`);
+
+  const buttons = penpotUtils.findShapes(s => s.children?.some(c => c.name === 'Face'), pop);
+  const inButton = new Set(buttons.flatMap(b => [b, ...penpotUtils.findShapes(() => true, b)]).map(s => s.id));
+  const content = penpotUtils.findShapes(s => !s.hidden && !inButton.has(s.id), pop);
+  const texts = content.filter(s => s.type === 'text');
+
+  const levels = new Set(texts.map(t => Number(t.fontSize)));
+  if (levels.size > 3) issues.push(`Popup "${pop.name}" có ${levels.size} cấp chữ (${[...levels].join('/')}px), tối đa 3 (luật 14)`);
+  const title = texts.find(t => /Title/.test(t.name)), desc = texts.find(t => /Desc/.test(t.name));
+  if (title && desc && title.y > desc.y) issues.push(`Popup "${pop.name}": Title phải nằm trên Description (luật 14)`);
+
+  const chars = texts.reduce((n, t) => n + t.characters.length, 0);
+  if (chars > 90) issues.push(`Popup "${pop.name}" nhiều chữ (${chars} ký tự), thay bằng icon/ảnh minh hoạ (luật 11)`);
+  const art = content.filter(s => s.type !== 'text' && /Icon$|Illustration|Reward/.test(s.name) && !/Glow$/.test(s.name));
+  const textHeight = texts.reduce((n, t) => n + t.height, 0);
+  if (!art.length) issues.push(`Popup "${pop.name}" không có icon/ảnh minh hoạ (luật 11)`);
+  else if (Math.max(...art.map(s => s.height)) < textHeight) issues.push(`Popup "${pop.name}": ảnh minh hoạ thấp hơn tổng chiều cao chữ, chưa đủ nổi bật (luật 11)`);
+
+  const thumbLine = screen.y + screen.height * 0.45;
+  if (pop.y + pop.height / 2 < thumbLine) issues.push(`Popup "${pop.name}" đặt quá cao, tâm phải ở giữa hoặc thấp hơn giữa màn (luật 13)`);
+  for (const b of buttons.filter(b => !/Close|^X$|- X$/.test(b.name)))
+    if (b.y + b.height / 2 < thumbLine) issues.push(`Nút "${b.name}" nằm nửa trên màn, khó với ngón cái (luật 13)`);
+};
+
 ui.audit = screen => {
   const issues = [], top = screen.y + ui.num('safe.top'), bottom = screen.y + screen.height - ui.num('safe.bottom');
   const all = penpotUtils.findShapes(() => true, screen).filter(s => !s.hidden);
@@ -179,8 +212,17 @@ ui.audit = screen => {
   for (const s of all) {
     if (s.type === 'text') {
       if (Number(s.fontSize) < minFont) issues.push(`Chữ quá nhỏ (${s.fontSize}px): "${s.characters}"`);
-      const inButton = s.parent?.children?.some(c => c.name === 'Face');
-      if (inButton && !s.strokes?.length) issues.push(`Chữ trong nút thiếu outline: "${s.characters}"`);
+      const face = s.parent?.children?.find(c => c.name === 'Face');
+      const isHeader = !face && Number(s.fontSize) >= ui.num('font.title');
+      const softShadow = (s.shadows || []).some(x => x.offsetY !== 0 && x.blur > 0);
+      const underlay = (s.shadows || []).some(x => x.offsetY > 0 && !x.blur);
+      if (!isHeader && softShadow) issues.push(`Chữ có shadow mềm nhưng không phải header lớn (luật 12): "${s.characters}"`);
+      if (!isHeader && (!s.strokes?.length || !underlay)) issues.push(`Chữ thiếu outline hoặc underlay (luật 3, 12): "${s.characters}"`);
+      if (face) {
+        const offX = Math.abs(s.x + s.width / 2 - (face.x + face.width / 2)), offY = Math.abs(s.y + s.height / 2 - (face.y + face.height / 2));
+        if (s.align !== 'center' || offX > 4 || offY > 6) issues.push(`Chữ trong nút không căn giữa (luật 10, lệch ${Math.round(offX)}/${Math.round(offY)}px): "${s.characters}"`);
+        if (!ui.isTitleCase(s.characters)) issues.push(`Chữ trong nút phải viết hoa chữ cái đầu mỗi từ (luật 10): "${s.characters}"`);
+      }
     }
     if (/Button|Btn|^Tab - /.test(s.name) || s.children?.some(c => c.name === 'Face')) {
       const glowing = [s, ...penpotUtils.findShapes(() => true, s)].filter(x => !/Badge|Dot|Notify/.test(x.name) && x.shadows?.some(ui.isGlow));
@@ -189,11 +231,7 @@ ui.audit = screen => {
     const interactive = s.type === 'text' || /Icon|Button|Btn/.test(s.name);
     if (interactive && (s.y < top || s.y + s.height > bottom)) issues.push(`Nằm trong vùng an toàn: ${s.name}`);
   }
-  for (const pop of all.filter(s => s.type === 'board' && /^Popup$|Popup Panel/.test(s.name))) {
-    const colors = penpotUtils.findShapes(s => s.name === 'Face', pop).map(f => f.fills?.[0]?.fillColorGradient?.stops?.[1]?.color || f.fills?.[0]?.fillColor);
-    const dup = colors.filter((c, i) => colors.indexOf(c) !== i);
-    if (dup.length) issues.push(`Popup "${pop.name}" có nút trùng màu: ${[...new Set(dup)].join(', ')}`);
-  }
+  for (const pop of all.filter(s => s.type === 'board' && /^Popup$|Popup Panel/.test(s.name))) ui.auditPopup(pop, screen, issues);
   const icons = all.filter(s => / Icon$/.test(s.name) && s.type !== 'text').map(s => `${s.name}: ${Math.round(Math.sqrt(s.width * s.height))}`);
   return { issues, iconOpticalSizes: icons };
 };
