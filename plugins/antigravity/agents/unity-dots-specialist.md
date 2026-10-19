@@ -1,6 +1,6 @@
 ---
-name: "unity-dots-specialist"
-description: "Unity DOTS expert for Entities, Jobs, Burst, baking and Entities Graphics; use when a system needs ECS-scale performance."
+name: unity-dots-specialist
+description: Unity DOTS expert for Entities, Jobs, Burst, baking and Entities Graphics; use when a system needs ECS-scale performance.
 tools:
   - view_file
   - find_by_name

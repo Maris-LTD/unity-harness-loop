@@ -1,5 +1,5 @@
 ---
-name: "game-designer"
+name: game-designer
 description: Designs the rules, loops, systems, balance and economy of a Unity game and writes the brief or GDDs; use for mechanics questions and design documents.
 tools: Read, Glob, Grep, Write, Edit, WebSearch
 disallowedTools: Bash

@@ -49,10 +49,24 @@ function json(value) {
   return JSON.stringify(value, null, 2);
 }
 
+const YAML_RESERVED = /^(y|yes|n|no|true|false|on|off|null|~)$/i;
+const YAML_NUMBER = /^[-+]?(\d[\d_]*(\.\d*)?|\.\d+)([eE][-+]?\d+)?$|^0[xob]|^[-+]?\.(inf|nan)$/i;
+
+function yamlScalar(value) {
+  if (typeof value !== 'string') return String(value);
+  const plain = value !== '' &&
+    value === value.trim() &&
+    !/[\n\r\t]/.test(value) &&
+    !/^[-?:,\[\]{}#&*!|>'"%@`]/.test(value) &&
+    !/: |:$| #/.test(value) &&
+    !YAML_RESERVED.test(value) &&
+    !YAML_NUMBER.test(value);
+  return plain ? value : JSON.stringify(value);
+}
+
 function yamlValue(value) {
-  if (Array.isArray(value)) return '\n' + value.map(v => `  - ${v}`).join('\n');
-  if (typeof value === 'string' && /[:#\-\[\]{}&*!|>'"%@`]/.test(value)) return ` ${JSON.stringify(value)}`;
-  return ` ${value}`;
+  if (Array.isArray(value)) return '\n' + value.map(v => `  - ${yamlScalar(v)}`).join('\n');
+  return ` ${yamlScalar(value)}`;
 }
 
 function frontmatter(fields) {
@@ -79,17 +93,50 @@ function renderTree(dir, target) {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const full = path.join(dir, entry.name);
     if (entry.isDirectory()) renderTree(full, target);
-    else if (entry.name.endsWith('.md')) fs.writeFileSync(full, render(full, fs.readFileSync(full, 'utf8'), target));
+    else if (entry.name.endsWith('.md')) {
+      const source = fs.readFileSync(full, 'utf8');
+      assertNoHiddenCharacters(full, source, INVISIBLE_IN_TEXT);
+      fs.writeFileSync(full, render(full, source, target));
+    }
   }
+}
+
+const AGENT_KEYS = ['description', 'targets', 'claude', 'antigravity'];
+const TARGETS = ['claude', 'antigravity'];
+
+function agentProblems(meta, mdNames) {
+  const problems = [];
+  for (const [name, m] of Object.entries(meta)) {
+    const where = `agents.json "${name}"`;
+    const unknown = Object.keys(m).filter(k => !AGENT_KEYS.includes(k));
+    if (unknown.length) problems.push(`${where}: unknown keys ${unknown.join(', ')}`);
+    if (typeof m.description !== 'string' || !m.description.trim()) problems.push(`${where}: description must be a non-empty string`);
+    const targets = Array.isArray(m.targets) ? m.targets : [];
+    if (!targets.length || targets.some(t => !TARGETS.includes(t))) problems.push(`${where}: targets must list ${TARGETS.join(' and/or ')}`);
+    if (!mdNames.includes(name)) problems.push(`${where}: no ${name}.md body`);
+    const claudeTools = m.claude && typeof m.claude.tools === 'string' ? m.claude.tools.split(',').map(t => t.trim()) : null;
+    if (targets.includes('claude') && !claudeTools) problems.push(`${where}: claude.tools must be a comma-separated string`);
+    if (targets.includes('antigravity') && !(m.antigravity && m.antigravity.tools)) {
+      const unmapped = (claudeTools || []).filter(t => !ANTIGRAVITY_TOOLS[t]);
+      if (!claudeTools) problems.push(`${where}: antigravity needs antigravity.tools or claude.tools to map`);
+      else if (unmapped.length) problems.push(`${where}: no Antigravity tool for ${unmapped.join(', ')}; set antigravity.tools`);
+    }
+  }
+  for (const name of mdNames.filter(n => !(n in meta))) problems.push(`shared/agents/${name}.md has no entry in agents.json`);
+  return problems;
 }
 
 function sharedAgents() {
   const meta = JSON.parse(fs.readFileSync(path.join(SHARED, 'agents', 'agents.json'), 'utf8'));
-  return Object.entries(meta).map(([name, m]) => ({
-    name,
-    ...m,
-    body: fs.readFileSync(path.join(SHARED, 'agents', `${name}.md`), 'utf8').trim(),
-  }));
+  const mdNames = fs.readdirSync(path.join(SHARED, 'agents')).filter(f => f.endsWith('.md')).map(f => f.slice(0, -3));
+  const problems = agentProblems(meta, mdNames);
+  if (problems.length) throw new Error(`invalid agent definitions:\n  ${problems.join('\n  ')}`);
+  return Object.entries(meta).map(([name, m]) => {
+    const file = path.join(SHARED, 'agents', `${name}.md`);
+    const body = fs.readFileSync(file, 'utf8').trim();
+    assertNoHiddenCharacters(file, body + m.description, INVISIBLE_IN_TEXT);
+    return { name, ...m, body };
+  });
 }
 
 function antigravityTools(agent) {
@@ -97,14 +144,18 @@ function antigravityTools(agent) {
   return agent.claude.tools.split(',').map(t => ANTIGRAVITY_TOOLS[t.trim()]).filter(Boolean);
 }
 
-const HIDDEN_CHARACTER = /[\p{Mn}\p{Me}\p{Cf}\p{Co}\p{Cs}]|[^\P{Cc}\t\r\n]/u;
+const HIDDEN_IN_WORKFLOW = /[\p{Mn}\p{Me}\p{Cf}\p{Co}\p{Cs}]|[^\P{Cc}\t\r\n]/u;
+const INVISIBLE_IN_TEXT = /[\p{Cf}\p{Co}\p{Cs}]|[^\P{Cc}\t\r\n]/u;
 
-function assertNoHiddenCharacters(file, source) {
+function assertNoHiddenCharacters(file, source, pattern = HIDDEN_IN_WORKFLOW) {
   source.split('\n').forEach((line, index) => {
-    const match = line.match(HIDDEN_CHARACTER);
+    const match = line.match(pattern);
     if (!match) return;
     const code = match[0].codePointAt(0).toString(16).toUpperCase().padStart(4, '0');
-    throw new Error(`${file}:${index + 1} contains hidden character U+${code}; Claude Code rejects workflow scripts with characters hidden in the approval dialog. Use a \\u escape instead.`);
+    const why = pattern === HIDDEN_IN_WORKFLOW
+      ? 'Claude Code rejects workflow scripts with characters hidden in the approval dialog. Use a \\u escape instead.'
+      : 'invisible characters (zero-width, bidi controls) hide text from reviewers. Remove it.';
+    throw new Error(`${file}:${index + 1} contains hidden character U+${code}; ${why}`);
   });
 }
 
@@ -192,7 +243,11 @@ function buildMarketplace() {
   }));
 }
 
-buildClaude();
-buildAntigravity();
-buildMarketplace();
-process.stdout.write(`built plugins/claude-code, plugins/antigravity and .claude-plugin/marketplace.json (v${pkg.version})\n`);
+if (require.main === module) {
+  buildClaude();
+  buildAntigravity();
+  buildMarketplace();
+  process.stdout.write(`built plugins/claude-code, plugins/antigravity and .claude-plugin/marketplace.json (v${pkg.version})\n`);
+}
+
+module.exports = { yamlValue, agentProblems, assertNoHiddenCharacters, INVISIBLE_IN_TEXT };

@@ -1,5 +1,5 @@
 ---
-name: "art-director"
+name: art-director
 description: "Owns the visual identity of a Unity game: art direction, asset specs and import settings, UI visual design; use for visual decisions and the AD-CONCEPT-VISUAL gate."
 tools: Read, Glob, Grep, Write, Edit, WebSearch
 disallowedTools: Bash

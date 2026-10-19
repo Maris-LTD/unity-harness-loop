@@ -1,5 +1,5 @@
 ---
-name: "technical-director"
+name: technical-director
 description: "Owns the technical vision of a Unity game: architecture, packages, render pipeline, performance budgets and technical risk; use for technology choices, cross-system conflicts and the TD-FEASIBILITY gate."
 tools: Read, Glob, Grep, Write, Edit, Bash, WebSearch
 model: opus

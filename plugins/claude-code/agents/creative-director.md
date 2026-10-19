@@ -1,5 +1,5 @@
 ---
-name: "creative-director"
+name: creative-director
 description: "Highest creative authority for a Unity game: pillars, core fantasy, tone and scope arbitration; use for vision decisions, pillar conflicts and the CD-PILLARS gate."
 tools: Read, Glob, Grep, Write, Edit, WebSearch
 disallowedTools: Bash

@@ -1,6 +1,6 @@
 ---
-name: "lead-programmer"
-description: "Owns code-level architecture and review for a Unity project (assemblies, interfaces, standards, refactoring); use to plan a story implementation, review code, and for the LP-CODE-REVIEW gate."
+name: lead-programmer
+description: Owns code-level architecture and review for a Unity project (assemblies, interfaces, standards, refactoring); use to plan a story implementation, review code, and for the LP-CODE-REVIEW gate.
 tools:
   - view_file
   - find_by_name

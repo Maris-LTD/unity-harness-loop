@@ -1,5 +1,5 @@
 ---
-name: "unity-addressables-specialist"
+name: unity-addressables-specialist
 description: Unity Addressables expert for group layout, async loading and release, memory budgets, remote catalogs and content updates; use for asset loading and delivery work.
 tools:
   - view_file

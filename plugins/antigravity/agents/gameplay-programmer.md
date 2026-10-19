@@ -1,5 +1,5 @@
 ---
-name: "gameplay-programmer"
+name: gameplay-programmer
 description: "Implements gameplay mechanics in Unity C# from stories and design docs: data-driven, testable, verified with unity-harness; use for player systems, rules and game-loop features."
 tools:
   - view_file

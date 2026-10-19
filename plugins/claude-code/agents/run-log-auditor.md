@@ -1,5 +1,5 @@
 ---
-name: "run-log-auditor"
+name: run-log-auditor
 description: Independently audits the judged parts of a harness run report.md (file descriptions, summary, plan notes, noise suggestions) against changes.diff and facts.json, then writes audit.md. Never edits report.md or project files.
 tools: Bash, Read, Grep, Glob
 model: sonnet

@@ -1,5 +1,5 @@
 ---
-name: "ui-programmer"
+name: ui-programmer
 description: Implements Unity menus, HUD and screens (uGUI or UI Toolkit) from specs, with data binding, accessibility and localization readiness; use for UI stories.
 tools: Read, Glob, Grep, Write, Edit, Bash
 maxTurns: 30

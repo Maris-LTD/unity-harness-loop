@@ -1,6 +1,6 @@
 ---
-name: "unity-shader-specialist"
-description: "Unity rendering expert for Shader Graph, HLSL, VFX Graph, URP/HDRP renderer features, post-processing and GPU budgets; use for shader, VFX and rendering work."
+name: unity-shader-specialist
+description: Unity rendering expert for Shader Graph, HLSL, VFX Graph, URP/HDRP renderer features, post-processing and GPU budgets; use for shader, VFX and rendering work.
 tools:
   - view_file
   - find_by_name

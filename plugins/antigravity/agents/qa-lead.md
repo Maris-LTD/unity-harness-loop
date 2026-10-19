@@ -1,6 +1,6 @@
 ---
-name: "qa-lead"
-description: "Owns test strategy and the test-evidence gate for a Unity project (EditMode tests, Play mode screenshots, bug severity); use for testability reviews and the QL-STORY-READY and QL-TEST-COVERAGE gates."
+name: qa-lead
+description: Owns test strategy and the test-evidence gate for a Unity project (EditMode tests, Play mode screenshots, bug severity); use for testability reviews and the QL-STORY-READY and QL-TEST-COVERAGE gates.
 tools:
   - view_file
   - find_by_name

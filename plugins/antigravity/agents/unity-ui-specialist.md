@@ -1,5 +1,5 @@
 ---
-name: "unity-ui-specialist"
+name: unity-ui-specialist
 description: Unity UI expert for UI Toolkit and uGUI architecture, data binding, screen stacks, gamepad/touch navigation and UI performance; use for complex UI work.
 tools:
   - view_file

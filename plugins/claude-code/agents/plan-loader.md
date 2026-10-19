@@ -1,6 +1,6 @@
 ---
-name: "plan-loader"
-description: "Reads an approved plan.md and returns its key facts (summary, complexity, test assemblies, smoke expectations) as structured data. Read-only, has no shell and no write tools. Used by the unity-feature workflow when args.planFile is given."
+name: plan-loader
+description: Reads an approved plan.md and returns its key facts (summary, complexity, test assemblies, smoke expectations) as structured data. Read-only, has no shell and no write tools. Used by the unity-feature workflow when args.planFile is given.
 tools: Read
 model: haiku
 ---

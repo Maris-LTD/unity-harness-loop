@@ -1,6 +1,6 @@
 ---
-name: "run-log-writer"
-description: "Writes the judgment parts of a harness run report (title, summary, plan notes, per-file descriptions, noise suggestions) as notes; the unity-harness CLI renders report.md from them plus changes.json and the run facts. Also fixes the notes when an audit lists discrepancies. Only writes inside the given run directory."
+name: run-log-writer
+description: Writes the judgment parts of a harness run report (title, summary, plan notes, per-file descriptions, noise suggestions) as notes; the unity-harness CLI renders report.md from them plus changes.json and the run facts. Also fixes the notes when an audit lists discrepancies. Only writes inside the given run directory.
 tools: Bash, Read, Grep, Glob
 model: sonnet
 ---

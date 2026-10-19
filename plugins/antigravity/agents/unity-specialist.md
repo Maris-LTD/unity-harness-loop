@@ -1,6 +1,6 @@
 ---
-name: "unity-specialist"
-description: "Authority on Unity patterns, packages and project settings (MonoBehaviour vs DOTS, Input System, uGUI vs UI Toolkit, URP); use to review Unity-specific code or choose a subsystem, and to know which unity-*-specialist to bring in."
+name: unity-specialist
+description: Authority on Unity patterns, packages and project settings (MonoBehaviour vs DOTS, Input System, uGUI vs UI Toolkit, URP); use to review Unity-specific code or choose a subsystem, and to know which unity-*-specialist to bring in.
 tools:
   - view_file
   - find_by_name

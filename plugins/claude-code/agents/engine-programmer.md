@@ -1,5 +1,5 @@
 ---
-name: "engine-programmer"
+name: engine-programmer
 description: "Implements the core framework of a Unity game: bootstrap, scene and resource loading, pooling, memory, profiling hooks and editor tooling; use for foundation and performance-critical stories."
 tools: Read, Glob, Grep, Write, Edit, Bash
 maxTurns: 30
