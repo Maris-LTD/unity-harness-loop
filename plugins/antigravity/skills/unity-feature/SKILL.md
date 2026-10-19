@@ -1,6 +1,8 @@
 ---
 name: unity-feature
 description: Plan, implement, verify (Unity harness + rule review), auto-fix and log a Unity feature in a 6-phase engineering loop. Use for "unity-feature", "làm feature", "phát triển tính năng", "implement feature", "tính năng mới".
+platforms:
+  - antigravity
 ---
 
 # Unity Feature Workflow
@@ -8,7 +10,23 @@ description: Plan, implement, verify (Unity harness + rule review), auto-fix and
 Plan, implement, verify (Unity harness + rule review), auto-fix and log a Unity feature or refactor end-to-end.
 Routes each step to a fitting model, enforces read-only guards on verification, and logs diffs independently.
 
-## Overview of the 6 Phases
+## Running with `run_workflow` (Automated Runner)
+
+When the `run_workflow` tool is available, execute the dynamic runner script:
+```python
+run_workflow(
+    ScriptPath="workflows/unity_feature.py",
+    Args={"task": "<task_description>", "smoke": True},
+    Description="Unity feature loop: <task_description>"
+)
+```
+Script location is either inside the repo (`workflows/unity_feature.py` or `plugins/antigravity/workflows/unity_feature.py`) or in the installed plugin directory (`~/.gemini/config/plugins/unity-harness/workflows/unity_feature.py`).
+
+---
+
+## Interactive Execution (Step-by-Step)
+
+If executing step-by-step or driving the loop directly:
 
 ```
 [Phase 1: Init]      --> Git baseline + working-tree fingerprint
@@ -24,9 +42,7 @@ Routes each step to a fitting model, enforces read-only guards on verification, 
 [Phase 6: Log]       --> report.md generation & independent audit
 ```
 
----
-
-## Phase 1: Init
+### Phase 1: Init
 
 1. Create a run baseline with the CLI:
    `unity-harness run-log baseline --slug <slug>`
@@ -37,11 +53,11 @@ Routes each step to a fitting model, enforces read-only guards on verification, 
 
 ---
 
-## Phase 2: Plan
+### Phase 2: Plan
 
 If a pre-approved `planFile` was provided, copy it:
 `unity-harness run-log write <runDir> plan.md --from "<planFile>"`
-Then spawn plan-loader with `invoke_subagent` with the `plan-loader` subagent to extract the structured plan.
+Then invoke `invoke_subagent` with the `plan-loader` subagent to extract the structured plan.
 
 Otherwise, generate a new plan:
 1. Examine project configuration: `unity-harness config` to read `testAssemblies`, `rules`, and `smoke`.
@@ -63,7 +79,7 @@ If `planOnly` mode was requested, stop here and present `<runDir>/plan.md` to th
 
 ---
 
-## Phase 3: Implement
+### Phase 3: Implement
 
 1. Route implementation based on complexity and story type:
    - **Foundation / Architecture**: engine-programmer
@@ -76,13 +92,13 @@ If `planOnly` mode was requested, stop here and present `<runDir>/plan.md` to th
    - Edit code using standard file editing tools. Never commit or push.
    - Keep comments and Debug logs of moved content verbatim.
    - Add EditMode tests for testable logic.
-   - Verify compilation passes with `unity-harness compile` before finishing.
+   - Verify compilation passes with `unity-harness compile` before finishing. Exit 2 means Editor is not ready: stop and ask user.
 3. Guard check:
    `unity-harness run-log tree <runDir> --tag after-implement --compare after-plan --expect write`
 
 ---
 
-## Phase 4: Verify
+### Phase 4: Verify
 
 1. Determine verification mode:
    - `full` if UI, scene, prefab, or startup flow changed (includes Play mode smoke test).
@@ -99,7 +115,7 @@ If `planOnly` mode was requested, stop here and present `<runDir>/plan.md` to th
 
 ---
 
-## Phase 5: Auto-Fix Loop (Up to 2 Rounds)
+### Phase 5: Auto-Fix Loop (Up to 2 Rounds)
 
 While blocking issues remain and fix rounds < 2:
 1. Provide the list of blocking issues to the implementer agent.
@@ -110,7 +126,7 @@ While blocking issues remain and fix rounds < 2:
 
 ---
 
-## Phase 6: Log & Audit
+### Phase 6: Log & Audit
 
 1. **Write Run Report**:
    Spawn `invoke_subagent` with the `run-log-writer` subagent with `runDir`, `runId`, `verdict`, and facts. It inspects `<runDir>/changes.diff` and writes judgment notes, then renders `<runDir>/report.md`.

@@ -23,7 +23,7 @@ On top of that:
 - **Skill `project-memory-in-repo`**: keep agent project memory in `.claude/memory/` under git, link Claude Code's memory folder to it (junction/symlink scripts that merge existing files and stop on conflicts), and fix `.gitignore` rules that hide it.
 - **Skill `unity-playmode-capture`**: enter Play mode, wait for a component, force a state with an eval (peak interaction, win/lose panel), capture the Game view at a phone resolution, then leave Play mode. Ships Bash scripts plus a gotchas list.
 - **Skill `unity-feedback-tweak`**: apply a play-test feedback round without rerunning the workflow, keeping rule code, tests, tuning, GDD and memory in sync, with an on-screen check for each change.
-- **Skill `audit-agent-plugin`**: a 6-point audit runbook (IPC fidelity, permission safety, lifecycle termination, type robustness, semantic skill portability, subagent tool compatibility) for agent plugins.
+- **Developer skill `audit-agent-plugin`**: in `.agents/skills/`, a 6-point audit runbook (IPC fidelity, permission safety, lifecycle termination, type robustness, semantic skill portability, subagent tool compatibility) for plugin developers.
 - **Studio workflow** (skills `studio-*`, both agents): a Unity-only port of [Claude Code Game Studios](https://github.com/Donchitos/Claude-Code-Game-Studios) — see [Studio workflow](#studio-workflow).
 
 ## Studio workflow
@@ -131,9 +131,13 @@ agy plugin install unity-harness-loop/plugins/antigravity
 
 Update with `git pull` and the same install command.
 
-Run the feature loop via the `unity-feature` skill or dynamic Python runner:
-```bash
-python workflows/unity_feature.py --task "Implement ..." --smoke
+Run the feature loop via the `unity-feature` skill (or invoke the `run_workflow` tool):
+```python
+run_workflow(
+    ScriptPath="workflows/unity_feature.py",
+    Args={"task": "Implement ...", "smoke": True},
+    Description="Unity feature loop"
+)
 ```
 
 ## Usage

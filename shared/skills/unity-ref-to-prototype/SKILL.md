@@ -62,9 +62,10 @@ References in this skill:
   a 30-level prototype took about an hour. Tell the user they can watch it with `/workflows`.
 {{/claude}}
 {{#antigravity}}
-- Run the `unity-feature` skill (or invoke `/unity-feature` with `{ task, smoke: true }`):
-  It drives the complete 6-phase engineering loop (Init → Plan → Implement → Verify → Fix → Log).
-  Alternatively, drive the loop yourself: spawn {{spawn gameplay-programmer}} to implement the code and tests,
+- If `run_workflow` is available, run the automated workflow runner:
+  `run_workflow(ScriptPath="workflows/unity_feature.py", Args={ "task": task, "smoke": True }, Description="Build prototype: " + task)`
+  (Use the repo path or the installed plugin path `<plugin>/workflows/unity_feature.py`).
+- Otherwise, drive the loop yourself following `unity-feature`: spawn {{spawn gameplay-programmer}} to implement the code and tests,
   verify with `unity-harness all` and `unity-harness smoke`, then spawn {{spawn unity-verifier}} and {{spawn unity-reviewer}} for independent inspection.
 {{/antigravity}}
 - While it runs, do not write into the project, because the tree guard voids verification. Use the time to draft

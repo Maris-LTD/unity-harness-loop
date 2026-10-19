@@ -160,8 +160,32 @@ function assertNoHiddenCharacters(file, source, pattern = HIDDEN_IN_WORKFLOW) {
 }
 
 function copySkills(target, platform) {
-  fs.cpSync(path.join(SHARED, 'skills'), path.join(target, 'skills'), { recursive: true });
-  renderTree(path.join(target, 'skills'), platform);
+  const dest = path.join(target, 'skills');
+  fs.mkdirSync(dest, { recursive: true });
+  for (const skill of fs.readdirSync(path.join(SHARED, 'skills'))) {
+    const srcDir = path.join(SHARED, 'skills', skill);
+    if (!fs.statSync(srcDir).isDirectory()) continue;
+    const skillMd = path.join(srcDir, 'SKILL.md');
+    if (fs.existsSync(skillMd)) {
+      const content = fs.readFileSync(skillMd, 'utf8');
+      const m = content.match(/^---\n([\s\S]*?)\n---/);
+      if (m) {
+        const lines = m[1].split('\n');
+        const platformsIdx = lines.findIndex(l => /^platforms\s*:/.test(l));
+        if (platformsIdx !== -1) {
+          const platforms = [];
+          for (let i = platformsIdx + 1; i < lines.length; i++) {
+            const itemMatch = lines[i].match(/^\s*-\s*([a-z0-9_-]+)/);
+            if (itemMatch) platforms.push(itemMatch[1]);
+            else if (!/^\s*$/.test(lines[i])) break;
+          }
+          if (platforms.length > 0 && !platforms.includes(platform)) continue;
+        }
+      }
+    }
+    fs.cpSync(srcDir, path.join(dest, skill), { recursive: true });
+  }
+  renderTree(dest, platform);
 }
 
 function copyLegalFiles(dir) {

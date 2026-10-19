@@ -47,9 +47,10 @@ References in this skill:
   - the architecture rules from `references/test-patterns.md`;
   - the user's coding rules, copied from CLAUDE.md;
   - the done criteria: Play from `Game.unity` shows level 1 with no console errors.
-- Run the `unity-feature` skill (or invoke `/unity-feature` with `{ task, smoke: true }`):
-  It drives the complete 6-phase engineering loop (Init → Plan → Implement → Verify → Fix → Log).
-  Alternatively, drive the loop yourself: spawn `invoke_subagent` with the `gameplay-programmer` subagent to implement the code and tests,
+- If `run_workflow` is available, run the automated workflow runner:
+  `run_workflow(ScriptPath="workflows/unity_feature.py", Args={ "task": task, "smoke": True }, Description="Build prototype: " + task)`
+  (Use the repo path or the installed plugin path `<plugin>/workflows/unity_feature.py`).
+- Otherwise, drive the loop yourself following `unity-feature`: spawn `invoke_subagent` with the `gameplay-programmer` subagent to implement the code and tests,
   verify with `unity-harness all` and `unity-harness smoke`, then spawn `invoke_subagent` with the `unity-verifier` subagent and `invoke_subagent` with the `unity-reviewer` subagent for independent inspection.
 - While it runs, do not write into the project, because the tree guard voids verification. Use the time to draft
   memory files in the scratchpad (see `project-memory-in-repo`) or to answer the user.

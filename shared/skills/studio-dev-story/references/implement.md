@@ -76,9 +76,9 @@ Run the `unity-feature` skill (or drive the 6-phase loop):
 1. If a Unity specialist applies, spawn it first for a short read-only design note, e.g. {{spawn unity-specialist}}.
 2. Follow the 6-phase loop (Init → Plan → Implement → Verify → Fix → Log) in `unity-feature`:
    - Spawn the primary programmer agent from the routing table (e.g. {{spawn gameplay-programmer}}) to write code and EditMode tests.
-   - Run `unity-harness full` for Visual/Feel, UI, scene/prefab changes, or `unity-harness all` otherwise.
+   - Run `unity-harness full` for Visual/Feel, UI, scene/prefab changes, or `unity-harness all` otherwise. Exit 2 means the Editor is not ready: ask the user to open it, do not loop.
    - Concurrently spawn {{spawn unity-verifier}} and {{spawn unity-reviewer}} for independent inspection.
-   - Auto-fix loop: up to 2 fix rounds with the programmer agent for blocking issues.
+   - Auto-fix loop: up to 2 fix rounds with the programmer agent for blocking issues; then report what is left.
    - Spawn {{spawn run-log-writer}} and {{spawn run-log-auditor}} to audit and finalize `report.md`.
 {{/antigravity}}
 

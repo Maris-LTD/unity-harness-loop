@@ -8,8 +8,8 @@ Tài liệu này ghi lại các bài học kỹ thuật cốt lõi và các "b�
 
 ### Nguy cơ tự động duyệt quyền (Auto-allow vulnerability)
 - **Tài liệu Antigravity quy định**: `"allow"` nghĩa là *"Automatically allow the tool execution"*.
-- **Quy tắc bắt buộc**: Hook **TUYỆT ĐỐI KHÔNG** được trả về `{"decision": "allow"}` cho các lệnh bình thường. Nếu hook không có lý do để chặn (`deny`), hook phải trả về rỗng (`{}` hoặc không can thiệp), để Antigravity hiển thị hộp thoại xin phép user theo cấu hình bảo mật thông thường.
-- **Hậu quả nếu vi phạm**: Trả về `"allow"` sẽ tự động chạy mọi lệnh shell (`run_command`) hoặc sửa file (`write_to_file`, `replace_file_content`) mà không hỏi user, kể cả các thao tác của agent chính.
+- **Quy tắc bắt buộc**: Hook **TUYỆT ĐỐI KHÔNG** được trả về `{"decision": "allow"}` cho các lệnh bình thường. Nếu hook không có lý do để chặn (`deny`), hook không nên trả về `"allow"` (mà trả về rỗng `{}` hoặc không can thiệp), để giữ nguyên cơ chế bảo mật và xin quyền của người dùng theo tài liệu. *(Lưu ý: cơ chế hiện modal xin quyền khi trả `{}` là suy luận từ tài liệu và thiết kế spec, chưa qua đo kiểm trực tiếp trên UI modal).*
+- **Hậu quả nếu vi phạm**: Trả về `"allow"` sẽ tự động cho phép chạy mọi lệnh shell (`run_command`) hoặc sửa file (`write_to_file`, `replace_file_content`) mà không cần user duyệt, kể cả các thao tác của agent chính.
 
 ### Giới hạn Payload của PreToolUse
 - Payload Antigravity gửi tới `stdin` của hook `PreToolUse` **KHÔNG** chứa thông tin định danh agent đang chạy (`agent_type`, `agentName`, `subagent_type` đều không tồn tại trong spec).
@@ -39,9 +39,9 @@ Payload của `Stop` hook luôn đi kèm trường `terminationReason` (thuộc 
 
 ## 3. Step Types vs Tool Names
 
-- Matcher trong `hooks.json` của Antigravity so khớp tên dựa trên `step type` (được chuyển thành chữ thường và bỏ tiền tố `CORTEX_STEP_TYPE_`).
-- Trong log Antigravity, các thao tác sửa file mang step type `CODE_ACTION` (`code_action`), trong khi tool có thể là `write_to_file`, `replace_file_content`, `multi_replace_file_content`.
-- Khi cần chặn công cụ sửa file, danh sách `WRITE_TOOLS` phải bao gồm cả `multi_replace_file_content`.
+- Tài liệu Antigravity mô tả matcher trong `hooks.json` so khớp tên dựa trên `step type` (được chuyển thành chữ thường và bỏ tiền tố `CORTEX_STEP_TYPE_`).
+- Trong log Antigravity thực tế, các thao tác sửa file mang step type `CODE_ACTION` (`code_action`), trong khi tên tool là `write_to_file`, `replace_file_content`, `multi_replace_file_content`. *(Lưu ý: giả thuyết matcher so theo `code_action` thay vì tên tool là suy luận đối chiếu từ tài liệu/log, chưa được kiểm chứng qua một hook test bắt độc lập).*
+- Khi cần nhận diện công cụ sửa file, danh sách `WRITE_TOOLS` phải bao gồm cả `multi_replace_file_content`.
 
 ---
 

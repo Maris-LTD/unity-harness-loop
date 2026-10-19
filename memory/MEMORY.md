@@ -24,4 +24,4 @@ Verification harness and studio workflow for Unity projects driven by AI coding 
 - Workflows & Skills: `unity-feature` ported to both Antigravity skill (`skills/unity-feature/SKILL.md`) and dynamic Python workflow (`workflows/unity_feature.py`), running the 6-phase engineering loop (Init → Plan → Implement → Verify → Fix → Log).
 
 ## Lessons Learned & Technical Constraints
-- [antigravity-gotchas.md](file:///C:/Users/Admin/Works/unity-harness-loop/memory/antigravity-gotchas.md): Verified lessons on Antigravity IPC, permission bypass risks with `allow`, Stop hook terminationReason handling, and defensive payload parsing.
+- [antigravity-gotchas.md](antigravity-gotchas.md): Technical lessons and analysis on Antigravity IPC, permission safety, Stop hook terminationReason handling, and defensive payload parsing.
