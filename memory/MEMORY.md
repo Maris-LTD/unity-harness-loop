@@ -18,7 +18,7 @@ Verification harness and studio workflow for Unity projects driven by AI coding 
   - `antigravity/`: Antigravity plugin (`plugin.json`, `hooks.json`, `rules/AGENTS.md`, `skills/`, `agents/`).
 
 ## Antigravity Integration Stance
-- Hook contracts: `SessionStart` (injects studio status), `PreInvocation` (turn-start snapshot), `PreToolUse` (readonly guard), `Stop` (stop-gate verification).
+- Hook contracts: `SessionStart` (injects studio status), `PreInvocation` (turn-start snapshot), `Stop` (stop-gate verification with terminationReason handling). Note: `PreToolUse` is excluded from Antigravity hooks.json because Antigravity's payload lacks caller identity, preventing safe discrimination without bypassing user permissions.
 - Subagents: 22 studio & workflow agents (`plan-loader`, `run-log-writer`, `run-log-auditor`, `unity-verifier`, `unity-reviewer`, etc.) mapped with Antigravity tools (`view_file`, `write_to_file`, `replace_file_content`, `run_command`, `search_web`).
 - Rules: `rules/AGENTS.md` automatically ingested by Antigravity.
 - Workflows & Skills: `unity-feature` ported to both Antigravity skill (`skills/unity-feature/SKILL.md`) and dynamic Python workflow (`workflows/unity_feature.py`), running the 6-phase engineering loop (Init → Plan → Implement → Verify → Fix → Log).
