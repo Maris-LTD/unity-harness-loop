@@ -20,7 +20,7 @@ Read `references/gotchas.md` when a script fails.
 | `edit_prefab.sh <prefab> <body.cs> [sprite_dir]` | Load prefab, run body, save |
 | `ui_audit.sh <folder> <out.txt> [w h] [baseline.txt]` | Numeric lint, de-duplicated by source prefab. Passing a baseline prints only new issues |
 | `gameview_size.sh <w> <h>` | Set the Game view to a fixed resolution |
-| `capture_game_view.sh <out.png> <w> <h>` | Capture what the Game window shows (output stays outside `Assets/`) |
+| `capture_game_view.sh <out.png> [w h]` | Capture what the Game window shows (default 1080x1920; output stays outside `Assets/`) |
 | `crop_image.sh <in> <out> x y w h [maxSide]` | Crop with top-left origin, optionally downscale |
 | `stack_images.sh <out> <img>...` | Put images side by side at height `H` (default 1000), e.g. demo next to capture |
 | `render_prefab.sh <prefab> <out> [w h] [setup_cs]` | Offscreen preview for quick iteration. **Never proof** |
