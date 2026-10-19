@@ -29,9 +29,9 @@ function makeRepo() {
   return dir;
 }
 
-function hook(dir, event) {
+function hook(dir, event, extra = {}) {
   return spawnSync(process.execPath, [CLI, 'hook', 'claude', event], {
-    input: JSON.stringify({ session_id: 's', cwd: dir }),
+    input: JSON.stringify({ session_id: 's', cwd: dir, ...extra }),
     encoding: 'utf8',
     env: envWithoutUnity(dir),
   }).stdout;
@@ -53,4 +53,15 @@ test('stop gate stops blocking unchanged files after it gives up, and blocks aga
   assert.strictEqual(hook(dir, 'stop'), '');
   writeCs(dir, 'class A {\n  // first\n  // second\n}\n');
   assert.strictEqual(JSON.parse(hook(dir, 'stop')).decision, 'block');
+});
+
+test('session-start keeps unverified edits across compact and resume, and resets on startup', () => {
+  const dir = makeRepo();
+  hook(dir, 'session-start', { source: 'startup' });
+  writeCs(dir, 'class A {\n  // unverified\n}\n');
+  hook(dir, 'session-start', { source: 'compact' });
+  hook(dir, 'session-start', { source: 'resume' });
+  assert.strictEqual(JSON.parse(hook(dir, 'stop')).decision, 'block');
+  hook(dir, 'session-start', { source: 'startup' });
+  assert.strictEqual(hook(dir, 'stop'), '');
 });
