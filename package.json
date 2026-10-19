@@ -5,9 +5,11 @@
   "bin": {
     "unity-harness": "bin/unity-harness.js"
   },
+  "license": "MIT",
   "files": [
     "bin/",
-    "lib/"
+    "lib/",
+    "THIRD_PARTY_NOTICES.md"
   ],
   "scripts": {
     "build:plugins": "node scripts/build-plugins.js",

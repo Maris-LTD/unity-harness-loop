@@ -154,3 +154,7 @@ scripts/build-plugins.js   regenerates plugins/ and the marketplace from shared/
 ```
 
 Edit `shared/`, then run `npm run build:plugins` and commit the generated files. Bump `version` in `package.json` for every release so Claude Code sees the update.
+
+## License
+
+MIT, see `LICENSE`. The studio material adapted from Claude Code Game Studios stays under its own MIT notice in `THIRD_PARTY_NOTICES.md`.

@@ -6,6 +6,7 @@
     "name": "Maris-LTD"
   },
   "repository": "https://github.com/Maris-LTD/unity-harness-loop",
+  "license": "MIT",
   "keywords": [
     "unity",
     "testing",

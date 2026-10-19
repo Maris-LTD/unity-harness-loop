@@ -113,8 +113,8 @@ function copySkills(target, platform) {
   renderTree(path.join(target, 'skills'), platform);
 }
 
-function copyNotice(dir) {
-  fs.copyFileSync(path.join(ROOT, 'THIRD_PARTY_NOTICES.md'), path.join(dir, 'THIRD_PARTY_NOTICES.md'));
+function copyLegalFiles(dir) {
+  for (const file of ['LICENSE', 'THIRD_PARTY_NOTICES.md']) fs.copyFileSync(path.join(ROOT, file), path.join(dir, file));
 }
 
 function buildClaude() {
@@ -126,10 +126,11 @@ function buildClaude() {
     description: DESCRIPTION,
     author: { name: 'Maris-LTD' },
     repository: 'https://github.com/Maris-LTD/unity-harness-loop',
+    license: 'MIT',
     keywords: ['unity', 'testing', 'smoke-test', 'hooks', 'studio', 'workflow'],
   }));
   copySkills(dir, 'claude');
-  copyNotice(dir);
+  copyLegalFiles(dir);
   for (const agent of sharedAgents().filter(a => a.targets.includes('claude'))) {
     const c = agent.claude;
     const head = frontmatter({ name: agent.name, description: agent.description, tools: c.tools, disallowedTools: c.disallowedTools, model: c.model, maxTurns: c.maxTurns });
@@ -157,7 +158,7 @@ function buildAntigravity() {
     description: DESCRIPTION,
   }));
   copySkills(dir, 'antigravity');
-  copyNotice(dir);
+  copyLegalFiles(dir);
   for (const agent of sharedAgents().filter(a => a.targets.includes('antigravity'))) {
     const ag = agent.antigravity || {};
     const head = frontmatter({
