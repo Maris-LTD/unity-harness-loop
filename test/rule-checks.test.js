@@ -36,3 +36,17 @@ for (const [name, ending] of [['LF', '\n'], ['CRLF', '\r\n']]) {
     assert.match(rules(dir).blocking.join('\n'), /Assets\/A\.cs has 251 lines \(limit 250\)/);
   });
 }
+
+test('comments and Debug.Log moved into a split-out file are existing code, new ones still block', () => {
+  const dir = makeRepo();
+  fs.mkdirSync(path.join(dir, 'Assets'), { recursive: true });
+  const big = path.join(dir, 'Assets', 'Big.cs');
+  fs.writeFileSync(big, 'class Big {\n  void Keep() {}\n  // remembers the last score\n  void Save() {\n    Debug.Log("saved");\n  }\n}\n');
+  spawnSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@t', 'add', '-A'], { cwd: dir });
+  spawnSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@t', 'commit', '-qm', 'big'], { cwd: dir });
+  fs.writeFileSync(big, 'class Big {\n  void Keep() {}\n}\n');
+  fs.writeFileSync(path.join(dir, 'Assets', 'Saver.cs'),
+    'class Saver {\n  // remembers the last score\n  void Save() {\n    Debug.Log("saved");\n  }\n  // remembers the last score\n  // brand new note\n}\n');
+  const blocking = rules(dir).blocking;
+  assert.deepStrictEqual(blocking.map(b => b.split(' ')[0]), ['Assets/Saver.cs:6', 'Assets/Saver.cs:7']);
+});

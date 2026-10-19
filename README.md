@@ -4,7 +4,7 @@ A verification loop for Unity projects worked on by AI coding agents. One CLI (`
 
 | Check | What it does |
 |---|---|
-| `rules` | Static check of the `.cs` lines you added (rename-aware): no new comments, no new `Debug.Log*`, `CompareTag`, max file length. Each rule can be switched off. |
+| `rules` | Static check of the `.cs` lines you added (rename-aware; a flagged line counts as moved, not new, when the same line was removed from a `.cs` file in the same change): no new comments, no new `Debug.Log*`, `CompareTag`, max file length. Each rule can be switched off. |
 | `compile` | Asks the open Editor to recompile and waits for the result. |
 | `tests` | Runs EditMode test assemblies. |
 | `smoke` | Enters Play mode, waits for a scene, checks that components exist, scans for missing scripts and console errors, saves a Game view capture. Runs with the Editor in the background: it turns on `PlayerSettings.runInBackground` for the run and restores it afterwards, because with it off an unfocused Editor stops ticking Play mode. |
