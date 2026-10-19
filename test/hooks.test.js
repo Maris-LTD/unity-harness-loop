@@ -5,17 +5,7 @@ const os = require('os');
 const path = require('path');
 const { spawnSync } = require('child_process');
 
-const CLI = path.join(__dirname, '..', 'bin', 'unity-harness.js');
-
-function envWithoutUnity(dir) {
-  const env = { ...process.env, CLAUDE_PROJECT_DIR: dir };
-  const pathKey = Object.keys(env).find(k => k.toUpperCase() === 'PATH');
-  const entries = (env[pathKey] || '').split(path.delimiter)
-    .filter(p => p && !['unity', 'unity.exe', 'unity.cmd'].some(name => fs.existsSync(path.join(p, name))));
-  for (const key of Object.keys(env)) if (key.toUpperCase() === 'PATH') delete env[key];
-  env.PATH = entries.join(path.delimiter);
-  return env;
-}
+const { CLI, envWithoutUnity } = require('./helpers');
 
 function makeRepo() {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'hooks-'));
