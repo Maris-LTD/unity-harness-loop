@@ -8,7 +8,12 @@ description: Turn a References folder (images, HTML demo, brief) into a Vietname
 This is the pipeline that produced Snap Jam 3D in one session. It went from a folder holding one image and one HTML
 demo to a 30-level prototype with 277 passing EditMode tests. Its steps chain other skills:
 - `unity-harness-project-setup` creates the project;
+{{#claude}}
 - the `unity-harness:unity-feature` workflow builds it;
+{{/claude}}
+{{#antigravity}}
+- the `unity-feature` skill (or engineering loop) builds it;
+{{/antigravity}}
 - `unity-playmode-capture` checks the result on screen;
 - `project-memory-in-repo` records context;
 - `unity-feedback-tweak` handles the play-test rounds after it.
@@ -38,22 +43,35 @@ References in this skill:
   - asmdefs `<Game>.Runtime`, `<Game>.Editor`, `<Game>.Tests.EditMode`
   - scene `Assets/<Game>/Scenes/Game.unity`
   - bootstrap `<Game>Game`
-- The working tree must be clean, with a baseline commit, before the workflow starts.
+- The working tree must be clean, with a baseline commit, before the run starts.
 
+{{#claude}}
 ## 3. Build with the workflow
+{{/claude}}
+{{#antigravity}}
+## 3. Build with unity-feature
+{{/antigravity}}
 - Write the `task` from `references/workflow-brief.md`. It must hold:
   - the extracted demo facts;
   - both deliverables: the GDD in Vietnamese with the user's sections, and the Unity implementation;
   - the architecture rules from `references/test-patterns.md`;
   - the user's coding rules, copied from CLAUDE.md;
   - the done criteria: Play from `Game.unity` shows level 1 with no console errors.
+{{#claude}}
 - Run `Workflow({ name: "unity-harness:unity-feature", args: { task, smoke: true } })`. It runs in the background;
   a 30-level prototype took about an hour. Tell the user they can watch it with `/workflows`.
+{{/claude}}
+{{#antigravity}}
+- Run the `unity-feature` skill (or invoke `/unity-feature` with `{ task, smoke: true }`):
+  It drives the complete 6-phase engineering loop (Init → Plan → Implement → Verify → Fix → Log).
+  Alternatively, drive the loop yourself: spawn {{spawn gameplay-programmer}} to implement the code and tests,
+  verify with `unity-harness all` and `unity-harness smoke`, then spawn {{spawn unity-verifier}} and {{spawn unity-reviewer}} for independent inspection.
+{{/antigravity}}
 - While it runs, do not write into the project, because the tree guard voids verification. Use the time to draft
   memory files in the scratchpad (see `project-memory-in-repo`) or to answer the user.
 
 ## 4. Close out the run
-- Read the workflow result (`remainingIssues`, verdict) and `.unity-harness/runs/<run>/report.md`.
+- Read the run result (`remainingIssues`, verdict) and `.unity-harness/runs/<run>/report.md`.
 - Fix small reviewer findings by hand. Past examples: progress saved only on Next, an SFX pool cutting off an
   arpeggio, a tension tone stopping while the finger is held still, a public setter. Add a test for each logic fix.
 - Run `unity-harness all`, then `unity-harness smoke`, and open `Temp/harness/smoke.png`. If the frame shows
@@ -69,7 +87,7 @@ References in this skill:
 - Report to the user:
   - what was built: rules, levels, GDD path;
   - the harness numbers: rules, compile, tests passed/total, smoke;
-  - the workflow verdict, and what you fixed by hand;
+  - the run verdict, and what you fixed by hand;
   - the known gaps: no art textures, landscape-only smoke frame, iOS haptics, not tested on a device.
 - Commit only when the user asks, following their commit-message rules. Then let them play. Handle the feedback
   rounds with `unity-feedback-tweak`.

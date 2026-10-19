@@ -14,8 +14,8 @@ tests, the GDD and the memory. This procedure does.
 - Ambiguous words: pick the most likely reading, say it in your reply, and make the result easy to adjust (one
   palette, one constant). In Snap Jam 3D, "the gameplay tone is red-pink" turned out to mean the environment. The
   band colors stayed; only the board, tray, background, light and UI changed.
-- Size check: a change that touches up to about five files and adds no new system gets done here. A new mechanic or
-  screen goes to `unity-harness:unity-feature` with a brief.
+- Size check: a change that touches up to about five files and adds no new system gets done here.
+  A new mechanic or screen goes to the `unity-feature` skill with a brief.
 - Do not enter Play mode or run smoke while the user may be playing in the Editor; ask first. Never clear saved
   progress without asking.
 

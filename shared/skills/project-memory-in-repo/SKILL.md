@@ -30,8 +30,14 @@ Run the PowerShell one as `powershell -NoProfile -ExecutionPolicy Bypass -File <
    update it instead of starting over.
 2. **Ask once:** in a project with no memory, ask the user whether to create it and whether git should version it.
    Do not ask again in later sessions once it exists.
+{{#claude}}
 3. **Wait for workflows:** while a workflow that guards the working tree is running (e.g. `unity-feature`), any write
    to the project voids its verify step. Draft the files in the scratchpad and move them in after it finishes.
+{{/claude}}
+{{#antigravity}}
+3. **Wait for active feature runs:** while a task that guards or verifies the working tree is running (e.g. `unity-feature`), any write
+   to the project voids its verify step. Draft the files in the scratchpad and move them in after it finishes.
+{{/antigravity}}
 4. **Write the files.** Use the frontmatter `name`, `description`, `metadata.type` (`project`, `user`, `feedback`,
    `reference`). End project and feedback files with `**Why:**` and `**How to apply:**`. Write `architecture` and
    `current-work` from the real code once it exists, not from the plan.

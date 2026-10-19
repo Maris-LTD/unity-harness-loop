@@ -5,8 +5,8 @@ description: Create or prepare a Unity project for the unity-harness loop - pack
 
 # Unity project setup for the harness loop
 
-The goal is a project that the `unity-feature` workflow can start on: Editor `ready`, `unity-harness compile` PASS,
-and a clean git tree with a baseline commit. The workflow diffs against that baseline, and its tree guard needs a
+The goal is a project that the `unity-feature` loop can start on: Editor `ready`, `unity-harness compile` PASS,
+and a clean git tree with a baseline commit. The feature loop diffs against that baseline, and its verification needs a
 clean start.
 
 Run the scripts in this skill's `scripts/` folder from **Bash**, as `bash <skill dir>/scripts/<name>.sh` or
@@ -24,7 +24,7 @@ Run the scripts in this skill's `scripts/` folder from **Bash**, as `bash <skill
 - `unity editors --json --no-banner` lists the installed Editors and their modules. Recommend the version that has
   both the iOS and Android modules and matches the user's sibling projects. Ask the user when there is more than one.
 - Check `which unity-harness`. If it is missing: `npm i -g github:Maris-LTD/unity-harness-loop`.
-- Fix the names now, because the config, the workflow brief and the code must all use the same ones:
+- Fix the names now, because the config, the feature brief and the code must all use the same ones:
   - code folder `Assets/<Game>/`
   - asmdefs `<Game>.Runtime`, `<Game>.Editor`, and `<Game>.Tests.EditMode`
   - scene `Assets/<Game>/Scenes/Game.unity`
@@ -65,7 +65,7 @@ node <skill>/scripts/configure_harness.js --tests MyGame.Tests.EditMode \
   --scene Assets/MyGame/Scenes/Game.unity --expect MyGameGame
 ```
 - On a fresh project, `init` picks `SampleScene` and finds no tests. Point the config at the names from step 1, even
-  though the files do not exist yet. The workflow brief must name them the same way.
+  though the files do not exist yet. The feature brief must name them the same way.
 - `unity-harness init` creates `.unity-harness/.gitignore`, which ignores `state/` and `runs/`. Commit `config.json`.
 - Commit now: `git add -A && git commit -m "Init <engine> project <Game>"`. This keeps the Editor's first-import
   changes in a separate commit.
@@ -83,7 +83,7 @@ node <skill>/scripts/configure_harness.js --tests MyGame.Tests.EditMode \
 - `unity-harness compile` must PASS.
 - The Editor rewrites `Packages/packages-lock.json`, URP assets, and adds `ProjectSettings/Packages/`. Commit them as
   the second baseline, e.g. "Add pipeline and AI assistant packages". `git status --short` must be empty before the
-  workflow starts.
+  feature run starts.
 - Offer the project memory store (`project-memory-in-repo` skill) if the project has none.
 
 ## Report

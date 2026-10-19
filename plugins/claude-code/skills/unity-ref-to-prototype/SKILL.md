@@ -38,7 +38,7 @@ References in this skill:
   - asmdefs `<Game>.Runtime`, `<Game>.Editor`, `<Game>.Tests.EditMode`
   - scene `Assets/<Game>/Scenes/Game.unity`
   - bootstrap `<Game>Game`
-- The working tree must be clean, with a baseline commit, before the workflow starts.
+- The working tree must be clean, with a baseline commit, before the run starts.
 
 ## 3. Build with the workflow
 - Write the `task` from `references/workflow-brief.md`. It must hold:
@@ -53,7 +53,7 @@ References in this skill:
   memory files in the scratchpad (see `project-memory-in-repo`) or to answer the user.
 
 ## 4. Close out the run
-- Read the workflow result (`remainingIssues`, verdict) and `.unity-harness/runs/<run>/report.md`.
+- Read the run result (`remainingIssues`, verdict) and `.unity-harness/runs/<run>/report.md`.
 - Fix small reviewer findings by hand. Past examples: progress saved only on Next, an SFX pool cutting off an
   arpeggio, a tension tone stopping while the finger is held still, a public setter. Add a test for each logic fix.
 - Run `unity-harness all`, then `unity-harness smoke`, and open `Temp/harness/smoke.png`. If the frame shows
@@ -69,7 +69,7 @@ References in this skill:
 - Report to the user:
   - what was built: rules, levels, GDD path;
   - the harness numbers: rules, compile, tests passed/total, smoke;
-  - the workflow verdict, and what you fixed by hand;
+  - the run verdict, and what you fixed by hand;
   - the known gaps: no art textures, landscape-only smoke frame, iOS haptics, not tested on a device.
 - Commit only when the user asks, following their commit-message rules. Then let them play. Handle the feedback
   rounds with `unity-feedback-tweak`.

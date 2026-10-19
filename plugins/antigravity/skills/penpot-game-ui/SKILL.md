@@ -5,9 +5,9 @@ description: Design mobile game UI screens and popups in Penpot via the Penpot M
 
 # Penpot game UI
 
-Dựng UI game mobile trong Penpot bằng `mcp__penpot__execute_code`. Phần khó không phải là vẽ mà là **giữ đúng luật và tự kiểm bằng ảnh**: mọi thay đổi đều phải xuất ảnh để xem trước khi báo xong.
+Dựng UI game mobile trong Penpot bằng Penpot MCP (gọi qua `call_mcp_tool(ServerName="penpot", ToolName="execute_code", ...)`). Phần khó không phải là vẽ mà là **giữ đúng luật và tự kiểm bằng ảnh**: mọi thay đổi đều phải xuất ảnh để xem trước khi báo xong.
 
-Cần Penpot MCP server (tool `mcp__penpot__*`) đã kết nối với file Penpot qua Penpot MCP Plugin. Không cần Unity Editor.
+Cần Penpot MCP server đã kết nối với file Penpot qua Penpot MCP Plugin. Không cần Unity Editor.
 
 Tài liệu đi kèm (đường dẫn tính từ thư mục chứa SKILL.md này):
 - `references/ui-rules.md`: luật UI/UX bắt buộc của user. **Đọc trước khi dựng bất cứ thứ gì.**
@@ -15,9 +15,9 @@ Tài liệu đi kèm (đường dẫn tính từ thư mục chứa SKILL.md này
 - `scripts/helpers.js`: thư viện hàm, nạp vào `storage.ui`.
 
 ## Bước 0: Kết nối và nạp thư viện
-1. Nạp tool bằng một lần ToolSearch: `select:mcp__penpot__high_level_overview,mcp__penpot__execute_code,mcp__penpot__export_shape,mcp__penpot__penpot_api_info`. Gọi `high_level_overview` một lần mỗi phiên.
+1. Kiểm tra Penpot MCP server bằng `call_mcp_tool(ServerName="penpot", ToolName="high_level_overview", Arguments={})`.
 2. Kiểm tra kết nối: trả về `penpot.currentFile.name`, `penpotUtils.getPages()` và tên các board ở root. Không đọc `currentUser`, vì plugin không cấp quyền này.
-3. Read `<skill dir>/scripts/helpers.js`, rồi truyền **nguyên văn** nội dung làm `code` cho `execute_code`. Sau đó mọi lần gọi đều bắt đầu bằng `const ui = storage.ui;`. Nếu `storage.ui` là undefined (plugin reload) thì nạp lại.
+3. Read `<skill dir>/scripts/helpers.js`, rồi truyền **nguyên văn** nội dung làm `code` cho `call_mcp_tool(ServerName="penpot", ToolName="execute_code", Arguments={"code": ...})`. Sau đó mọi lần gọi đều bắt đầu bằng `const ui = storage.ui;`. Nếu `storage.ui` là undefined (plugin reload) thì nạp lại.
 4. Chạy `ui.ensureTokens()` để tạo token set "Game UI" nếu chưa có. Đổi tông màu theo game: `ui.ensureTokens({ 'theme.primary': '#...' })` cho token mới, hoặc `ui.setToken(...)` cho token đã có.
 
 ## Bước 1: Thu thập đầu vào
