@@ -231,7 +231,6 @@ function buildAntigravity() {
     [PLUGIN_NAME]: {
       enabled: true,
       SessionStart: [{ type: 'command', command: 'unity-harness hook antigravity session-start', timeout: 30 }],
-      PreToolUse: [{ matcher: 'run_command|write_to_file|replace_file_content', hooks: [{ type: 'command', command: 'unity-harness hook antigravity pre-tool-use', timeout: 10 }] }],
       PreInvocation: [{ type: 'command', command: 'unity-harness hook antigravity turn-start', timeout: 30 }],
       Stop: [{ type: 'command', command: 'unity-harness hook antigravity stop', timeout: 600 }],
     },

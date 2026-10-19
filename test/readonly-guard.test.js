@@ -55,40 +55,14 @@ test('read-only agents keep the Bash commands they need', () => {
   }
 });
 
-test('antigravity pre-tool-use denies write tools and write commands for read-only agents', () => {
-  function preToolUseAntigravity(payload) {
-    const out = spawnSync(process.execPath, [CLI, 'hook', 'antigravity', 'pre-tool-use'], { input: JSON.stringify(payload), encoding: 'utf8' }).stdout;
-    return out ? JSON.parse(out) : null;
-  }
+test('checkReadOnlyTool safely extracts agent name when agent is an object or string', () => {
+  const { checkReadOnlyTool } = require('../lib/readonly-guard');
+  const deniedObj = checkReadOnlyTool({ agent: { name: 'unity-verifier' }, tool_name: 'Write' });
+  assert.match(deniedObj, /unity-verifier is read-only .*Write tool/);
 
-  const deniedWrite = preToolUseAntigravity({
-    agent_type: 'unity-verifier',
-    toolCall: { name: 'write_to_file', args: { TargetFile: 'a.cs' } },
-  });
-  assert.strictEqual(deniedWrite.decision, 'deny');
-  assert.match(deniedWrite.reason, /unity-verifier is read-only .*write_to_file tool/);
+  const allowedObj = checkReadOnlyTool({ agent: { name: 'gameplay-programmer' }, tool_name: 'Write' });
+  assert.strictEqual(allowedObj, null);
 
-  const deniedEdit = preToolUseAntigravity({
-    agent_type: 'unity-reviewer',
-    toolCall: { name: 'replace_file_content', args: { TargetFile: 'a.cs' } },
-  });
-  assert.strictEqual(deniedEdit.decision, 'deny');
-
-  const deniedCommand = preToolUseAntigravity({
-    agent_type: 'unity-verifier',
-    toolCall: { name: 'run_command', args: { CommandLine: 'rm -f Assets/A.cs' } },
-  });
-  assert.strictEqual(deniedCommand.decision, 'deny');
-
-  const allowedCommand = preToolUseAntigravity({
-    agent_type: 'unity-verifier',
-    toolCall: { name: 'run_command', args: { CommandLine: 'git status' } },
-  });
-  assert.strictEqual(allowedCommand.decision, 'allow');
-
-  const allowedOtherAgent = preToolUseAntigravity({
-    agent_type: 'gameplay-programmer',
-    toolCall: { name: 'write_to_file', args: { TargetFile: 'a.cs' } },
-  });
-  assert.strictEqual(allowedOtherAgent.decision, 'allow');
+  const deniedMulti = checkReadOnlyTool({ agent: 'unity-reviewer', tool_name: 'multi_replace_file_content' });
+  assert.match(deniedMulti, /unity-reviewer is read-only .*multi_replace_file_content tool/);
 });

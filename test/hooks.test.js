@@ -55,3 +55,27 @@ test('session-start keeps unverified edits across compact and resume, and resets
   hook(dir, 'session-start', { source: 'startup' });
   assert.strictEqual(hook(dir, 'stop'), '');
 });
+
+test('antigravity stop allows stop immediately when terminationReason is USER_CANCELED or ERROR', () => {
+  const dir = makeRepo();
+  const antigravityHook = (event, extra = {}) => {
+    return spawnSync(process.execPath, [CLI, 'hook', 'antigravity', event], {
+      input: JSON.stringify({ conversationId: 'c1', workspacePaths: [dir], ...extra }),
+      encoding: 'utf8',
+      env: envWithoutUnity(dir),
+    }).stdout;
+  };
+
+  antigravityHook('session-start');
+  writeCs(dir, 'class A {\n  // dirty file\n}\n');
+
+  const cancelRes = JSON.parse(antigravityHook('stop', { terminationReason: 'USER_CANCELED' }));
+  assert.strictEqual(cancelRes.decision, 'stop');
+
+  const errorRes = JSON.parse(antigravityHook('stop', { terminationReason: 'ERROR' }));
+  assert.strictEqual(errorRes.decision, 'stop');
+
+  const noToolCallRes = JSON.parse(antigravityHook('stop', { terminationReason: 'NO_TOOL_CALL' }));
+  assert.strictEqual(noToolCallRes.decision, 'continue');
+  assert.match(noToolCallRes.reason, /Unity harness gate failed/);
+});
