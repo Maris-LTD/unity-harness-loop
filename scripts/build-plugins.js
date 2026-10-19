@@ -30,7 +30,7 @@ const ANTIGRAVITY_TOOLS = {
   Glob: 'find_by_name',
   Grep: 'grep_search',
   Write: 'write_to_file',
-  Edit: 'edit_file',
+  Edit: 'replace_file_content',
   Bash: 'run_command',
   WebSearch: 'search_web',
 };
@@ -228,6 +228,8 @@ function buildAntigravity() {
   write(path.join(dir, 'hooks.json'), json({
     [PLUGIN_NAME]: {
       enabled: true,
+      SessionStart: [{ type: 'command', command: 'unity-harness hook antigravity session-start', timeout: 30 }],
+      PreToolUse: [{ matcher: 'run_command|write_to_file|replace_file_content', hooks: [{ type: 'command', command: 'unity-harness hook antigravity pre-tool-use', timeout: 10 }] }],
       PreInvocation: [{ type: 'command', command: 'unity-harness hook antigravity turn-start', timeout: 30 }],
       Stop: [{ type: 'command', command: 'unity-harness hook antigravity stop', timeout: 600 }],
     },

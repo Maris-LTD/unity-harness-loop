@@ -6,7 +6,7 @@ tools:
   - find_by_name
   - grep_search
   - write_to_file
-  - edit_file
+  - replace_file_content
   - run_command
   - search_web
 commandExecutionPolicy: auto

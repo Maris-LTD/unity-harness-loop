@@ -54,3 +54,41 @@ test('read-only agents keep the Bash commands they need', () => {
     assert.strictEqual(bash('unity-harness:run-log-auditor', command), null, command);
   }
 });
+
+test('antigravity pre-tool-use denies write tools and write commands for read-only agents', () => {
+  function preToolUseAntigravity(payload) {
+    const out = spawnSync(process.execPath, [CLI, 'hook', 'antigravity', 'pre-tool-use'], { input: JSON.stringify(payload), encoding: 'utf8' }).stdout;
+    return out ? JSON.parse(out) : null;
+  }
+
+  const deniedWrite = preToolUseAntigravity({
+    agent_type: 'unity-verifier',
+    toolCall: { name: 'write_to_file', args: { TargetFile: 'a.cs' } },
+  });
+  assert.strictEqual(deniedWrite.decision, 'deny');
+  assert.match(deniedWrite.reason, /unity-verifier is read-only .*write_to_file tool/);
+
+  const deniedEdit = preToolUseAntigravity({
+    agent_type: 'unity-reviewer',
+    toolCall: { name: 'replace_file_content', args: { TargetFile: 'a.cs' } },
+  });
+  assert.strictEqual(deniedEdit.decision, 'deny');
+
+  const deniedCommand = preToolUseAntigravity({
+    agent_type: 'unity-verifier',
+    toolCall: { name: 'run_command', args: { CommandLine: 'rm -f Assets/A.cs' } },
+  });
+  assert.strictEqual(deniedCommand.decision, 'deny');
+
+  const allowedCommand = preToolUseAntigravity({
+    agent_type: 'unity-verifier',
+    toolCall: { name: 'run_command', args: { CommandLine: 'git status' } },
+  });
+  assert.strictEqual(allowedCommand.decision, 'allow');
+
+  const allowedOtherAgent = preToolUseAntigravity({
+    agent_type: 'gameplay-programmer',
+    toolCall: { name: 'write_to_file', args: { TargetFile: 'a.cs' } },
+  });
+  assert.strictEqual(allowedOtherAgent.decision, 'allow');
+});

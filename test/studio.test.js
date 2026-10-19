@@ -124,3 +124,18 @@ test('claude session-start injects the protocol only for studio projects', () =>
   assert.match(payload.hookSpecificOutput.additionalContext, /Unity Studio protocol/);
   assert.match(payload.hookSpecificOutput.additionalContext, /Current studio status/);
 });
+
+test('antigravity session-start injects the protocol and studio status only for studio projects', () => {
+  const dir = makeProject();
+  run(dir, 'init');
+  const hook = () => spawnSync(process.execPath, [CLI, 'hook', 'antigravity', 'session-start'], {
+    input: JSON.stringify({ conversationId: 'c', workspacePaths: [dir] }),
+    encoding: 'utf8',
+  }).stdout;
+  assert.strictEqual(hook(), '');
+  run(dir, 'studio', 'set', 'rigor=minimal');
+  const payload = JSON.parse(hook());
+  assert.ok(Array.isArray(payload.injectSteps));
+  assert.match(payload.injectSteps[0].systemMessage.systemMessage, /Unity Studio protocol/);
+  assert.match(payload.injectSteps[0].systemMessage.systemMessage, /Current studio status/);
+});
