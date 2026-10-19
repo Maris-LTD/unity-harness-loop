@@ -194,7 +194,7 @@ function buildClaude() {
       Stop: [{ hooks: [{ type: 'command', command: 'unity-harness hook claude stop', timeout: 600 }] }],
     },
   }));
-  for (const file of fs.readdirSync(path.join(SHARED, 'workflows'))) {
+  for (const file of fs.readdirSync(path.join(SHARED, 'workflows')).filter(f => f.endsWith('.js'))) {
     const source = fs.readFileSync(path.join(SHARED, 'workflows', file), 'utf8');
     assertNoHiddenCharacters(file, source);
     write(path.join(dir, 'workflows', file), source.split('__AGENT_PREFIX__').join(CLAUDE_AGENT_PREFIX));
@@ -225,6 +225,8 @@ function buildAntigravity() {
     write(path.join(dir, 'agents', `${agent.name}.md`), `${head}\n# System Prompt\n\n${render(agent.name, agent.body, 'antigravity')}`);
   }
   write(path.join(dir, 'rules', 'AGENTS.md'), fs.readFileSync(path.join(ROOT, 'lib', 'studio-protocol.md'), 'utf8'));
+  const pyWorkflow = path.join(SHARED, 'workflows', 'unity_feature.py');
+  if (fs.existsSync(pyWorkflow)) write(path.join(dir, 'workflows', 'unity_feature.py'), fs.readFileSync(pyWorkflow, 'utf8'));
   write(path.join(dir, 'hooks.json'), json({
     [PLUGIN_NAME]: {
       enabled: true,

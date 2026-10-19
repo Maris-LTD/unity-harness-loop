@@ -40,7 +40,8 @@
   "plan-loader": {
     "description": "Reads an approved plan.md and returns its key facts (summary, complexity, test assemblies, smoke expectations) as structured data. Read-only, has no shell and no write tools. Used by the unity-feature workflow when args.planFile is given.",
     "targets": [
-      "claude"
+      "claude",
+      "antigravity"
     ],
     "claude": {
       "tools": "Read",
@@ -50,7 +51,8 @@
   "run-log-writer": {
     "description": "Writes the judgment parts of a harness run report (title, summary, plan notes, per-file descriptions, noise suggestions) as notes; the unity-harness CLI renders report.md from them plus changes.json and the run facts. Also fixes the notes when an audit lists discrepancies. Only writes inside the given run directory.",
     "targets": [
-      "claude"
+      "claude",
+      "antigravity"
     ],
     "claude": {
       "tools": "Bash, Read, Grep, Glob",
@@ -60,7 +62,8 @@
   "run-log-auditor": {
     "description": "Independently audits the judged parts of a harness run report.md (file descriptions, summary, plan notes, noise suggestions) against changes.diff and facts.json, then writes audit.md. Never edits report.md or project files.",
     "targets": [
-      "claude"
+      "claude",
+      "antigravity"
     ],
     "claude": {
       "tools": "Bash, Read, Grep, Glob",

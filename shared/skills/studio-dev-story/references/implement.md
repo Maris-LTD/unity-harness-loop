@@ -71,18 +71,15 @@ Run `Workflow({ name: "unity-harness:unity-feature", args: { task, smoke } })`.
   a narrower task, then rerun `unity-harness all`.
 {{/claude}}
 {{#antigravity}}
-## Antigravity path: programmer agents plus the harness
-There is no workflow runner here; drive the loop yourself.
-1. If a Unity specialist applies, spawn it first for a short read-only design note, e.g.
-   {{spawn unity-specialist}}.
-2. Spawn the primary agent from the routing table the same way, e.g. {{spawn gameplay-programmer}}, with the brief
-   and the specialist's note. It writes the code and the EditMode tests and reports changed files.
-3. Run `unity-harness full` for Visual/Feel, UI, Integration or scene/prefab changes (it adds the Play mode smoke), `unity-harness all` otherwise. Exit 2 means the
-   Editor is not ready: ask the user to open it, do not loop.
-4. Spawn unity-reviewer ({{spawn unity-reviewer}}) and unity-verifier ({{spawn unity-verifier}}), both read-only,
-   for an independent review and verdict.
-5. Blocking harness failures or blocker/major review findings → send them back to the same programmer agent with the
-   exact lines, rerun step 3-4. At most 3 fix rounds; then report what is left.
+## Antigravity path: the unity-feature workflow skill
+Run the `unity-feature` skill (or drive the 6-phase loop):
+1. If a Unity specialist applies, spawn it first for a short read-only design note, e.g. {{spawn unity-specialist}}.
+2. Follow the 6-phase loop (Init → Plan → Implement → Verify → Fix → Log) in `unity-feature`:
+   - Spawn the primary programmer agent from the routing table (e.g. {{spawn gameplay-programmer}}) to write code and EditMode tests.
+   - Run `unity-harness full` for Visual/Feel, UI, scene/prefab changes, or `unity-harness all` otherwise.
+   - Concurrently spawn {{spawn unity-verifier}} and {{spawn unity-reviewer}} for independent inspection.
+   - Auto-fix loop: up to 2 fix rounds with the programmer agent for blocking issues.
+   - Spawn {{spawn run-log-writer}} and {{spawn run-log-auditor}} to audit and finalize `report.md`.
 {{/antigravity}}
 
 ## Config/Data stories
