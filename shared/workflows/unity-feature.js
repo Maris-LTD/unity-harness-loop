@@ -229,16 +229,20 @@ if (!stopReason) {
 
 const verifyMode = (typeof input.smoke === 'boolean' ? input.smoke : plan.needsSmoke) ? 'full' : 'all'
 const assemblies = (input.assemblies || plan.testAssemblies || []).filter(Boolean)
-const assemblyFlag = assemblies.length ? ` with \`--assemblies ${assemblies.join(',')}\`` : ''
+const verifyFlags = `--since-run ${run.runDir}` + (assemblies.length ? ` --assemblies ${assemblies.join(',')}` : '')
+const preRunNote = run.preExistingDirty
+  ? `\n\n${run.preExistingDirty} files were already modified before this run: the keys of \`dirty\` in ${run.runDir}/baseline.json. ` +
+    `For those, compare with ${run.runDir}/baseline-files/<path> when that copy exists (\`git diff --no-index\`), skip them when unchanged, and report only issues in lines this run changed.`
+  : ''
 
 const openFindings = r => (r ? r.findings : []).filter(f => f.severity !== 'minor')
 
 function reviewPrompt(scope) {
-  if (!scope) return `Review the current C# diff for this task: ${input.task}`
+  if (!scope) return `Review the current C# diff for this task: ${input.task}${preRunNote}`
   return `Re-review after a fix round for this task: ${input.task}\n\n` +
     `Limit the diff to these files: ${scope.files.join(', ') || 'none'}.\n` +
     `Previous blocking findings: ${JSON.stringify(scope.open)}\n` +
-    `Report a previous finding again only if it is still present (re-check its file even when it is not listed). Report new issues only in the listed files.`
+    `Report a previous finding again only if it is still present (re-check its file even when it is not listed). Report new issues only in the listed files.${preRunNote}`
 }
 
 function mergeReview(previous, next, scope) {
@@ -255,7 +259,7 @@ function verifyRound(n, scope) {
         .then(next => mergeReview(review, next, scope))
   return parallel([
     () => agent(
-      `Verify the current working tree. Run mode \`${verifyMode}\`${assemblyFlag}.\n` +
+      `Verify the current working tree. Run mode \`${verifyMode}\` with \`${verifyFlags}\`.\n` +
       `Smoke expectations from the plan: ${plan.smokeExpectations || 'none stated'}\n` +
       `You are read-only: report failures as verdict fail, never fix them.`,
       { label: `verify#${n}`, phase: 'Verify', agentType: agentType('unity-verifier'), schema: VERIFY_SCHEMA, ...routed('verify') }),

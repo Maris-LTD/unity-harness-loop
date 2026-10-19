@@ -4,7 +4,8 @@ const { setProjectRoot, projectRoot, loadConfig, configPath, hasConfig } = requi
 const USAGE = `unity-harness <command> [--project <dir>]
 
 Verify (needs the Unity CLI and an open Editor except for rules):
-  rules | compile | tests | smoke | all | full   [--assemblies a,b] [--files f1,f2] [--json]
+  rules | compile | tests | smoke | all | full   [--assemblies a,b] [--files f1,f2] [--since-run <runDir>] [--json]
+    --since-run: rules judge files that were dirty before the run against their baseline copy, and skip them when untouched
 
 Project setup:
   init [--force]        create .unity-harness/config.json for this Unity project

@@ -50,3 +50,31 @@ test('comments and Debug.Log moved into a split-out file are existing code, new 
   const blocking = rules(dir).blocking;
   assert.deepStrictEqual(blocking.map(b => b.split(' ')[0]), ['Assets/Saver.cs:6', 'Assets/Saver.cs:7']);
 });
+
+test('with --since-run, files dirty before the run are judged against their baseline copy', () => {
+  const dir = makeRepo();
+  fs.mkdirSync(path.join(dir, 'Assets'), { recursive: true });
+  const write = (rel, text) => fs.writeFileSync(path.join(dir, 'Assets', rel), text);
+  write('Mine.cs', 'class Mine {\n}\n');
+  write('Touched.cs', 'class Touched {\n}\n');
+  spawnSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@t', 'add', '-A'], { cwd: dir });
+  spawnSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@t', 'commit', '-qm', 'base'], { cwd: dir });
+  write('Mine.cs', 'class Mine {\n  // user work in progress\n}\n');
+  write('Touched.cs', 'class Touched {\n  // user note\n}\n');
+  write('Draft.cs', 'class Draft {\n  // untracked user draft\n}\n');
+  const base = JSON.parse(spawnSync(process.execPath, [CLI, '--project', dir, 'run-log', 'baseline', '--slug', 't'], { encoding: 'utf8' }).stdout);
+  write('Touched.cs', 'class Touched {\n  // user note\n  // added by the run\n}\n');
+  write('New.cs', 'class New {\n  // new file from the run\n}\n');
+  const since = JSON.parse(spawnSync(process.execPath, [CLI, '--project', dir, 'rules', '--json', '--since-run', base.runDir], { encoding: 'utf8' }).stdout).checks[0];
+  assert.deepStrictEqual(since.blocking.map(b => b.split(' ')[0]).sort(), ['Assets/New.cs:2', 'Assets/Touched.cs:3']);
+  assert.strictEqual(since.info.preExisting, 2);
+  const all = rules(dir).blocking.map(b => b.split(' ')[0]).sort();
+  assert.deepStrictEqual(all, ['Assets/Draft.cs:2', 'Assets/Mine.cs:2', 'Assets/New.cs:2', 'Assets/Touched.cs:2', 'Assets/Touched.cs:3']);
+});
+
+test('--since-run with a missing baseline warns and falls back to HEAD', () => {
+  const dir = makeRepo();
+  writeLines(dir, 1, '\n');
+  const check = JSON.parse(spawnSync(process.execPath, [CLI, '--project', dir, 'rules', '--json', '--since-run', 'nope'], { encoding: 'utf8' }).stdout).checks[0];
+  assert.match(check.warnings.join('\n'), /no baseline\.json in nope, checking against HEAD/);
+});
