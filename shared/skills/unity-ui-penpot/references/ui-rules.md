@@ -5,7 +5,7 @@ Nếu project có luật riêng mâu thuẫn với file này, luật của proje
 ## Khung và bố cục
 - Khung mặc định 1080×2340. Vùng an toàn trên 150px, dưới 70px: không đặt chữ, icon hay nút ở đó, chỉ nền của header/navbar được tràn vào.
 - Chữ nhỏ nhất 28px; nhãn khoảng 34px trở lên, mô tả 40px, nút 60px, tiêu đề 64px, chữ Play khoảng 104px (tỉ lệ trong popup theo luật 16).
-- Vùng chạm nhỏ nhất 132×132px (44pt × 3).
+- Vùng chạm nhỏ nhất 120×120px.
 - Một font duy nhất, mặc định Lilita One (kiểu chữ game casual, dày, bo tròn).
 
 ## 1. Nút PLAY theo độ khó level
@@ -42,11 +42,6 @@ Mỗi popup tối đa một nút mỗi màu. `ui.audit` kiểm tra luật này.
 - Badge thông báo (chấm đỏ, "!") được glow nhẹ vì là tín hiệu chú ý, không phải vùng bấm.
 - `ui.audit` báo lỗi khi một nút hoặc phần tử con của nút có glow.
 
-## 10. Chữ trong nút căn giữa, viết hoa chữ cái đầu mỗi từ
-- **Căn giữa** cả ngang lẫn dọc so với mặt nút (`Face`, không tính phần đáy dày): `align='center'`, text rộng bằng nút, dùng `ui.centerY`. Có icon đi kèm (ví dụ giá kèm icon gem) thì cả cụm icon + chữ căn giữa nút.
-- **Camel case kiểu tiêu đề**: mỗi từ viết hoa chữ cái đầu, còn lại viết thường: `Play`, `Claim Reward`, `Watch Ad`, `No Thanks`. Không viết ALL CAPS (`PLAY`, `CLAIM`), không viết thường toàn bộ. Chữ viết tắt ngắn (`OK`, `VIP`, `x2`) và số giữ nguyên. Đổi nhanh bằng `ui.titleCase('claim reward')`.
-- `ui.audit` báo lỗi khi chữ trong nút lệch tâm quá 4px ngang / 6px dọc, hoặc sai kiểu viết hoa.
-
 ## 11. Popup ưu tiên icon và ảnh minh hoạ, hạn chế chữ
 - Truyền đạt nội dung popup bằng icon/ảnh minh hoạ trước (phần thưởng, vật phẩm, nhân vật); chữ chỉ bổ sung.
 - Ảnh minh hoạ phải nổi bật hơn chữ: đặt ở trung tâm popup, chiếm nhiều diện tích hơn khối chữ, có `ui.iconGlow` (luật 9).
@@ -69,34 +64,38 @@ Mỗi popup tối đa một nút mỗi màu. `ui.audit` kiểm tra luật này.
 - `ui.audit` báo lỗi khi popup có hơn 3 cỡ chữ (ngoài nút) hoặc Title nằm dưới Description.
 
 ## Luật 15–19: bộ "Design UI rules" trên Notion
-Nguồn: trang Notion "Design UI rules". Notion ghi số đo ở tỉ lệ 1x (màn rộng 360); khung 1080 là 3x nên mọi số px dưới đây đã nhân 3 (ghi kèm số gốc). Cách viết hoa chữ trong nút vẫn theo luật 10 (Title Case), không viết ALL CAPS.
+Nguồn: trang Notion "Design UI rules". Notion đo ở màn nhỏ; số px được quy đổi theo mốc chung với các luật trước là vùng chạm (44px Notion ↔ `touch.min` 120px), hệ số khoảng 2.7, rồi làm tròn về token sẵn có. Số gốc trên Notion ghi trong ngoặc. Các tỉ lệ % giữ nguyên.
+
+Luật 10 cũ (Title Case) đã bỏ: căn giữa chữ trong nút chuyển sang luật 17, cách viết hoa theo luật 16.
 
 ## 15. Bố cục popup: không khoảng trống chết, padding lồng lớp
 - **Zero Dead Space**: chiều cao popup co theo nội dung (wrap-content), không kéo dài Frame khi không đủ phần tử lấp đầy. Đáy Frame cách phần tử thấp nhất đúng bằng padding. Dùng `ui.stack(...)` rồi `ui.wrap(frame, bottom)`.
-- Khoảng cách dọc giữa các khối liền kề (Content Frame → Description → nút) nhất quán trong 36–60px (12–20@1x), mặc định `space.stack` 48.
-- Padding từ viền Frame đến khối nội dung bên trong đều 4 phía, 60–72px (20–24@1x), mặc định `space.inset` 66.
-- Khối con (Content Frame, khung nhận thưởng) bo góc nhỏ hơn khung cha 12–24px (4–8@1x) để hai đường cong song song: Frame `radius.panel` 36 → Content Frame `radius.tile` 24.
-- `ui.audit` báo lỗi khi padding lệch hai bên hoặc ngoài khoảng, khoảng cách dọc ngoài 36–60px, đáy thừa trống, hoặc chênh bo góc sai.
+- Khoảng cách dọc giữa các khối liền kề (Content Frame → Description → nút) nhất quán trong 32–54px (Notion 12–20), mặc định `space.lg` 40.
+- Padding từ viền Frame đến khối nội dung bên trong đều 4 phía, 54–65px (Notion 20–24), mặc định `space.xl` 64.
+- Khối con (Content Frame, khung nhận thưởng) bo góc nhỏ hơn khung cha 11–22px (Notion 4–8) để hai đường cong song song: Frame `radius.panel` 36 → Content Frame `radius.tile` 24.
+- `ui.audit` báo lỗi khi padding lệch hai bên hoặc ngoài khoảng, khoảng cách dọc ngoài 32–54px, đáy thừa trống, hoặc chênh bo góc sai.
 
 ## 16. Typography: một font, viền tương phản, tỉ lệ cỡ chữ
 - **Một font duy nhất** cho cả màn/popup (casual hoạt hoạ, dày, bo tròn), không trộn font.
-- **Stroke & contrast**: chữ sáng (trắng, vàng) bắt buộc có viền đậm tối màu (xanh thẫm, nâu đậm, đen) dày tối thiểu 6px (2–4@1x, `ui.text` tự tính `max(6, size×0.08)`) và bóng nhẹ phía dưới (underlay, luật 12). Không dùng viền nhạt hơn hoặc cùng tông sáng với màu chữ.
+- **Viết IN HOA** toàn bộ chữ tiêu đề (`Title`, tên màn) và chữ trong nút: `PLAY`, `CLAIM REWARD`, `NO THANKS`. Số và ký hiệu (`x2`) giữ nguyên. Chữ mô tả viết thường bình thường.
+- **Stroke & contrast**: chữ sáng (trắng, vàng) bắt buộc có viền đậm tối màu (xanh thẫm, nâu đậm, đen) dày tối thiểu 5px (Notion 2–4, `ui.text` tự tính `max(5, size×0.08)`) và bóng nhẹ phía dưới (underlay, luật 12). Không dùng viền nhạt hơn hoặc cùng tông sáng với màu chữ.
 - **Tỉ lệ cỡ chữ** so với Title của popup (Title = 100%, to nhất, viền dày nhất):
   - Chữ nút CTA: 90–95% (Title 64 → nút 58–61, mặc định `font.button` 60), đủ to để đọc lướt trong 0.5 giây.
   - Description/Subtitle: 60–70% (Title 64 → 38–45, mặc định `font.body` 40), màu tương phản cao với nền, **tối đa 2 dòng**.
-- `ui.audit` báo lỗi khi có hơn 1 font, chữ sáng thiếu viền tối hoặc viền mỏng hơn 6px, tỉ lệ cỡ chữ sai, Description quá 2 dòng.
+- `ui.audit` báo lỗi khi có hơn 1 font, chữ sáng thiếu viền tối hoặc viền mỏng hơn 5px, Title hoặc chữ nút không in hoa, tỉ lệ cỡ chữ sai, Description quá 2 dòng.
 
 ## 17. Nút bấm: tỉ lệ chữ trên nút và khối 3D
+- **Căn giữa** chữ cả ngang lẫn dọc so với mặt nút (`Face`, không tính phần đáy dày): `align='center'`, text rộng bằng nút, dùng `ui.centerY`. Có icon đi kèm (giá kèm icon gem) thì cả cụm icon + chữ căn giữa nút. `ui.audit` báo lỗi khi lệch quá 4px ngang / 6px dọc.
 - **Occupancy**: chữ trong nút chiếm 60–75% chiều ngang và 50–60% chiều cao mặt nút (`Face`); khoảng trống trên/dưới chữ chỉ khoảng 0.5–0.75 chiều cao ký tự. Chỉnh bằng `await ui.fitButtons([btn, ...], fill)`: các nút truyền chung một lần thì bằng nhau (luật 7, xếp ngang), xếp dọc thì fit riêng, Primary `fill` 0.62 (to hơn), Secondary 0.74.
 - **3 lớp bắt buộc cho Primary CTA** (xanh lá, hoặc vàng cam nổi trên nền xanh dương):
   1. Viền ngoài (Outer Stroke) vàng kim hoặc trắng tạo ranh giới: `ui.button(..., { rim: '#FFE45C' })` (hoặc `'#FFFFFF'`).
   2. Mặt nút gradient sáng dần về đỉnh (`Face`, top → base).
-  3. Chân đế (Bevel) dày 12–24px (4–8@1x), tối hơn thân nút (`Edge`), `ui.button` tự tính theo chiều cao.
+  3. Chân đế (Bevel) dày 11–22px (Notion 4–8), tối hơn thân nút (`Edge`), `ui.button` tự tính theo chiều cao.
 - `ui.audit` đo chữ thật trong từng nút (trừ nút X và nút có icon kèm chữ) và báo lỗi khi ngoài khoảng occupancy.
 
 ## 18. Title Banner và nút đóng
 - **Header Anchor**: Title Ribbon căn giữa trục dọc của Frame, đè lên mép trên Frame, phần nhô lên trên bằng 1/3–1/2 chiều cao ribbon, để phá sự thô cứng của hình chữ nhật.
-- **Nút X**: đỏ (Negative, luật 2), luôn ở góc trên phải; tâm nút gióng thẳng mép ngoài cùng của Frame (hoặc mép ngoài Title Ribbon); cao 70–80% chiều cao ribbon. Hitbox tối thiểu 132×132 (44@1x): nếu hình X nhỏ hơn thì báo dev Unity nới vùng chạm.
+- **Nút X**: đỏ (Negative, luật 2), luôn ở góc trên phải; tâm nút gióng thẳng mép ngoài cùng của Frame (hoặc mép ngoài Title Ribbon); cao 70–80% chiều cao ribbon. Hitbox tối thiểu `touch.min` 120×120 (Notion 44): nếu hình X nhỏ hơn thì báo dev Unity nới vùng chạm.
 - Đặt cả hai bằng `ui.placeHeader(frame, ribbon, close)`. `ui.audit` báo lỗi khi ribbon lệch tâm, nhô sai tỉ lệ, X lệch mép hoặc sai kích thước.
 
 ## 19. Khung minh hoạ (Content Frame)

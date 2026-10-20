@@ -33,7 +33,7 @@ Tài liệu đi kèm (đường dẫn tính từ thư mục chứa SKILL.md này
 2. Kiểm tra kết nối: trả về `penpot.currentFile.name`, `penpotUtils.getPages()` và tên các board ở root. Không đọc `currentUser`, vì plugin không cấp quyền này.
 3. Đọc `<skill dir>/scripts/helpers.js` bằng `view_file`, rồi truyền **nguyên văn** nội dung làm `code` cho `call_mcp_tool(ServerName="penpot", ToolName="execute_code", Arguments={"code": ...})`; làm tiếp y hệt với `<skill dir>/scripts/audit.js`. Sau đó mọi lần gọi đều bắt đầu bằng `const ui = storage.ui;`. Nếu `storage.ui` là undefined (plugin reload) thì nạp lại cả hai, đúng thứ tự.
 {{/antigravity}}
-4. Chạy `ui.ensureTokens()` để tạo token set "Game UI" nếu chưa có. File tạo từ bản cũ còn `font.button` 52 và `touch.min` 120: cập nhật bằng `ui.setToken('fontSizes', 'font.button', '60')` và `ui.setToken('sizing', 'touch.min', '132')`. Đổi tông màu theo game: `ui.ensureTokens({ 'theme.primary': '#...' })` cho token mới, hoặc `ui.setToken(...)` cho token đã có.
+4. Chạy `ui.ensureTokens()` để tạo token set "Game UI" nếu chưa có. File tạo từ bản cũ còn `font.button` 52: cập nhật bằng `ui.setToken('fontSizes', 'font.button', '60')`. Đổi tông màu theo game: `ui.ensureTokens({ 'theme.primary': '#...' })` cho token mới, hoặc `ui.setToken(...)` cho token đã có.
 
 ## Bước 1: Thu thập đầu vào
 Cần biết: nguồn asset (board sprite trong Penpot hoặc file ảnh), demo hay ảnh tham khảo nếu có, danh sách tính năng của màn (tiền tệ, số tab, nút sự kiện…), thiết bị đích. Chỉ hỏi những gì không suy ra được. Có demo thì Read ảnh và mô tả lại bố cục trước khi dựng.
@@ -48,7 +48,7 @@ Nếu chưa có board `UI Kit - Buttons` thì dựng:
 - `Play Button` (Difficulty: Normal/green, Hard/purple, Super Hard/red), 420×200, `radius.button.lg`, chữ `font.display`, viền ngoài `rim: '#FFE45C'` (luật 17).
 - `Popup Button` (Type: Primary/green có `rim: '#FFE45C'`, Secondary/blue, Negative/red), 400×140, `radius.button.md`, chữ `font.button`.
 - Tạo bằng `await ui.button(kit, {name, x, y, w, h, color, label, size, radius, rim})`, sau đó `ui.makeVariants([{shape, properties}], 'Play Button')`.
-- Dùng instance qua `ui.variant('Popup Button', { Type: 'Primary' })`, đổi chữ qua child `Label` (viết hoa chữ cái đầu mỗi từ, luật 10; đổi chữ xong chạy lại `ui.centerY` để giữ căn giữa), resize thoải mái vì constraints đã đặt sẵn.
+- Dùng instance qua `ui.variant('Popup Button', { Type: 'Primary' })`, đổi chữ qua child `Label` (viết IN HOA, luật 16; đổi chữ xong chạy lại `ui.centerY` để giữ căn giữa), resize thoải mái vì constraints đã đặt sẵn.
 - Đổi chữ xong thì gọi `await ui.fitButtons([...])` để chữ chiếm 60–75% ngang, 50–60% cao mặt nút (luật 17): truyền chung các nút cùng hàng để chúng bằng nhau; xếp dọc thì fit Primary với `fill` 0.62, Secondary 0.74.
 
 ## Bước 4: Dựng màn hình
@@ -59,8 +59,8 @@ Nếu chưa có board `UI Kit - Buttons` thì dựng:
 4. Nội dung: nút bên trái/phải là khung sprite đặt trong **rect `Frame` riêng** (không đặt shadow lên board), CTA chính và các phần khác.
 5. `Nav Shade`, rồi `Nav Shadow` (rect cùng kích thước navbar, mang viền cứng `ui.drop(ink, -6)`), rồi `Bottom Nav`: board flex row, gap 4, padding dưới 66, các tab `horizontalSizing='fill'`. Tab active nền vàng (`btn.yellow.*`) và icon to nổi lên trên (`clipContent=false`, không glow). Tab thường chỉ có icon.
 
-Popup: thêm `Dim Overlay` (#06173A, 70%) rồi board `Popup` gồm `Frame` (gradient primary → deep, viền ink, `radius.panel`, không glow), `Title Ribbon` (sky → primary), `Content Frame` (nền `theme.surface` hoặc kem `#FFF8E7`, `radius.tile`, cách viền Frame `space.inset` hai bên) chứa ảnh minh hoạ, `Description` ngay dưới, rồi các nút theo luật 2, 7, 8. Nút đóng X là nút đỏ nhỏ, radius sm.
-- Xếp dọc Content Frame → Description → nút bằng `ui.stack([...], top)` (khoảng cách `space.stack`), rồi co Frame theo nội dung bằng `ui.wrap(frame, bottom)` (luật 15). Đặt ribbon đè mép trên Frame và nút X ở góc trên phải bằng `ui.placeHeader(frame, ribbon, close)` (luật 18).
+Popup: thêm `Dim Overlay` (#06173A, 70%) rồi board `Popup` gồm `Frame` (gradient primary → deep, viền ink, `radius.panel`, không glow), `Title Ribbon` (sky → primary), `Content Frame` (nền `theme.surface` hoặc kem `#FFF8E7`, `radius.tile`, cách viền Frame `space.xl` hai bên) chứa ảnh minh hoạ, `Description` ngay dưới, rồi các nút theo luật 2, 7, 8. Nút đóng X là nút đỏ nhỏ, radius sm.
+- Xếp dọc Content Frame → Description → nút bằng `ui.stack([...], top)` (khoảng cách `space.lg`), rồi co Frame theo nội dung bằng `ui.wrap(frame, bottom)` (luật 15). Đặt ribbon đè mép trên Frame và nút X ở góc trên phải bằng `ui.placeHeader(frame, ribbon, close)` (luật 18).
 - Cỡ chữ theo Title: nút 90–95%, Description 60–70% và tối đa 2 dòng (luật 16). Icon chính của popup (phần thưởng) được nhấn bằng `ui.iconGlow(icon)` (quầng radial vàng phía sau và glow nhẹ quanh icon).
 - Nội dung ưu tiên ảnh minh hoạ to ở giữa, chữ ít (luật 11). Chữ chỉ có `Title` (header, được `shadow: true`) rồi `Description` ngắn, tối đa 3 cấp chữ (luật 12, 14).
 - Tâm popup ở giữa hoặc hơi thấp hơn giữa màn, các nút hành động ở nửa dưới màn (luật 13).
@@ -70,7 +70,7 @@ Popup: thêm `Dim Overlay` (#06173A, 70%) rồi board `Popup` gồm `Frame` (gra
 ## Bước 5: Kiểm tra (bắt buộc)
 1. `export_shape` theo id board màn hình, rồi tự xem ảnh: lệch, tràn khung, chữ đè nhau, mảng tối lạ do shadow, chỗ nào chìm vào nền.
 2. `await ui.audit(screen)` → `issues` phải rỗng. So `iconOpticalSizes` giữa các icon cùng cấp.
-3. Rà theo checklist ở `references/ui-rules.md` (đặc biệt luật 2, 3, 6, 7, 8, 9, 10, các luật popup 11–14 và bộ luật Notion 15–19).
+3. Rà theo checklist ở `references/ui-rules.md` (đặc biệt luật 2, 3, 6, 7, 8, 9, các luật popup 11–14 và bộ luật Notion 15–19).
 4. Sửa, xuất ảnh lại, lặp đến khi sạch. Chỉ báo xong khi ảnh cuối cùng đã được xem.
 
 ## Báo cáo

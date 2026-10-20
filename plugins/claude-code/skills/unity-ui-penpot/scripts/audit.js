@@ -46,9 +46,9 @@ ui.auditLayout = (pop, texts, buttons, art, issues) => {
   if (art.length && !cf) issues.push(`Popup "${pop.name}": ảnh minh hoạ phải nằm trong "Content Frame" nền nhạt (luật 19)`);
   if (cf) {
     const l = cf.x - frame.x, r = ui.right(frame) - ui.right(cf);
-    if (Math.abs(l - r) > 4 || !ui.within(l, 54, 78)) issues.push(`Popup "${pop.name}": padding Frame → Content Frame phải đều hai bên, 60–72px (đang ${Math.round(l)}/${Math.round(r)}, luật 15)`);
+    if (Math.abs(l - r) > 4 || !ui.within(l, 50, 69)) issues.push(`Popup "${pop.name}": padding Frame → Content Frame phải đều hai bên, 54–65px (đang ${Math.round(l)}/${Math.round(r)}, luật 15)`);
     const dr = (frame.borderRadius || 0) - (cf.borderRadius || 0);
-    if (!ui.within(dr, 12, 24)) issues.push(`Popup "${pop.name}": Content Frame phải bo góc nhỏ hơn Frame 12–24px (đang chênh ${dr}, luật 15)`);
+    if (!ui.within(dr, 10, 23)) issues.push(`Popup "${pop.name}": Content Frame phải bo góc nhỏ hơn Frame 11–22px (đang chênh ${dr}, luật 15)`);
     const cl = ui.luma(ui.fillHex(cf)), fl = ui.luma(ui.fillHex(frame));
     if (cl !== null && fl !== null && cl <= fl) issues.push(`Popup "${pop.name}": Content Frame phải có nền nhạt hơn Frame (luật 19)`);
     for (const a of art) {
@@ -64,11 +64,11 @@ ui.auditLayout = (pop, texts, buttons, art, issues) => {
   for (let i = 1; i < stack.length; i++) {
     const a = stack[i - 1], b = stack[i], gap = b.y - ui.bottom(a);
     const overlapX = b.x < ui.right(a) && ui.right(b) > a.x;
-    if (overlapX && gap > -1 && !ui.within(gap, 32, 64)) issues.push(`Khoảng cách "${a.name}" → "${b.name}" là ${Math.round(gap)}px, phải 36–60px (luật 15)`);
+    if (overlapX && gap > -1 && !ui.within(gap, 28, 58)) issues.push(`Khoảng cách "${a.name}" → "${b.name}" là ${Math.round(gap)}px, phải 32–54px (luật 15)`);
   }
   if (stack.length) {
     const dead = ui.bottom(frame) - Math.max(...stack.map(ui.bottom));
-    if (dead > 96) issues.push(`Popup "${pop.name}" thừa ${Math.round(dead)}px trống ở đáy, co Frame theo nội dung bằng ui.wrap (luật 15)`);
+    if (dead > ui.num('space.xl') + 24) issues.push(`Popup "${pop.name}" thừa ${Math.round(dead)}px trống ở đáy, co Frame theo nội dung bằng ui.wrap (luật 15)`);
   }
 };
 
@@ -85,6 +85,7 @@ ui.auditPopup = (pop, screen, issues) => {
   const levels = new Set(texts.map(t => Number(t.fontSize)));
   if (levels.size > 3) issues.push(`Popup "${pop.name}" có ${levels.size} cấp chữ (${[...levels].join('/')}px), tối đa 3 (luật 14)`);
   const title = texts.find(t => /Title/.test(t.name)), desc = texts.find(t => /Desc/.test(t.name));
+  if (title && !ui.isUpper(title.characters)) issues.push(`Title phải viết IN HOA (luật 16): "${title.characters}"`);
   if (title && desc && title.y > desc.y) issues.push(`Popup "${pop.name}": Title phải nằm trên Description (luật 14)`);
   if (title) {
     const ts = Number(title.fontSize);
@@ -123,12 +124,12 @@ ui.auditText = (s, issues) => {
   if (fl !== null && fl > 0.45) {
     const sl = ui.luma(stroke?.strokeColor);
     if (!stroke || (sl !== null && sl > 0.25)) issues.push(`Chữ sáng phải có viền đậm tối màu (luật 16): "${s.characters}"`);
-    else if (stroke.strokeWidth < 6) issues.push(`Viền chữ mỏng hơn 6px (luật 16): "${s.characters}"`);
+    else if (stroke.strokeWidth < 5) issues.push(`Viền chữ mỏng hơn 5px (luật 16): "${s.characters}"`);
   }
   if (face) {
     const offX = Math.abs(s.x + s.width / 2 - (face.x + face.width / 2)), offY = Math.abs(s.y + s.height / 2 - (face.y + face.height / 2));
-    if (s.align !== 'center' || offX > 4 || offY > 6) issues.push(`Chữ trong nút không căn giữa (luật 10, lệch ${Math.round(offX)}/${Math.round(offY)}px): "${s.characters}"`);
-    if (!ui.isTitleCase(s.characters)) issues.push(`Chữ trong nút phải viết hoa chữ cái đầu mỗi từ (luật 10): "${s.characters}"`);
+    if (s.align !== 'center' || offX > 4 || offY > 6) issues.push(`Chữ trong nút không căn giữa (luật 17, lệch ${Math.round(offX)}/${Math.round(offY)}px): "${s.characters}"`);
+    if (!ui.isUpper(s.characters)) issues.push(`Chữ trong nút phải viết IN HOA (luật 16): "${s.characters}"`);
   }
 };
 

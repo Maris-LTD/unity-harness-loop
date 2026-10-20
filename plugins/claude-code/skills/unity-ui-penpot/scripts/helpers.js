@@ -18,8 +18,8 @@ ui.DEFAULT_TOKENS = {
   borderRadius: { 'radius.button.lg': '40', 'radius.button.md': '28', 'radius.button.sm': '20', 'radius.panel': '36', 'radius.tile': '24' },
   borderWidth: { 'stroke.button': '4', 'stroke.panel': '6' },
   fontSizes: { 'font.display': '104', 'font.title': '64', 'font.button': '60', 'font.body': '40', 'font.label': '34', 'font.min': '28' },
-  spacing: { 'space.xs': '8', 'space.sm': '16', 'space.md': '24', 'space.lg': '40', 'space.xl': '64', 'space.stack': '48', 'space.inset': '66', 'safe.top': '150', 'safe.bottom': '70' },
-  sizing: { 'icon.currency': '96', 'icon.side': '112', 'icon.tab.normal': '128', 'icon.tab.active': '200', 'touch.min': '132' }
+  spacing: { 'space.xs': '8', 'space.sm': '16', 'space.md': '24', 'space.lg': '40', 'space.xl': '64', 'safe.top': '150', 'safe.bottom': '70' },
+  sizing: { 'icon.currency': '96', 'icon.side': '112', 'icon.tab.normal': '128', 'icon.tab.active': '200', 'touch.min': '120' }
 };
 
 ui.set = () => penpot.library.local.tokens.sets.find(s => s.name === ui.SET);
@@ -84,7 +84,7 @@ ui.text = (parent, name, chars, o) => {
   t.fontSize = String(o.size);
   t.fills = ui.solid(o.color || '#FFFFFF');
   if (o.outline) {
-    t.strokes = ui.stroke(o.outline, o.outlineWidth || Math.max(6, Math.round(o.size * 0.08)), 'outer');
+    t.strokes = ui.stroke(o.outline, o.outlineWidth || Math.max(5, Math.round(o.size * 0.08)), 'outer');
     t.shadows = [ui.drop(o.outline, Math.max(3, Math.round(o.size * 0.06)))];
   }
   if (o.shadow) t.shadows = [...(t.shadows || []), ui.drop(o.shadowColor || '#0A2A5E', Math.round(o.size * 0.1), Math.round(o.size * 0.18), 0, 0.5)];
@@ -125,7 +125,7 @@ ui.iconGlow = (icon, o = {}) => {
 };
 ui.button = async (parent, o) => {
   const c = k => ui.tok(`btn.${o.color}.${k}`);
-  const depth = Math.min(24, Math.max(12, Math.round(o.h * 0.08)));
+  const depth = Math.min(22, Math.max(11, Math.round(o.h * 0.08)));
   const radius = o.radius ?? ui.num('radius.button.md');
   const b = ui.board(parent, o.name, o.x, o.y, o.w, o.h);
   b.shadows = [ui.drop('#000000', 8, 14, 0, 0.25)];
@@ -169,12 +169,12 @@ ui.variant = (containerName, props) => {
   return v.instance();
 };
 
-ui.stack = (shapes, top, gap = ui.num('space.stack')) => {
+ui.stack = (shapes, top, gap = ui.num('space.lg')) => {
   let y = top;
   for (const s of shapes) { s.y = y; y += s.height + gap; }
   return y - gap;
 };
-ui.wrap = (frame, contentBottom, pad = ui.num('space.inset')) => {
+ui.wrap = (frame, contentBottom, pad = ui.num('space.xl')) => {
   const h = Math.round(contentBottom + pad - frame.y);
   frame.resize(frame.width, h);
   if (frame.parent?.type === 'board' && /^Popup$|Popup Panel/.test(frame.parent.name)) frame.parent.resize(frame.parent.width, frame.y - frame.parent.y + h);
@@ -209,9 +209,8 @@ ui.backgroundFX = (screen, p = {}) => {
   return fx;
 };
 
-ui.keepCase = w => /\d/.test(w) || (w.length <= 3 && w === w.toUpperCase());
-ui.titleCase = str => str.replace(/[^\s\-/]+/g, w => ui.keepCase(w) ? w : w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
-ui.isTitleCase = str => ui.titleCase(str) === str;
+ui.upper = str => str.replace(/[^\s\-/]+/g, w => /\d/.test(w) ? w : w.toUpperCase());
+ui.isUpper = str => ui.upper(str) === str;
 
 storage.ui = ui;
 return Object.keys(ui);
