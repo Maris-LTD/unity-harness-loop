@@ -15,3 +15,4 @@
 - Icon nổi lên khỏi tab hoặc board cha: đặt `clipContent = false` cho cha.
 - Thêm nhiều phần tử vào board flex: chờ ~300ms để layout tính xong rồi mới đọc vị trí và đặt con bên trong.
 - Card sprite trong các board "UI Pack" có dạng `Card - <file>.png`; ảnh là shape có `fillImage` bên trong card (`ui.spriteSrc`). Một số card có thể trống: xuất board pack ra xem trước khi gán.
+- `ui.audit` là hàm async (đo chữ thật trong nút bằng cách tạm chuyển `growType` sang auto-width rồi trả lại): luôn `await ui.audit(screen)`. Nó nằm trong `scripts/audit.js`, phải nạp sau `helpers.js`.
