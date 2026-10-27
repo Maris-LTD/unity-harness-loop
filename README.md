@@ -46,6 +46,7 @@ A brief → stories → done pipeline with director, lead and specialist agents,
 | `game-code-review`, `game-qa-plan` | Architectural review on top of `unity-reviewer` and the harness; sprint QA plan |
 | `game-sprint-plan`, `game-sprint-status` | Sprint plan and a read-only burndown snapshot |
 | `game-help` | Reads the project state and names the next step |
+| `game-session-start`, `game-session-end` | Session handoff: at the start, read the checkpoint, git since then, run logs, decision log and memory, flag drift, check the Editor and preload the next step; at the end, rewrite the checkpoint, add a session note, log decisions and update memory. Both use `unity-harness session brief` |
 | `unity-reference` | Unity 6.x API changes, deprecations and best practices to check before using an unfamiliar API |
 
 Agents: `creative-director`, `technical-director`, `producer`, `game-designer`, `art-director`, `lead-programmer`, `qa-lead`, `qa-tester`, `gameplay-programmer`, `ui-programmer`, `ai-programmer`, `engine-programmer`, `unity-specialist` and the `unity-ui`/`shader`/`addressables`/`dots` specialists. The 22 review gates (CD-PILLARS, TD-ARCHITECTURE, PR-EPIC, QL-STORY-READY, LP-CODE-REVIEW, the four phase gates, ...) live in the owning agent and run according to the review mode that rigor implies (`minimal` → none).
@@ -56,6 +57,7 @@ Settings live in the `studio` block of `.unity-harness/config.json`, written onl
 unity-harness studio config            # resolved settings, rigor expansion, document paths
 unity-harness studio set rigor=standard automation=guided
 unity-harness studio status            # brief, epics, stories by status, sprint, evidence
+unity-harness session brief [--json]   # checkpoint, commits since it, runs, decision log, memory, drift signals
 ```
 
 Documents go to `Docs/` (outside `Assets/`, change with `docsRoot`): `design/game-brief.md`, `design/gdd/`, `architecture/` (architecture doc, `adr-NNNN-*.md`, control manifest, TR registry), `production/epics/<epic>/story-NNN-*.md`, `production/sprints/`, `production/qa/evidence/`, `production/session-state/active.md`. The always-on rules (collaboration loop, automation modes, gates, evidence) are `lib/studio-protocol.md`: Claude Code gets them from the session-start hook in studio projects, Antigravity from the plugin's `rules/AGENTS.md`.

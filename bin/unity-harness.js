@@ -19,6 +19,9 @@ Studio workflow (skills studio-*):
   studio status [--json]  scan brief, epics, stories, sprint and evidence (observations only)
   studio protocol       print the always-on studio rules
 
+Session handoff (skills game-session-start, game-session-end):
+  session brief [--json] [--runs N]   checkpoint, git since checkpoint, recent runs, decision log, memory, drift signals
+
 Run logs (used by the unity-feature workflow and run-log agents):
   run-log baseline --slug <slug>
   run-log changes <runDir>
@@ -68,6 +71,7 @@ function main(rawArgv) {
     }
   }
   if (command === 'studio') return require('../lib/studio').studio(rest);
+  if (command === 'session') return require('../lib/session-brief').session(rest);
   if (command === 'hook') return require('../lib/hooks').runHook(rest[0], rest[1]);
   const { verify } = require('../lib/verify');
   const code = verify(command, rest);
