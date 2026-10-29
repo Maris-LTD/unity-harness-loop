@@ -267,5 +267,20 @@
       "model": "sonnet",
       "maxTurns": 20
     }
+  },
+  "session-scout": {
+    "description": "Collects the project state for game-session-start (session brief, memory, logs, drift, Editor status) and returns the orientation report with one recommended next step. Read-only, asks no questions. Runs on a cheap model so the main conversation does not pay for the reads.",
+    "targets": [
+      "antigravity"
+    ],
+    "antigravity": {
+      "tools": [
+        "view_file",
+        "grep_search",
+        "run_command"
+      ],
+      "model": "flash",
+      "commandExecutionPolicy": "auto"
+    }
   }
 }

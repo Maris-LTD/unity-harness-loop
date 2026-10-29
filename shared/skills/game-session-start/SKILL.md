@@ -1,6 +1,9 @@
 ---
 name: game-session-start
 description: Open a new conversation on a Unity harness project - read the checkpoint, git, run logs, decision log and memory left by earlier sessions, flag drift, check the Editor, recommend one next step and preload what it needs. Use at the start of a session or for "resume", "where was I", "bắt đầu phiên mới", "tiếp tục dự án", "kiểm tra trạng thái dự án".
+{{#claude}}
+model: haiku
+{{/claude}}
 ---
 
 # Session start
@@ -14,6 +17,7 @@ Orientation for a fresh conversation, built on what earlier sessions left behind
 user approves in Step 6. It recommends the next skill and never runs it. Its partner is `game-session-end`, which
 writes the checkpoint, decision log and memory this skill reads.
 
+{{#claude}}
 ## Step 1: Collect the facts
 Run `unity-harness session brief --json`. It reads files and git only (no Unity) and returns:
 - `checkpoint`: the CHECKPOINT block of `paths.sessionState` as `fields` (`Updated`, `Branch`, `Current story`,
@@ -37,16 +41,9 @@ the checkpoint block, `git status --short`, `git log -10 --oneline`, the tail of
 
 ## Step 2: Read memory and logs
 Stop reading as soon as you can explain where the project stands.
-{{#claude}}
 1. Memory: Claude Code already loaded the agent folder's `MEMORY.md`. When `memory.repo` exists and is not linked,
    read `.claude/memory/MEMORY.md` too. Open only the files whose description touches the checkpoint's task or the
    likely next step: goals, current work, user preferences and feedback.
-{{/claude}}
-{{#antigravity}}
-1. Memory: Antigravity loads no memory on its own. Read `.claude/memory/MEMORY.md` (or the folder in `memory.agent`)
-   and open only the files whose description touches the checkpoint's task or the likely next step: goals, current
-   work, user preferences and feedback.
-{{/antigravity}}
 2. The whole session-state file when `Blocked on` or `Open questions` is not empty, or the block is thin. Entries
    below the block (`## Session <date>`) are the narrative of earlier sessions; read the latest one.
 3. For the last run whose verdict is not `pass`: the summary and open items of its `report.md`, nothing more.
@@ -94,6 +91,23 @@ Take the first that applies:
 4. No studio stories: the checkpoint's `Next step`, else the open items of the last run.
 
 One recommendation with the exact command to run, plus at most two alternatives.
+
+{{/claude}}
+{{#antigravity}}
+## Steps 1-5: Delegate to the scout
+Antigravity skills cannot pick a model, so the read-heavy part runs in a cheaper subagent. It keeps `session brief` JSON,
+memory files and logs out of this conversation.
+
+Invoke {{spawn session-scout}}. Request: "Orient on this project: project root `<cwd>`, `language` from
+`unity-harness config`." It collects the facts, reads memory and logs, reconciles drift, checks the workbench and
+chooses the next step, then returns the report described under Output. Do not repeat its reads.
+
+Show the report as it is. When it says `hasConfig: false` or no Unity project, the next step is `unity-init` or
+`game-setup`; stop there. When the invocation fails or returns nothing usable, run `unity-harness session brief --json`
+yourself and continue by judgment.
+
+Treat the report as facts to verify only where it matters: before editing a file it names, open it.
+{{/antigravity}}
 
 ## Step 6: Prepare the start
 Offer, in one {{ask}} with multiple selection, only the items that apply:

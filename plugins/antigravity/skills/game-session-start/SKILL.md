@@ -10,79 +10,19 @@ Orientation for a fresh conversation, built on what earlier sessions left behind
 user approves in Step 6. It recommends the next skill and never runs it. Its partner is `game-session-end`, which
 writes the checkpoint, decision log and memory this skill reads.
 
-## Step 1: Collect the facts
-Run `unity-harness session brief --json`. It reads files and git only (no Unity) and returns:
-- `checkpoint`: the CHECKPOINT block of `paths.sessionState` as `fields` (`Updated`, `Branch`, `Current story`,
-  `Current task`, `Next step`, `Blocked on`, `Files in progress`, `Open questions`).
-- `git`: branch, head, `recent` commits, `changed` and `untracked` files, `commitsAfterCheckpoint` with
-  `minutesAfterCheckpoint` (anchored on the last commit of the checkpoint file, or on its modified time when the file is
-  ignored or has uncommitted edits), `upstream` ahead/behind as of the last fetch.
-- `runs`: the last rows of `.unity-harness/runs/INDEX.md` (verdict, log audit, title, report path) and `unfinished`
-  run folders that never reached the index.
-- `decisionLog`: the last lines of `paths.decisionLog`.
-- `memory`: `repo` (`.claude/memory`) and `agent` (Claude Code's memory folder for this project) with file dates;
-  `linked` when one is a junction to the other.
-- `studio`: rigor, workflow, stage, story counts, `inProgress`, `blocked`, `nextReadyStory`, `activeStory`.
-- `signals`: drift the CLI detects mechanically. You judge what each one means.
+## Steps 1-5: Delegate to the scout
+Antigravity skills cannot pick a model, so the read-heavy part runs in a cheaper subagent. It keeps `session brief` JSON,
+memory files and logs out of this conversation.
 
-If the CLI answers with a usage error, it predates this skill: tell the user to update it
-(`npm i -g github:Maris-LTD/unity-harness-loop`) and gather the same facts by hand: `unity-harness studio status`,
-the checkpoint block, `git status --short`, `git log -10 --oneline`, the tail of the runs INDEX.md.
+Invoke `invoke_subagent` with the `session-scout` subagent. Request: "Orient on this project: project root `<cwd>`, `language` from
+`unity-harness config`." It collects the facts, reads memory and logs, reconciles drift, checks the workbench and
+chooses the next step, then returns the report described under Output. Do not repeat its reads.
 
-`hasConfig: false` or no Unity project → the next step is `unity-init` or `game-setup`; say so and stop.
+Show the report as it is. When it says `hasConfig: false` or no Unity project, the next step is `unity-init` or
+`game-setup`; stop there. When the invocation fails or returns nothing usable, run `unity-harness session brief --json`
+yourself and continue by judgment.
 
-## Step 2: Read memory and logs
-Stop reading as soon as you can explain where the project stands.
-1. Memory: Antigravity loads no memory on its own. Read `.claude/memory/MEMORY.md` (or the folder in `memory.agent`)
-   and open only the files whose description touches the checkpoint's task or the likely next step: goals, current
-   work, user preferences and feedback.
-2. The whole session-state file when `Blocked on` or `Open questions` is not empty, or the block is thin. Entries
-   below the block (`## Session <date>`) are the narrative of earlier sessions; read the latest one.
-3. For the last run whose verdict is not `pass`: the summary and open items of its `report.md`, nothing more.
-4. `decisionLog.last`.
-
-Memory records what was true when it was written. Before relying on a file, function or flag it names, check that it
-still exists. Git, files and story statuses win over memory.
-
-## Step 3: Reconcile drift
-Turn each signal into a judged sentence with an action. Do not repeat the raw signal.
-
-| Signal | How to judge it |
-|---|---|
-| `commits-after-checkpoint` | Commits a few minutes after the checkpoint are usually the commit of the work it describes. Compare each subject with the checkpoint: a commit that adds work it does not mention (a feature, content, a fix) means the checkpoint is stale; offer to refresh it in Step 6 |
-| `checkpoint-uncommitted` | Fine if the session-state folder is meant to stay local; otherwise remind to commit it with the work |
-| `branch-changed` | Ask whether the checkpoint's task belongs to the other branch |
-| `uncommitted-changes` | List the files (at most 10), split into work in progress and Editor noise (`ProjectSettings/*.json`, `.meta` churn, TMP autosize). Say which look intentional |
-| `unfinished-runs` | A `unity-dev` run that never finalized: interrupted, or running in another window. Read its `plan.md` if present and recommend resuming or abandoning it. Never delete it |
-| `last-run-not-pass` | Name its open items and whether a later commit addressed them |
-| `active-story-not-in-progress` | The checkpoint names a story whose status says otherwise; the story status wins (only `game-done` closes a story) |
-| `behind-upstream` | Suggest `git pull` before working; the count is from the last fetch |
-| `no-checkpoint`, `no-memory` | Nothing to resume from. Recommend `game-session-end` at the end of this session, and `game-memory` for memory |
-
-Without a signal, also look for memory that contradicts the repo: a named file that is gone, "current work" that the
-stories already mark Complete, a decision the decision log later reversed.
-
-## Step 4: Check the workbench
-The goal is no surprise when the first real command runs.
-- `unity status --json --no-banner`: find the instance whose `project` is this project and check it is `ready`.
-  Several Editors may be listed. If none matches, say so first; harness checks, captures and Play mode need it.
-- When it is ready: `unity command recompile_status --json --no-banner`. `compilationFailed` makes fixing the listed
-  `errors` the next step, whatever the plan says.
-- Skip both when the next step does not need Unity (design or docs work).
-- Do not run `unity-harness all`, recompile or enter Play mode here: they are slow and change Editor state.
-
-## Step 5: Choose the next step
-Take the first that applies:
-1. A blocker for any work: compile errors, the Editor on another project, an unfinished run holding the tree.
-2. The checkpoint's unfinished task (`Current task` / `Next step` set, and git or story statuses do not show it done):
-   "It looks like you were doing X. Continue?"
-3. Studio routing, same as `game-help`: an In Progress story → `game-dev <path>`, or `game-done <path>` when the
-   checkpoint or git says its code is written; else `nextReadyStory` → `game-dev <path>`; a Blocked story → its
-   unblocking action; every story Complete → play the build, add the next stories with `game-tasks`, or raise rigor.
-   At standard/full rigor, point to `game-help` for the phase ladder instead of rebuilding it here.
-4. No studio stories: the checkpoint's `Next step`, else the open items of the last run.
-
-One recommendation with the exact command to run, plus at most two alternatives.
+Treat the report as facts to verify only where it matters: before editing a file it names, open it.
 
 ## Step 6: Prepare the start
 Offer, in one `ask_question` with multiple selection, only the items that apply:

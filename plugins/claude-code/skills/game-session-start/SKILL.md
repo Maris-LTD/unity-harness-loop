@@ -1,6 +1,7 @@
 ---
 name: game-session-start
 description: Open a new conversation on a Unity harness project - read the checkpoint, git, run logs, decision log and memory left by earlier sessions, flag drift, check the Editor, recommend one next step and preload what it needs. Use at the start of a session or for "resume", "where was I", "bắt đầu phiên mới", "tiếp tục dự án", "kiểm tra trạng thái dự án".
+model: haiku
 ---
 
 # Session start
@@ -85,6 +86,7 @@ Take the first that applies:
 4. No studio stories: the checkpoint's `Next step`, else the open items of the last run.
 
 One recommendation with the exact command to run, plus at most two alternatives.
+
 
 ## Step 6: Prepare the start
 Offer, in one `AskUserQuestion` with multiple selection, only the items that apply:
