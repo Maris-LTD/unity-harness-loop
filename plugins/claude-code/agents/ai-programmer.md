@@ -2,6 +2,7 @@
 name: ai-programmer
 description: "Implements enemy and NPC behaviour in Unity: state machines or behaviour trees, AI Navigation, perception and group tactics; use for AI stories."
 tools: Read, Glob, Grep, Write, Edit, Bash
+model: sonnet
 maxTurns: 30
 ---
 

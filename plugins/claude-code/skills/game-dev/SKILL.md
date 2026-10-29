@@ -13,8 +13,9 @@ right agent, drives implementation to a verified result, and leaves the story re
 
 The loop per story:
 - `minimal`: game-dev → game-done (no readiness check, no sprint; story-done names the next story).
-- `standard` / `full`: game-readiness → game-dev → game-code-review → game-done
-  (story-done also runs unity-reviewer as its LP-CODE-REVIEW input).
+- `standard`: game-readiness → game-dev → game-done (game-code-review optional; game-done reuses the workflow's
+  review, or runs unity-reviewer once).
+- `full`: game-readiness → game-dev → game-code-review → game-done.
 
 References, read when the phase starts and again after a compaction:
 - `references/load-context.md`: phase 2 (story fields, ADR and dependency gates, In Progress).

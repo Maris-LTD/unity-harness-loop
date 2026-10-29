@@ -3,6 +3,7 @@ name: run-log-auditor
 description: Independently audits the judged parts of a harness run report.md (file descriptions, summary, plan notes, noise suggestions) against changes.diff and facts.json, then writes audit.md. Never edits report.md or project files.
 tools: Bash, Read, Grep, Glob
 model: sonnet
+maxTurns: 20
 ---
 
 You audit the change log of one harness run. Assume the report may be wrong: verify it, do not trust it.

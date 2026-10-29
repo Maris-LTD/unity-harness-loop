@@ -11,8 +11,10 @@ INCOMPLETE: make it the headline, list what exists, name the breakage, offer to 
 Complete", no status change, checkpoint `Next step: game-dev <path> - resume: <breakage>`.
 
 ## Verify
-Run `unity-harness all` (rules + compile + EditMode tests) yourself even if the workflow or verifier already did, and
-report the command, exit code and every `x` line. Exit 2 → `Verification: NOT VERIFIED - Editor not ready`; ask the
+The workflow's verifier already ran the harness and its guard proved the tree did not change afterwards. When the
+workflow (or the Antigravity loop) returned verdict `pass`, do not run `unity-harness all` again: report the
+verifier's `checks` as the verification. In every other case (no workflow, verdict not `pass`, or you edited by hand
+afterwards) run `unity-harness all` yourself and report the command, exit code and every `x` line. Exit 2 → `Verification: NOT VERIFIED - Editor not ready`; ask the
 user to open the Editor, do not loop, do not infer the code is fine because it reads correctly.
 A test count of `0/0` right after a compile means the domain was still reloading: rerun; 0/0 is not a pass.
 
@@ -74,8 +76,17 @@ Deviations from scope: none | <files outside the story's boundary>
 Engine risks flagged: none | <specialist finding>
 Blockers: none | <what>
 ```
-End with the next step by `workflow`: standard / full → `Next: game-code-review <story-path>, then game-done
-<story-path>`; minimal → `Next: game-done <story-path>`.
+End with the next step by `workflow`: full → `Next: game-code-review <story-path>, then game-done <story-path>`;
+standard / minimal → `Next: game-done <story-path>` (game-code-review is optional at standard: name it only for
+risky or architectural stories).
+
+## Reusable review (Claude Code workflow only)
+When the workflow returned verdict `pass`, its reviewer already judged the final diff. Append the line below under the
+checkpoint block of `paths.sessionState`, so game-code-review and game-done reuse it instead of reviewing again:
+`Code review: <story path> | APPROVED | LP-CODE-REVIEW not run | <YYYY-MM-DD> | <file>=<git hash-object>, ...`
+listing every `.cs` file the workflow changed (`changedFiles`, plus the test file) with its `git hash-object` now. Minor
+findings it returned go in the story's Completion Notes later, not into this line. Skip it when the verdict is not
+`pass` or when files changed afterwards.
 
 ## Session checkpoint
 Overwrite (never append) the block between `<!-- CHECKPOINT -->` and `<!-- /CHECKPOINT -->` in `paths.sessionState`.
@@ -87,7 +98,7 @@ Updated: <YYYY-MM-DD>
 Branch: <current git branch>
 Current story: <story path>
 Current task: game-dev - <story title>
-Next step: <game-code-review <story path> (standard/full) | game-done <story path> (minimal)>
+Next step: <game-code-review <story path> (full) | game-done <story path> (minimal / standard)>
 Blocked on: nothing
 Files in progress: <changed files, test file included>
 Run result: <the Run result line, verbatim>
@@ -97,3 +108,6 @@ Open questions: none
 - INCOMPLETE → `Next step: game-dev <path> - resume: <breakage>`.
 - BLOCKED (phase 2) → `Next step: <the unblocking action>` and fill `Blocked on`.
 Write it only when no workflow is running. Confirm "Session state updated."
+Then, as the very last action (after every write above, so nothing changes the tree again), run
+`unity-harness fingerprint save verified-<story-slug>` when the verification above passed. game-done compares against it
+to skip a second `unity-harness all`.

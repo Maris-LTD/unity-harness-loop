@@ -52,20 +52,23 @@ acceptance criteria and the brief. Do not look for one.") and to the user in one
 (`Brief omits: ADR (none), manifest (none) - implementing against acceptance criteria + brief`).
 
 ## Claude Code path: the unity-dev workflow
-Run `Workflow({ name: "unity-harness:unity-dev", args: { task, smoke } })`.
+Run `Workflow({ name: "unity-harness:unity-dev", args: { task, planFile, smoke } })`.
+- `planFile`: the story path. The story already holds the acceptance criteria, files, notes and Out of Scope, so the
+  workflow loads it with the cheap plan-loader instead of paying a planning agent to rewrite it. Leave it out only
+  when the story lacks a files-to-touch list; then the workflow plans.
 - `task`: the brief above written as one text (Vietnamese plan sections come from the workflow itself): story title
   and path, acceptance criteria verbatim, Out of Scope, files and folders to touch, test requirement, tuning-as-data
   rule, the project's coding rules copied from CLAUDE.md, the specialist's concerns when one applies, and the done
   criteria (compiles, EditMode tests pass, smoke conditions for visual stories).
 - `smoke: true` for Visual/Feel, UI and Integration stories, and any story that changes scenes, prefabs or startup;
   otherwise leave it out (the plan decides).
-- Large or risky story (many files, HIGH risk, coarse granularity): offer `planOnly: true` first, let the user edit
-  the plan, then rerun with `planFile`.
+- Large or risky story (many files, HIGH risk, coarse granularity): offer `planOnly: true` first (without `planFile`),
+  let the user edit the generated plan, then rerun with that plan as `planFile`.
 - When a Unity specialist applies, spawn it first with the `Agent` tool with `subagent_type: "unity-harness:unity-specialist"` (or the matching sub-specialist)
   for a short read-only design note, and put that note in `task`.
 - Tell the user: it runs in the background (watch with `/workflows`); nothing may write into the project while it
   runs, or the tree guard voids verification. Do not edit story files or the checkpoint until it returns.
-- When it returns, read its result (`verdict`, `remainingIssues`, `runDir`) and `<runDir>/report.md`. Verdict `pass`
+- When it returns, read its result (`verdict`, `remainingIssues`, `changedFiles`, `runDir`) and `<runDir>/report.md`. Verdict `pass`
   with no remaining issues → phase 5. Otherwise fix the remaining issues by hand (small) or rerun the workflow with
   a narrower task, then rerun `unity-harness all`.
 

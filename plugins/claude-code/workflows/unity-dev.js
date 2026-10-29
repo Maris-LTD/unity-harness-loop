@@ -1,14 +1,14 @@
 export const meta = {
   name: 'unity-dev',
   description: 'Plan, implement, verify (Unity harness + rule review), auto-fix and log a Unity feature, routing each step to a fitting model and guarding read-only steps',
-  whenToUse: 'Medium or large Unity C# feature/refactor that must end compiled, tested, reviewed and logged. Needs the unity-harness CLI and .unity-harness/config.json in the project. args: {task, planOnly?, planFile?, smoke?, assemblies?, maxFixRounds?, maxLogFixes?, models?, agentPrefix?}',
+  whenToUse: 'Medium or large Unity C# feature/refactor that must end compiled, tested, reviewed and logged. Needs the unity-harness CLI and .unity-harness/config.json in the project. args: {task, planOnly?, planFile?, smoke?, assemblies?, maxFixRounds?, maxLogFixes?, audit?, models?, agentPrefix?}',
   phases: [
-    { title: 'Init', detail: 'git baseline + working-tree fingerprint', model: 'haiku' },
+    { title: 'Init', detail: 'git baseline + working-tree fingerprint (run by the planner, or one haiku step when a plan file is given)', model: 'haiku' },
     { title: 'Plan', detail: 'plan.md + complexity (or load an approved plan, read-only)' },
     { title: 'Implement', detail: 'model picked from plan complexity' },
     { title: 'Verify', detail: 'unity-verifier and unity-reviewer, read-only guarded' },
     { title: 'Fix', detail: 'sonnet first, escalate to session model' },
-    { title: 'Log', detail: 'report.md from git diff (rename-aware), independent audit' },
+    { title: 'Log', detail: 'report.md from git diff (rename-aware); independent audit only when the run did not pass or is high complexity' },
   ],
 }
 
@@ -62,13 +62,16 @@ const bool = { type: 'boolean' }
 const obj = (properties, required) => ({ type: 'object', properties, required: required || Object.keys(properties) })
 const INIT_SCHEMA = obj({ runId: str, runDir: str, preExistingDirty: { type: 'number' } })
 const TREE_SCHEMA = obj({ tag: str, changed: strList, violation: bool }, ['tag', 'changed', 'violation'])
-const PLAN_SCHEMA = obj({
+const PLAN_PROPERTIES = {
   summary: str,
   complexity: { type: 'string', enum: ['low', 'medium', 'high'] },
   complexityReason: str,
   testAssemblies: strList, needsSmoke: bool, smokeExpectations: str,
-})
-const IMPLEMENT_SCHEMA = obj({ changedFiles: strList, compiled: bool, notes: str })
+}
+const PLAN_SCHEMA = obj(PLAN_PROPERTIES)
+const PLAN_WITH_RUN_SCHEMA = obj({ ...PLAN_PROPERTIES, ...INIT_SCHEMA.properties })
+const IMPLEMENT_SCHEMA = obj({ changedFiles: strList, compiled: bool, notes: str, treeChanged: strList }, ['changedFiles', 'compiled', 'notes'])
+const FIX_SCHEMA = obj({ compiled: bool, treeChanged: strList }, ['compiled'])
 const ISSUE = obj({ file: str, line: { type: 'number' }, message: str, probableCause: str }, ['message'])
 const VERIFY_SCHEMA = obj({
   verdict: { type: 'string', enum: ['pass', 'fail', 'editor-unavailable'] },
@@ -83,6 +86,7 @@ const shell = (command, label, phaseName, schema) => agent(
 )
 
 async function writeRunLog(logInput) {
+  const audited = Boolean(logInput.audited)
   const routes = logInput.routes || {}
   const verdict = logInput.verdict || 'unknown'
   const runId = logInput.runId || logInput.runDir
@@ -109,9 +113,22 @@ async function writeRunLog(logInput) {
     required: ['accurate', 'discrepancies'],
   }
 
-  await agent(`Write the run report.\n\n${header}\n\nFacts (pass verbatim as "facts"):\n${JSON.stringify(facts)}`, {
-    label: 'log:write', phase: 'Log', agentType: agentType('run-log-writer'), ...(routes.write || {}),
-  })
+  const finalizeCommand = `unity-harness run-log finalize "${logInput.runDir}" --verdict ${verdict} --audit not-audited`
+  const written = await agent(
+    `Write the run report.\n\n${header}\n\nFacts (pass verbatim as "facts"):\n${JSON.stringify(facts)}` +
+    (audited ? '' : `\n\nAfter the report is written, run exactly this as your last command and return finalized=true when it succeeds:\n${finalizeCommand}`),
+    { label: 'log:write', phase: 'Log', agentType: agentType('run-log-writer'), ...(audited ? {} : { schema: obj({ finalized: bool }) }), ...(routes.write || {}) },
+  )
+
+  if (!audited) {
+    if (!written || !written.finalized) {
+      await agent(
+        `Run exactly this from Bash at the project root and return its stdout:\n${finalizeCommand}`,
+        { label: 'log:finalize', phase: 'Log', ...(routes.finalize || route('finalize')) },
+      )
+    }
+    return { report: `${logInput.runDir}/report.md`, audit: null, auditState: 'not-audited', logFixes: 0, discrepancies: [] }
+  }
 
   const audit = n => agent(`Audit the run report.\n\n${header}`, {
     label: `log:audit#${n}`, phase: 'Log', agentType: agentType('run-log-auditor'), schema: AUDIT_SCHEMA, ...(routes.audit || {}),
@@ -143,14 +160,28 @@ async function writeRunLog(logInput) {
   }
 }
 
-phase('Init')
-const run = await shell(`unity-harness run-log baseline --slug ${slug}`, 'init', 'Init', INIT_SCHEMA)
-if (!run) throw new Error('could not create run baseline')
-const planPath = `${run.runDir}/plan.md`
-log(`Run ${run.runId} (${run.preExistingDirty} files were already dirty before the run)`)
-
+let run = null
+let planPath = null
 const guardEvents = []
 let lastTag = 'start'
+
+function adoptRun(info) {
+  run = { runId: info.runId, runDir: info.runDir, preExistingDirty: info.preExistingDirty || 0 }
+  planPath = `${run.runDir}/plan.md`
+  log(`Run ${run.runId} (${run.preExistingDirty} files were already dirty before the run)`)
+}
+
+async function settleWrite(tag, reported, phaseName) {
+  if (!Array.isArray(reported)) return guard(tag, 'write', phaseName)
+  const since = lastTag
+  lastTag = tag
+  if (!reported.length) guardEvents.push({ kind: 'no-changes', step: tag, since })
+  return { violation: false, changed: reported }
+}
+
+const writeTreeStep = (tag, runDir) =>
+  `Finally, as your last command, run exactly: unity-harness run-log tree "${runDir}" --tag ${tag} --compare ${lastTag} --expect write\nReturn the "changed" array it prints as treeChanged.`
+
 async function guard(tag, expect, phaseName) {
   const since = lastTag
   const res = await shell(`unity-harness run-log tree ${run.runDir} --tag ${tag} --compare ${since} --expect ${expect}`, `guard:${tag}`, phaseName, TREE_SCHEMA)
@@ -167,7 +198,6 @@ async function guard(tag, expect, phaseName) {
   return res
 }
 
-phase('Plan')
 const PLAN_RULES = [
   'House rules: the rule switches printed by `unity-harness config` (maxLines, noComments, noDebugLog, compareTag), component-based SRP, [SerializeField] private fields, dependencies through the existing DI or service pattern of the project.',
   'complexity: low = 1–2 files, local change; medium = several files in one feature; high = cross-module, new architecture, or risky runtime flow.',
@@ -177,24 +207,36 @@ const PLAN_RULES = [
 ].join('\n')
 let plan = null
 if (input.planFile) {
-  await shell(`unity-harness run-log write ${run.runDir} plan.md --from "${input.planFile}"`, 'init:copy-plan', 'Plan')
+  phase('Init')
+  const init = await agent(
+    `Run these two commands from Bash at the project root, in order. Do nothing else: no other commands, no file edits. Return the JSON the first one prints.\n` +
+    `1. unity-harness run-log baseline --slug ${slug}\n2. unity-harness run-log write <runDir from step 1> plan.md --from "${input.planFile}"`,
+    { label: 'init', phase: 'Init', schema: INIT_SCHEMA, ...routed('init') },
+  )
+  if (!init) throw new Error('could not create run baseline')
+  adoptRun(init)
+  phase('Plan')
   plan = await agent(
     `Read the approved plan at ${input.planFile} and return it as the structured plan.\n\nTask: ${input.task}\n\n${PLAN_RULES}`,
     { label: 'plan:load', phase: 'Plan', agentType: agentType('plan-loader'), schema: PLAN_SCHEMA, ...routed('loadPlan') },
   )
 } else {
+  phase('Plan')
   plan = await agent(
     `Plan this Unity change for this Unity project.\n\nTask: ${input.task}\n\n` +
+    `First command, before reading anything else: unity-harness run-log baseline --slug ${slug}\nIts JSON gives runId, runDir and preExistingDirty: return them in your structured result and use that runDir wherever <runDir> appears below.\n` +
     `Explore the relevant code (start from rules.includePaths printed by \`unity-harness config\`).Do NOT modify any project file: this step is read-only and the working tree is fingerprinted. ` +
     `Produce a Vietnamese markdown plan with sections Mục tiêu, Độ phức tạp (+ lý do), File (path | create/modify/move/delete | trách nhiệm), Các bước, Test, Smoke (điều kiện kiểm được), Rủi ro.\n` +
     `Save it only with this Bash command and confirm it prints {"written": ...}; if the heredoc fails, write a draft under $TEMP and use --from <draft>:\n` +
-    `unity-harness run-log write ${run.runDir} plan.md <<'__RUNLOG_EOF__'\n<markdown>\n__RUNLOG_EOF__\n\n` +
+    `unity-harness run-log write <runDir> plan.md <<'__RUNLOG_EOF__'\n<markdown>\n__RUNLOG_EOF__\n\n` +
     `plan.md is the single source for files, steps and risks: do not repeat them in your structured result. summary is at most 2 sentences. ` +
     `Test assemblies are listed under testAssemblies in \`unity-harness config\`. needsSmoke = true if scenes, prefabs, UI or startup flow change.\n${PLAN_RULES}`,
-    { label: 'plan', phase: 'Plan', schema: PLAN_SCHEMA, ...routed('plan') },
+    { label: 'plan', phase: 'Plan', schema: PLAN_WITH_RUN_SCHEMA, ...routed('plan') },
   )
+  if (plan && plan.runDir) adoptRun(plan)
 }
 if (!plan) throw new Error('planning agent returned nothing')
+if (!run) throw new Error('could not create run baseline')
 const planGuard = await guard('after-plan', 'readonly', 'Plan')
 log(`Plan: complexity=${plan.complexity}, smoke=${plan.needsSmoke}`)
 
@@ -220,10 +262,11 @@ if (!stopReason) {
     `Edit code with your file tools (git mv is fine for moves). Never commit or push. Keep comments and Debug logs of moved content verbatim. ` +
     `When logic is testable, add EditMode tests in an existing test assembly. ` +
     `When done, run \`unity-harness compile\` from Bash and fix errors until it passes ` +
-    `(exit 2 = Editor not ready: stop and report). Do not run tests or smoke yourself. Report any deviation from the plan in notes.`,
+    `(exit 2 = Editor not ready: stop and report). Do not run tests or smoke yourself. Report any deviation from the plan in notes.\n\n` +
+    writeTreeStep('after-implement', run.runDir),
     { label: `implement(${plan.complexity})`, phase: 'Implement', schema: IMPLEMENT_SCHEMA, ...routed('implement', plan.complexity, `complexity=${plan.complexity}`) },
   ) || impl
-  await guard('after-implement', 'write', 'Implement')
+  await settleWrite('after-implement', impl.treeChanged, 'Implement')
   log(`Implemented ${impl.changedFiles.length} files, compiled=${impl.compiled}`)
 }
 
@@ -295,13 +338,14 @@ if (!stopReason) {
     round += 1
     const fixRoute = routed('fix', round - 1, `round ${round}`)
     log(`Fix round ${round}/${MAX_FIX_ROUNDS} on ${fixRoute.model || 'session model'}: ${blocking.length} blocking issues`)
-    await agent(
+    const fixed = await agent(
       `Fix these blocking issues in the Unity project, nothing else.\n\nTask context: ${input.task}\n\nIssues:\n${JSON.stringify(blocking, null, 2)}\n\n` +
       `Never delete existing comments or Debug logs just to satisfy the rule check; if a rule issue points at old or moved content, leave it and say so. ` +
-      `Never commit. After editing, run \`unity-harness compile\` and make it pass.`,
-      { label: `fix#${round}`, phase: 'Fix', ...fixRoute },
+      `Never commit. After editing, run \`unity-harness compile\` and make it pass.\n\n` +
+      writeTreeStep(`after-fix-${round}`, run.runDir),
+      { label: `fix#${round}`, phase: 'Fix', schema: FIX_SCHEMA, ...fixRoute },
     )
-    const fixGuard = await guard(`after-fix-${round}`, 'write', 'Fix')
+    const fixGuard = await settleWrite(`after-fix-${round}`, fixed ? fixed.treeChanged : null, 'Fix')
     const scope = reviewScopeAfterFix(fixGuard)
     if (scope && !scope.files.length && !scope.open.length) log(`Review skipped in round ${round}: fix changed no .cs file and no review finding was open`)
     await verifyGuarded(round, scope)
@@ -311,7 +355,8 @@ if (!stopReason) {
 const verdict = guardEvents.some(e => e.kind === 'guard-violation') ? 'guard-violation'
   : blocking.length ? 'needs-attention'
     : verify && verify.verdict === 'pass' ? 'pass' : 'unverified'
-const logRoutes = { write: routed('logWrite'), audit: routed('logAudit'), finalize: routed('finalize') }
+const audited = input.audit === true || verdict !== 'pass' || plan.complexity === 'high'
+const logRoutes = { write: routed('logWrite'), audit: audited ? routed('logAudit') : null, finalize: audited ? routed('finalize') : null }
 const facts = {
   plan: { summary: plan.summary, complexity: plan.complexity, complexityReason: plan.complexityReason, smokeExpectations: plan.smokeExpectations },
   implementNotes: impl.notes, filesClaimedByImplementer: impl.changedFiles,
@@ -322,7 +367,7 @@ const facts = {
 phase('Log')
 let logResult = null
 try {
-  logResult = await writeRunLog({ runDir: run.runDir, runId: run.runId, task: input.task, verdict, facts, routes: logRoutes })
+  logResult = await writeRunLog({ runDir: run.runDir, runId: run.runId, task: input.task, verdict, facts, audited, routes: logRoutes })
 } catch (error) {
   log(`Run log failed: ${error.message}`)
 }
@@ -333,7 +378,7 @@ if (logResult && logResult.logFixes) {
 return {
   task: input.task, runDir: run.runDir, verdict, stopReason, plan: plan.summary, complexity: plan.complexity,
   report: logResult ? logResult.report : null, logAudit: logResult ? logResult.auditState : 'failed',
-  fixRounds: round, remainingIssues: blocking, guardEvents,
+  fixRounds: round, remainingIssues: blocking, guardEvents, changedFiles: impl.changedFiles,
   minorFindings: (review ? review.findings : []).filter(f => f.severity === 'minor'),
   capture: verify ? verify.capture || null : null, unityNoise: verify ? verify.unityNoise : [], modelsUsed,
 }

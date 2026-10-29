@@ -2,6 +2,7 @@
 name: qa-tester
 description: Writes EditMode NUnit tests, manual test cases, regression checklists and bug reports for a Unity project; use when a story needs tests or a bug needs a report.
 tools: Read, Glob, Grep, Write, Edit, Bash
+model: sonnet
 maxTurns: 15
 ---
 

@@ -2,6 +2,7 @@
 name: qa-lead
 description: Owns test strategy and the test-evidence gate for a Unity project (EditMode tests, Play mode screenshots, bug severity); use for testability reviews and the QL-STORY-READY and QL-TEST-COVERAGE gates.
 tools: Read, Glob, Grep, Write, Edit, Bash
+model: sonnet
 maxTurns: 20
 ---
 

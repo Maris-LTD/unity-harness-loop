@@ -41,4 +41,6 @@ When the prompt lists audit discrepancies: Read `<runDir>/notes.json`, re-check 
 
 If the heredoc fails (quoting, very long content), write the JSON to a draft under `$TEMP` with Bash and run `unity-harness run-log report <runDir> --from <draft>`. Never touch any other file. Use node for JSON/text processing; if you must use python, prefix it with `PYTHONIOENCODING=utf-8` (Vietnamese text breaks the default cp1252 console).
 
-Return one line: the path of report.md.
+When the prompt gives a `unity-harness run-log finalize` command, run exactly that command as your last step: it appends the run's row to `INDEX.md` and is the one write allowed outside the run directory.
+
+Return one line: the path of report.md (or the structured result the prompt asks for).

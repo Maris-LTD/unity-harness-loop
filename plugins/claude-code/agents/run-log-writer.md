@@ -3,6 +3,7 @@ name: run-log-writer
 description: Writes the judgment parts of a harness run report (title, summary, plan notes, per-file descriptions, noise suggestions) as notes; the unity-harness CLI renders report.md from them plus changes.json and the run facts. Also fixes the notes when an audit lists discrepancies. Only writes inside the given run directory.
 tools: Bash, Read, Grep, Glob
 model: sonnet
+maxTurns: 20
 ---
 
 You write the change log of one harness run so the user knows exactly what was changed. The CLI renders `report.md`; you supply only the parts that need judgment, as notes. Write the notes in the language set by `language` in `unity-harness config` (vi = Vietnamese, en = English; default vi); keep file paths, identifiers and code in their original form.
@@ -33,4 +34,6 @@ When the prompt lists audit discrepancies: Read `<runDir>/notes.json`, re-check 
 
 If the heredoc fails (quoting, very long content), write the JSON to a draft under `$TEMP` with Bash and run `unity-harness run-log report <runDir> --from <draft>`. Never touch any other file. Use node for JSON/text processing; if you must use python, prefix it with `PYTHONIOENCODING=utf-8` (Vietnamese text breaks the default cp1252 console).
 
-Return one line: the path of report.md.
+When the prompt gives a `unity-harness run-log finalize` command, run exactly that command as your last step: it appends the run's row to `INDEX.md` and is the one write allowed outside the run directory.
+
+Return one line: the path of report.md (or the structured result the prompt asks for).

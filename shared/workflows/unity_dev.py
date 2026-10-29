@@ -315,12 +315,15 @@ else:
         "required": ["accurate", "discrepancies"]
     }
 
-    audit_res = await agent(
-        f"Audit the run report.\n\n{header}",
-        schema=AUDIT_SCHEMA,
-        role="Run Log Auditor",
-        type_name="run-log-auditor"
-    )
+    audited = input_args.get("audit") is True or verdict != "pass" or plan.get("complexity") == "high"
+    audit_res = None
+    if audited:
+        audit_res = await agent(
+            f"Audit the run report.\n\n{header}",
+            schema=AUDIT_SCHEMA,
+            role="Run Log Auditor",
+            type_name="run-log-auditor"
+        )
 
     log_fixes = 0
     while audit_res and not audit_res.get("accurate") and log_fixes < max_log_fixes:
@@ -340,7 +343,7 @@ else:
             type_name="run-log-auditor"
         )
 
-    audit_state = "accurate" if audit_res and audit_res.get("accurate") else "inaccurate"
+    audit_state = "not-audited" if not audited else ("accurate" if audit_res and audit_res.get("accurate") else "inaccurate")
     exec_json(f'unity-harness run-log finalize "{run_dir}" --verdict {verdict} --audit {audit_state}')
 
     result = {

@@ -42,11 +42,12 @@ Verdicts:
 
 ## Phase 5: LP-CODE-REVIEW
 No implementation files → skip: "LP-CODE-REVIEW skipped - no implementation files".
-Reuse first: if `paths.sessionState` has a `Code review: <this story path> | ...` line, recompute `git hash-object`
-for each file it lists and compare. All unchanged, and the story's implementation files are all in that list → reuse
-its verdict and LP-CODE-REVIEW result instead of reviewing again ("Code review reused from game-code-review on
-<date>: <verdict>"), and treat CHANGES REQUIRED as BLOCKING. Any file changed or missing from the list → review
-again as below.
+Reuse first: if `paths.sessionState` has a `Code review: <this story path> | ...` line (written by game-dev's workflow
+or by game-code-review), recompute `git hash-object` for each file it lists and compare. All unchanged, and the story's
+implementation files are all in that list → do not run unity-reviewer again ("Code review reused from <game-dev
+workflow | game-code-review> on <date>: <verdict>"). Treat CHANGES REQUIRED as BLOCKING. A recorded LP-CODE-REVIEW
+result is reused too; `LP-CODE-REVIEW not run` means the gate below still runs at `full`, passing the recorded verdict
+as the unity-reviewer input. Any file changed or missing from the list → review again as below.
 Otherwise run the review yourself: spawn the `Agent` tool with `subagent_type: "unity-harness:unity-reviewer"` on the story's files (read-only; it checks the
 project's Unity rules and correctness). Then by `reviewMode`:
 - `solo`: report the unity-reviewer findings, no gate. Blocker findings are BLOCKING deviations; major / minor are

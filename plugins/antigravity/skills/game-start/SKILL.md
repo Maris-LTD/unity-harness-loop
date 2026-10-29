@@ -126,7 +126,7 @@ at any level."
   `game-manifest` → `game-architecture-review` → `game-gate pre-production`.
 - Pre-production: `game-epics` → `game-tasks` → `game-sprint-plan` → `game-qa-plan sprint` →
   `game-gate production`.
-- Production: `game-readiness` → `game-dev` → `game-code-review` → `game-done`;
+- Production: `game-readiness` → `game-dev` → `game-done` (`game-code-review` between them at full rigor, optional otherwise);
   `game-sprint-status` any time.
 
 **full**: everything in standard, with all 8 GDD sections per system, director review on every gated step, and a

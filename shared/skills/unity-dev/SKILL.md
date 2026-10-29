@@ -130,9 +130,9 @@ While blocking issues remain and fix rounds < 2:
 
 1. **Write Run Report**:
    Spawn {{spawn run-log-writer}} with `runDir`, `runId`, `verdict`, and facts. It inspects `<runDir>/changes.diff` and writes judgment notes, then renders `<runDir>/report.md`.
-2. **Audit Report**:
+2. **Audit Report** (only when the verdict is not `pass`, the plan complexity is `high`, or `audit: true` was passed):
    Spawn {{spawn run-log-auditor}} to audit `<runDir>/report.md` against diff and facts.
    If discrepancies are found, {{spawn run-log-writer}} fixes them (up to 2 fix rounds).
 3. **Finalize**:
-   Run `unity-harness run-log finalize "<runDir>" --verdict <verdict> --audit <auditState>`
+   Run `unity-harness run-log finalize "<runDir>" --verdict <verdict> --audit <auditState>`; `auditState` is `not-audited` when step 2 was skipped.
 4. Present the final outcome, report link, and summary to the user.

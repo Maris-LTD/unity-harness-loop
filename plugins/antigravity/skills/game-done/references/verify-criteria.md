@@ -20,6 +20,10 @@ Also read, bounded:
 
 ## Run the harness (always)
 This port runs the tests instead of only checking that test files exist.
+- Reuse first: when `Current story:` in `paths.sessionState` is this story and `unity-harness fingerprint compare
+  verified-<story-slug>` exits 0 (tree unchanged since game-dev's passing verification), take that result from the
+  checkpoint / story and say "Harness reused from game-dev (tree unchanged)". Exit 1, no fingerprint, or no
+  recorded result → run it.
 - `unity-harness all` → rules, compile, EditMode tests. Record passed/total per assembly. Exit 2 → the verdict is at
   best NOT ASSESSED for every criterion that needs it ("Editor not ready"); ask the user to open the Editor.
 - `0/0` tests right after a compile = domain still reloading: rerun once; 0/0 is not a pass.

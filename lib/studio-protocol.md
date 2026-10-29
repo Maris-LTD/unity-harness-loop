@@ -7,7 +7,7 @@ create it). Elsewhere, ignore this file.
 - Read the settings once per skill run with `unity-harness studio config`: `rigor`, `automation`, `stage`,
   `reviewMode`, `workflow`, `storyGranularity`, `qaLevel`, `docsDensity`, `language` and the document `paths`.
   The blank sub-knobs follow `rigor` (minimal → solo/coarse/minimal/terse, standard → lean/balanced/standard/balanced,
-  full → full/fine/full/thorough).
+  full → full/balanced/full/thorough; set storyGranularity=fine only when 1-AC stories are wanted).
 - `unity-harness studio status` lists what exists (brief, GDDs, epics, stories by status, sprint, evidence,
   active story). It reports observations; the skill decides what they mean.
 - Change settings only through `unity-harness studio set key=value`, and only after the user approves. Never
