@@ -45,7 +45,7 @@ References in this skill:
   - the extracted demo facts;
   - both deliverables: the GDD in Vietnamese with the user's sections, and the Unity implementation;
   - the architecture rules from `references/test-patterns.md`;
-  - the user's coding rules, copied from CLAUDE.md;
+  - the user's coding rules, copied from CLAUDE.md / AGENTS.md;
   - the done criteria: Play from `Game.unity` shows level 1 with no console errors.
 - If `run_workflow` is available, run the automated workflow runner:
   `run_workflow(ScriptPath="workflows/unity_dev.py", Args={ "task": task, "smoke": True }, Description="Build prototype: " + task)`

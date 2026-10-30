@@ -3,6 +3,7 @@ name: unity-dev
 description: Plan, implement, verify (Unity harness + rule review), auto-fix and log a Unity feature in a 6-phase engineering loop. Use for "unity-dev", "làm feature", "phát triển tính năng", "implement feature", "tính năng mới".
 platforms:
   - antigravity
+  - qoder
 ---
 
 # Unity Feature Workflow
@@ -10,6 +11,7 @@ platforms:
 Plan, implement, verify (Unity harness + rule review), auto-fix and log a Unity feature or refactor end-to-end.
 Routes each step to a fitting model, enforces read-only guards on verification, and logs diffs independently.
 
+{{#antigravity}}
 ## Running with `run_workflow` (Automated Runner)
 
 When the `run_workflow` tool is available, execute the dynamic runner script:
@@ -21,6 +23,13 @@ run_workflow(
 )
 ```
 Script location is either inside the repo (`workflows/unity_dev.py` or `plugins/antigravity/workflows/unity_dev.py`) or in the installed plugin directory (`~/.gemini/config/plugins/unity-harness/workflows/unity_dev.py`).
+{{/antigravity}}
+{{#qoder}}
+## Running in Qoder
+
+Qoder plugins do not ship an automated workflow runner in this version. Drive the 6-phase loop interactively below;
+it uses the same `unity-harness` commands and the plugin's Qoder subagents.
+{{/qoder}}
 
 ---
 
@@ -86,7 +95,12 @@ If `planOnly` mode was requested, stop here and present `<runDir>/plan.md` to th
    - **UI / HUD / Menus**: {{agent ui-programmer}}
    - **Gameplay / Mechanics / Physics**: {{agent gameplay-programmer}}
    - **AI / Navigation**: {{agent ai-programmer}}
+{{#qoder}}
+   - Low complexity: use the `lite` model tier. Medium/High complexity: `inherit`.
+{{/qoder}}
+{{^qoder}}
    - Low complexity: lighter model tier (`flash`). Medium/High complexity: `pro` / `inherit`.
+{{/qoder}}
 2. Spawn the implementer agent with the plan:
    - Read `<runDir>/plan.md`.
    - Edit code using standard file editing tools. Never commit or push.

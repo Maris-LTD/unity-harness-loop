@@ -58,9 +58,16 @@ Draft every item, then show them together (path and content).
 4. **Memory.** For each durable fact: update the file that already covers it, add a new file plus its index line, or
    fix or delete a file that proved wrong.
 {{#claude}}
+{{#qoder}}
+   Write to `.claude/memory/` (the repo copy) when it exists, using the memory format of this harness: frontmatter
+   `name`, `description`, `metadata.type`; project and feedback files end with `**Why:**` and `**How to apply:**`.
+   If it does not exist, recommend `game-memory` instead of creating it here.
+{{/qoder}}
+{{^qoder}}
    Write to `.claude/memory/` when it exists (it is the repo copy), else to Claude Code's memory folder for this
    project (`memory.agent.dir` in the brief). Use the memory format of this harness: frontmatter `name`,
    `description`, `metadata.type`; project and feedback files end with `**Why:**` and `**How to apply:**`.
+{{/qoder}}
 {{/claude}}
 {{#antigravity}}
    Write to `.claude/memory/` (frontmatter `name`, `description`, `metadata.type`; project and feedback files end

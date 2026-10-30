@@ -1,6 +1,6 @@
 ---
 name: game-memory
-description: Keep the agent's project memory in .claude/memory/ under git and link Claude Code's memory folder to it. Use when a project has no saved context, or for "tạo bộ nhớ ngữ cảnh", "lưu context dự án", "đưa memory vào git".
+description: Keep the agent's project memory in .claude/memory/ under git and point the agent's memory folder at it. Use when a project has no saved context, or for "tạo bộ nhớ ngữ cảnh", "lưu context dự án", "đưa memory vào git".
 ---
 
 # Project memory in the repo
@@ -17,6 +17,7 @@ four to start: `project-overview`, `tech-setup`, `architecture`, `current-work`.
 Run the PowerShell one as `powershell -NoProfile -ExecutionPolicy Bypass -File <skill>/scripts/link_memory.ps1 -Project <root>`.
 `-DryRun` only prints the paths.
 
+{{^qoder}}
 ## Where Claude Code looks
 - Claude Code loads `<config>/projects/<slug>/memory/MEMORY.md`. `<config>` is `~/.claude` or `CLAUDE_CONFIG_DIR`.
   `<slug>` is the absolute path of the folder the session **started in**, with every character that is not a letter
@@ -24,6 +25,7 @@ Run the PowerShell one as `powershell -NoProfile -ExecutionPolicy Bypass -File <
 - If the session started in a parent folder, such as the home folder, its memory and transcript are filed under that
   folder's slug. `/resume` inside the project then cannot find the session. Tell the user to start the agent in the
   project root. To find a lost session, grep `<config>/projects/*/*.jsonl` for the project path.
+{{/qoder}}
 
 ## Steps
 1. **Check what exists:** `ls .claude/memory`, plus `-DryRun` to see the agent folder. If memory exists, read it and
@@ -41,7 +43,12 @@ Run the PowerShell one as `powershell -NoProfile -ExecutionPolicy Bypass -File <
 4. **Write the files.** Use the frontmatter `name`, `description`, `metadata.type` (`project`, `user`, `feedback`,
    `reference`). End project and feedback files with `**Why:**` and `**How to apply:**`. Write `architecture` and
    `current-work` from the real code once it exists, not from the plan.
+{{#qoder}}
+5. **Link:** Qoder needs no linked memory folder; keep the repo copy and add the read line from step 8 to `AGENTS.md`.
+{{/qoder}}
+{{^qoder}}
 5. **Link:** run `link_memory.ps1` or `link_memory.sh`. Check that `ls <agent memory>` lists the repo files.
+{{/qoder}}
 6. **Unignore:** run `git check-ignore -v .claude/memory/MEMORY.md || echo "not ignored"` and fix the rule it
    prints. Repeat until it says `not ignored`. Typical fixes:
    - `.claude` → `.claude/*` followed by `!.claude/memory/` (a directory that is ignored as a whole cannot be
@@ -50,7 +57,7 @@ Run the PowerShell one as `powershell -NoProfile -ExecutionPolicy Bypass -File <
    - `docs` hides `Docs/` on case-insensitive file systems; add `!/[Dd]ocs/` if the GDD lives there
 7. **Commit** the memory together with the work it describes. Follow the user's commit rules (e.g. no AI attribution
    lines).
-8. **Other agents:** agents without Claude Code's auto-memory (e.g. Antigravity) do not load this folder. Ask the
+8. **Other agents:** agents without Claude Code's auto-memory (e.g. Antigravity or Qoder) do not load this folder. Ask the
    user before adding a line to the rules file that agent loads (such as `AGENTS.md` or `GEMINI.md`):
    "Read `.claude/memory/MEMORY.md` and the files it links before working; update them when project facts change."
 

@@ -35,7 +35,7 @@ Deliverables:
 - Assets: <only primitive/procedural meshes and URP Lit materials, no external assets | use <folder>>. Procedural SFX
   synthesized at runtime (<each sound with frequencies>). Haptics behind an interface (<platform impls>, no-op in
   Editor). Input via the new Input System; <picking rule; blocked feedback>. Progress in PlayerPrefs; <wrap rule>.
-- Coding rules (mandatory): <copy the project's CLAUDE.md rules: no comments, no Debug.Log, files <= 250 lines, SRP
+- Coding rules (mandatory): <copy the project's CLAUDE.md / AGENTS.md rules: no comments, no Debug.Log, files <= 250 lines, SRP
   small components, private + [SerializeField], properties with private set, no LINQ / string concat /
   GetComponent in Update, CompareTag, cache components, no per-frame GC alloc>.
 - Play mode must start from Game.unity and show level 1 playable with no console errors. After changes, check git

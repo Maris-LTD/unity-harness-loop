@@ -9,7 +9,12 @@ This is the pipeline that produced Snap Jam 3D in one session. It went from a fo
 demo to a 30-level prototype with 277 passing EditMode tests. Its steps chain other skills:
 - `unity-init` creates the project;
 {{#claude}}
+{{#qoder}}
+- the `unity-dev` skill (or engineering loop) builds it;
+{{/qoder}}
+{{^qoder}}
 - the `unity-harness:unity-dev` workflow builds it;
+{{/qoder}}
 {{/claude}}
 {{#antigravity}}
 - the `unity-dev` skill (or engineering loop) builds it;
@@ -46,7 +51,12 @@ References in this skill:
 - The working tree must be clean, with a baseline commit, before the run starts.
 
 {{#claude}}
+{{#qoder}}
+## 3. Build with unity-dev
+{{/qoder}}
+{{^qoder}}
 ## 3. Build with the workflow
+{{/qoder}}
 {{/claude}}
 {{#antigravity}}
 ## 3. Build with unity-dev
@@ -55,11 +65,17 @@ References in this skill:
   - the extracted demo facts;
   - both deliverables: the GDD in Vietnamese with the user's sections, and the Unity implementation;
   - the architecture rules from `references/test-patterns.md`;
-  - the user's coding rules, copied from CLAUDE.md;
+  - the user's coding rules, copied from CLAUDE.md / AGENTS.md;
   - the done criteria: Play from `Game.unity` shows level 1 with no console errors.
 {{#claude}}
+{{#qoder}}
+- Drive the loop yourself following `unity-dev`: spawn {{spawn gameplay-programmer}} to implement the code and tests,
+  verify with `unity-harness all` and `unity-harness smoke`, then spawn {{spawn unity-verifier}} and {{spawn unity-reviewer}} for independent inspection.
+{{/qoder}}
+{{^qoder}}
 - Run `Workflow({ name: "unity-harness:unity-dev", args: { task, smoke: true } })`. It runs in the background;
   a 30-level prototype took about an hour. Tell the user they can watch it with `/workflows`.
+{{/qoder}}
 {{/claude}}
 {{#antigravity}}
 - If `run_workflow` is available, run the automated workflow runner:

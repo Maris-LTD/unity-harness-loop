@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert');
 
-const { yamlValue, agentProblems, assertNoHiddenCharacters, INVISIBLE_IN_TEXT } = require('../scripts/build-plugins');
+const { yamlValue, agentProblems, assertNoHiddenCharacters, INVISIBLE_IN_TEXT, render } = require('../scripts/build-plugins');
 
 test('yamlValue keeps plain scalars plain and quotes what YAML would misread', () => {
   const plain = ['unity-verifier', 'Bash, Read, Grep, Glob', 'Reviews the diff. Use after implementing', 'sonnet', 'ratio 16:9 and a-b'];
@@ -30,6 +30,45 @@ test('agentProblems reports every broken agent definition', () => {
   assert.match(text, /"typo": description must be a non-empty string/);
   assert.match(text, /"typo": targets must list/);
   assert.match(text, /orphan\.md has no entry in agents\.json/);
+});
+
+test('qoder renders claude-family content with qoder branches and plain agent names', () => {
+  const source = [
+    '---',
+    'name: demo',
+    '{{#claude}}',
+    '{{^qoder}}',
+    'model: haiku',
+    '{{/qoder}}',
+    '{{/claude}}',
+    '---',
+    '{{#claude}}',
+    '{{#qoder}}',
+    'Qoder path',
+    '{{/qoder}}',
+    '{{^qoder}}',
+    'Claude path',
+    '{{/qoder}}',
+    '{{/claude}}',
+    'Ask {{ask}}; spawn {{spawn unity-verifier}}; agent {{agent producer}}. Platform {{platform}}.',
+    '',
+  ].join('\n');
+  const qoder = render('demo', source, 'qoder');
+  assert.match(qoder, /^---\nname: demo\n---/);
+  assert.doesNotMatch(qoder, /model: haiku/);
+  assert.match(qoder, /Qoder path/);
+  assert.doesNotMatch(qoder, /Claude path/);
+  assert.match(qoder, /Ask `AskUserQuestion`/);
+  assert.match(qoder, /subagent_type: "unity-verifier"/);
+  assert.match(qoder, /agent producer\. Platform Qoder\./);
+  const claude = render('demo', source, 'claude');
+  assert.match(claude, /model: haiku/);
+  assert.match(claude, /Claude path/);
+  assert.doesNotMatch(claude, /Qoder path/);
+  assert.match(claude, /subagent_type: "unity-harness:unity-verifier"/);
+  const antigravity = render('demo', source, 'antigravity');
+  assert.doesNotMatch(antigravity, /model: haiku/);
+  assert.match(antigravity, /ask_question/);
 });
 
 test('text files reject invisible characters but allow emoji variation selectors and Vietnamese', () => {

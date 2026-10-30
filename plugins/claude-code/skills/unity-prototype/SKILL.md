@@ -45,7 +45,7 @@ References in this skill:
   - the extracted demo facts;
   - both deliverables: the GDD in Vietnamese with the user's sections, and the Unity implementation;
   - the architecture rules from `references/test-patterns.md`;
-  - the user's coding rules, copied from CLAUDE.md;
+  - the user's coding rules, copied from CLAUDE.md / AGENTS.md;
   - the done criteria: Play from `Game.unity` shows level 1 with no console errors.
 - Run `Workflow({ name: "unity-harness:unity-dev", args: { task, smoke: true } })`. It runs in the background;
   a 30-level prototype took about an hour. Tell the user they can watch it with `/workflows`.

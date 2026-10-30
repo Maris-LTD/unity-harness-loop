@@ -1,6 +1,6 @@
 ---
 name: game-memory
-description: Keep the agent's project memory in .claude/memory/ under git and link Claude Code's memory folder to it. Use when a project has no saved context, or for "tạo bộ nhớ ngữ cảnh", "lưu context dự án", "đưa memory vào git".
+description: Keep the agent's project memory in .claude/memory/ under git and point the agent's memory folder at it. Use when a project has no saved context, or for "tạo bộ nhớ ngữ cảnh", "lưu context dự án", "đưa memory vào git".
 ---
 
 # Project memory in the repo
@@ -44,7 +44,7 @@ Run the PowerShell one as `powershell -NoProfile -ExecutionPolicy Bypass -File <
    - `docs` hides `Docs/` on case-insensitive file systems; add `!/[Dd]ocs/` if the GDD lives there
 7. **Commit** the memory together with the work it describes. Follow the user's commit rules (e.g. no AI attribution
    lines).
-8. **Other agents:** agents without Claude Code's auto-memory (e.g. Antigravity) do not load this folder. Ask the
+8. **Other agents:** agents without Claude Code's auto-memory (e.g. Antigravity or Qoder) do not load this folder. Ask the
    user before adding a line to the rules file that agent loads (such as `AGENTS.md` or `GEMINI.md`):
    "Read `.claude/memory/MEMORY.md` and the files it links before working; update them when project facts change."
 

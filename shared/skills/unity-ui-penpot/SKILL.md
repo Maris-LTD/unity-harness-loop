@@ -24,7 +24,12 @@ Tài liệu đi kèm (đường dẫn tính từ thư mục chứa SKILL.md này
 
 ## Bước 0: Kết nối và nạp thư viện
 {{#claude}}
+{{#qoder}}
+1. Gọi `mcp__penpot__high_level_overview` một lần mỗi phiên. Qoder tự nạp MCP tool `mcp__penpot__*`, không cần ToolSearch; nếu tool chưa hiện, nhắc user bật Penpot MCP server.
+{{/qoder}}
+{{^qoder}}
 1. Nạp tool bằng một lần ToolSearch: `select:mcp__penpot__high_level_overview,mcp__penpot__execute_code,mcp__penpot__export_shape,mcp__penpot__penpot_api_info`. Gọi `high_level_overview` một lần mỗi phiên.
+{{/qoder}}
 2. Kiểm tra kết nối: trả về `penpot.currentFile.name`, `penpotUtils.getPages()` và tên các board ở root. Không đọc `currentUser`, vì plugin không cấp quyền này.
 3. Read `<skill dir>/scripts/helpers.js`, rồi truyền **nguyên văn** nội dung làm `code` cho `execute_code`; làm tiếp y hệt với `<skill dir>/scripts/audit.js`. Sau đó mọi lần gọi đều bắt đầu bằng `const ui = storage.ui;`. Nếu `storage.ui` là undefined (plugin reload) thì nạp lại cả hai, đúng thứ tự.
 {{/claude}}

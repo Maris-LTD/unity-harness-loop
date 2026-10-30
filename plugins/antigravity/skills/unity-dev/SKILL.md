@@ -3,6 +3,7 @@ name: unity-dev
 description: Plan, implement, verify (Unity harness + rule review), auto-fix and log a Unity feature in a 6-phase engineering loop. Use for "unity-dev", "làm feature", "phát triển tính năng", "implement feature", "tính năng mới".
 platforms:
   - antigravity
+  - qoder
 ---
 
 # Unity Feature Workflow

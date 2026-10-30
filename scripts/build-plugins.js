@@ -13,17 +13,28 @@ const DESCRIPTION = 'Unity verification loop and studio workflow for AI agents: 
 const TARGET_TEXT = {
   claude: {
     platform: 'Claude Code',
+    family: 'claude',
     ask: '`AskUserQuestion`',
     spawn: name => `the \`Agent\` tool with \`subagent_type: "${CLAUDE_AGENT_PREFIX}${name}"\``,
     agent: name => `${CLAUDE_AGENT_PREFIX}${name}`,
   },
   antigravity: {
     platform: 'Antigravity',
+    family: 'antigravity',
     ask: '`ask_question`',
     spawn: name => `\`invoke_subagent\` with the \`${name}\` subagent`,
     agent: name => name,
   },
+  qoder: {
+    platform: 'Qoder',
+    family: 'claude',
+    ask: '`AskUserQuestion`',
+    spawn: name => `the \`Agent\` tool with \`subagent_type: "${name}"\``,
+    agent: name => name,
+  },
 };
+
+const QODER_MODEL = { haiku: 'lite', sonnet: 'efficient', opus: 'performance' };
 
 const ANTIGRAVITY_TOOLS = {
   Read: 'view_file',
@@ -74,12 +85,27 @@ function frontmatter(fields) {
   return `---\n${rows.join('\n')}\n---\n`;
 }
 
+function stripBlock(text, name, sigil) {
+  const marker = sigil.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return text.replace(new RegExp(`\\{\\{${marker}${name}\\}\\}[\\s\\S]*?\\{\\{/${name}\\}\\}\\n?`, 'g'), '');
+}
+
+function stripMarkers(text, name) {
+  return text
+    .replace(new RegExp(`\\{\\{[#^]${name}\\}\\}\\n?`, 'g'), '')
+    .replace(new RegExp(`\\{\\{/${name}\\}\\}\\n?`, 'g'), '');
+}
+
 function render(file, source, target) {
   const text = TARGET_TEXT[target];
-  const other = target === 'claude' ? 'antigravity' : 'claude';
-  const out = source
-    .replace(new RegExp(`\\{\\{#${other}\\}\\}[\\s\\S]*?\\{\\{/${other}\\}\\}\\n?`, 'g'), '')
-    .replace(new RegExp(`\\{\\{[#/]${target}\\}\\}\\n?`, 'g'), '')
+  const family = text.family;
+  const other = family === 'claude' ? 'antigravity' : 'claude';
+  let out = stripBlock(source, other, '#');
+  if (target === 'qoder') out = stripBlock(out, 'qoder', '^');
+  else out = stripBlock(out, 'qoder', '#');
+  out = stripMarkers(out, 'qoder');
+  out = stripMarkers(out, family);
+  out = out
     .replace(/\{\{platform\}\}/g, text.platform)
     .replace(/\{\{ask\}\}/g, text.ask)
     .replace(/\{\{spawn ([a-z0-9-]+)\}\}/g, (_, name) => text.spawn(name))
@@ -102,7 +128,7 @@ function renderTree(dir, target) {
 }
 
 const AGENT_KEYS = ['description', 'targets', 'claude', 'antigravity'];
-const TARGETS = ['claude', 'antigravity'];
+const TARGETS = ['claude', 'antigravity', 'qoder'];
 
 function agentProblems(meta, mdNames) {
   const problems = [];
@@ -188,6 +214,17 @@ function copySkills(target, platform) {
   renderTree(dest, platform);
 }
 
+function stripSkillPlatforms(dir) {
+  const skills = path.join(dir, 'skills');
+  for (const skill of fs.readdirSync(skills)) {
+    const file = path.join(skills, skill, 'SKILL.md');
+    if (!fs.existsSync(file)) continue;
+    const source = fs.readFileSync(file, 'utf8');
+    const out = source.replace(/^platforms:\n(?:  - [^\n]*\n)+/m, '');
+    if (out !== source) fs.writeFileSync(file, out);
+  }
+}
+
 function copyLegalFiles(dir) {
   for (const file of ['LICENSE', 'THIRD_PARTY_NOTICES.md']) fs.copyFileSync(path.join(ROOT, file), path.join(dir, file));
 }
@@ -261,6 +298,35 @@ function buildAntigravity() {
   }));
 }
 
+function buildQoder() {
+  const dir = path.join(PLUGINS, 'qoder');
+  reset(dir);
+  write(path.join(dir, '.qoder-plugin', 'plugin.json'), json({
+    name: PLUGIN_NAME,
+    version: pkg.version,
+    description: DESCRIPTION,
+    author: { name: 'Maris-LTD' },
+    repository: 'https://github.com/Maris-LTD/unity-harness-loop',
+    license: 'MIT',
+    keywords: ['unity', 'testing', 'smoke-test', 'hooks', 'studio', 'workflow'],
+  }));
+  copySkills(dir, 'qoder');
+  stripSkillPlatforms(dir);
+  copyLegalFiles(dir);
+  for (const agent of sharedAgents().filter(a => a.targets.includes('claude'))) {
+    const c = agent.claude;
+    const head = frontmatter({
+      name: agent.name,
+      description: agent.description,
+      tools: c.tools,
+      disallowedTools: c.disallowedTools,
+      model: c.model ? QODER_MODEL[c.model] || c.model : undefined,
+      maxTurns: c.maxTurns,
+    });
+    write(path.join(dir, 'agents', `${agent.name}.md`), `${head}\n${render(agent.name, agent.body, 'qoder')}`);
+  }
+}
+
 function buildMarketplace() {
   write(path.join(ROOT, '.claude-plugin', 'marketplace.json'), json({
     name: 'unity-harness-loop',
@@ -273,8 +339,9 @@ function buildMarketplace() {
 if (require.main === module) {
   buildClaude();
   buildAntigravity();
+  buildQoder();
   buildMarketplace();
-  process.stdout.write(`built plugins/claude-code, plugins/antigravity and .claude-plugin/marketplace.json (v${pkg.version})\n`);
+  process.stdout.write(`built plugins/claude-code, plugins/antigravity, plugins/qoder and .claude-plugin/marketplace.json (v${pkg.version})\n`);
 }
 
-module.exports = { yamlValue, agentProblems, assertNoHiddenCharacters, INVISIBLE_IN_TEXT };
+module.exports = { yamlValue, agentProblems, assertNoHiddenCharacters, INVISIBLE_IN_TEXT, render };

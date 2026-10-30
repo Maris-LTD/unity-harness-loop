@@ -52,6 +52,17 @@ acceptance criteria and the brief. Do not look for one.") and to the user in one
 (`Brief omits: ADR (none), manifest (none) - implementing against acceptance criteria + brief`).
 
 {{#claude}}
+{{#qoder}}
+## Qoder path: the engineering loop
+Drive the 6-phase loop from `unity-dev` with Qoder subagents:
+1. If a Unity specialist applies, spawn it first for a short read-only design note, e.g. {{spawn unity-specialist}}.
+2. Spawn the primary programmer agent from the routing table (e.g. {{spawn gameplay-programmer}}) to write code and EditMode tests; copy the project's coding rules from `AGENTS.md`.
+3. Run `unity-harness full` for Visual/Feel, UI, scene/prefab changes, or `unity-harness all` otherwise. Exit 2 means the Editor is not ready: ask the user to open it, do not loop.
+4. Concurrently spawn {{spawn unity-verifier}} and {{spawn unity-reviewer}} for independent inspection.
+5. Auto-fix loop: up to 2 fix rounds with the programmer agent for blocking issues; then report what is left.
+6. Spawn {{spawn run-log-writer}} and {{spawn run-log-auditor}} to audit and finalize `report.md`.
+{{/qoder}}
+{{^qoder}}
 ## Claude Code path: the unity-dev workflow
 Run `Workflow({ name: "unity-harness:unity-dev", args: { task, planFile, smoke } })`.
 - `planFile`: the story path. The story already holds the acceptance criteria, files, notes and Out of Scope, so the
@@ -72,6 +83,7 @@ Run `Workflow({ name: "unity-harness:unity-dev", args: { task, planFile, smoke }
 - When it returns, read its result (`verdict`, `remainingIssues`, `changedFiles`, `runDir`) and `<runDir>/report.md`. Verdict `pass`
   with no remaining issues → phase 5. Otherwise fix the remaining issues by hand (small) or rerun the workflow with
   a narrower task, then rerun `unity-harness all`.
+{{/qoder}}
 {{/claude}}
 {{#antigravity}}
 ## Antigravity path: the unity-dev workflow skill

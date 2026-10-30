@@ -116,7 +116,12 @@ Prototype-first (the core mechanic is unproven):
 2. Build a throwaway prototype of the core mechanic first. `/prototype` is not in this plugin yet: use
    `unity-prototype` when there is an HTML demo or reference images, otherwise build it on a scratch scene
 {{#claude}}
+{{#qoder}}
+   by spawning the gameplay programmer with {{spawn gameplay-programmer}}, then `unity-harness all`.
+{{/qoder}}
+{{^qoder}}
    with a small `unity-harness:unity-dev` workflow run.
+{{/qoder}}
 {{/claude}}
 {{#antigravity}}
    by spawning the gameplay programmer with {{spawn gameplay-programmer}}, then `unity-harness all`.

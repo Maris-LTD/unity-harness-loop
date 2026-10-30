@@ -152,7 +152,12 @@ Then ask with {{ask}}: "Would you like to start with `<first step>`?" with `Yes,
 ## Phase 5: Hand off
 When the user confirms, answer with one short line naming how to start the skill, nothing else:
 {{#claude}}
+{{#qoder}}
+"Type `/<skill>` to begin."
+{{/qoder}}
+{{^qoder}}
 "Type `/unity-harness:<skill>` to begin."
+{{/qoder}}
 {{/claude}}
 {{#antigravity}}
 "Type `/<skill>` to begin."

@@ -60,7 +60,12 @@ Files changed:
 Verification: unity-harness all - <rules / compile / tests passed/total>   [or NOT VERIFIED - <reason>]
 Run result: <OBSERVED ... | NOT VERIFIED ... | N/A ...>
 {{#claude}}
+{{#qoder}}
+Review: <unity-reviewer findings fixed / open; unity-verifier verdict>
+{{/qoder}}
+{{^qoder}}
 Workflow / review: <unity-dev verdict + report path | reviewer findings fixed / open>
+{{/qoder}}
 {{/claude}}
 {{#antigravity}}
 Review: <unity-reviewer findings fixed / open; unity-verifier verdict>
@@ -80,6 +85,7 @@ End with the next step by `workflow`: full → `Next: game-code-review <story-pa
 standard / minimal → `Next: game-done <story-path>` (game-code-review is optional at standard: name it only for
 risky or architectural stories).
 
+{{^qoder}}
 ## Reusable review (Claude Code workflow only)
 When the workflow returned verdict `pass`, its reviewer already judged the final diff. Append the line below under the
 checkpoint block of `paths.sessionState`, so game-code-review and game-done reuse it instead of reviewing again:
@@ -87,6 +93,7 @@ checkpoint block of `paths.sessionState`, so game-code-review and game-done reus
 listing every `.cs` file the workflow changed (`changedFiles`, plus the test file) with its `git hash-object` now. Minor
 findings it returned go in the story's Completion Notes later, not into this line. Skip it when the verdict is not
 `pass` or when files changed afterwards.
+{{/qoder}}
 
 ## Session checkpoint
 Overwrite (never append) the block between `<!-- CHECKPOINT -->` and `<!-- /CHECKPOINT -->` in `paths.sessionState`.

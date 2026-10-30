@@ -16,7 +16,12 @@ tests, the GDD and the memory. This procedure does.
   band colors stayed; only the board, tray, background, light and UI changed.
 - Size check: a change that touches up to about five files and adds no new system gets done here.
 {{#claude}}
+{{#qoder}}
+  A new mechanic or screen goes to the `unity-dev` skill with a brief.
+{{/qoder}}
+{{^qoder}}
   A new mechanic or screen goes to `unity-harness:unity-dev` with a brief.
+{{/qoder}}
 {{/claude}}
 {{#antigravity}}
   A new mechanic or screen goes to the `unity-dev` skill with a brief.

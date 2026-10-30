@@ -2,7 +2,9 @@
 name: game-session-start
 description: Open a new conversation on a Unity harness project - read the checkpoint, git, run logs, decision log and memory left by earlier sessions, flag drift, check the Editor, recommend one next step and preload what it needs. Use at the start of a session or for "resume", "where was I", "bắt đầu phiên mới", "tiếp tục dự án", "kiểm tra trạng thái dự án".
 {{#claude}}
+{{^qoder}}
 model: haiku
+{{/qoder}}
 {{/claude}}
 ---
 
@@ -28,8 +30,14 @@ Run `unity-harness session brief --json`. It reads files and git only (no Unity)
 - `runs`: the last rows of `.unity-harness/runs/INDEX.md` (verdict, log audit, title, report path) and `unfinished`
   run folders that never reached the index.
 - `decisionLog`: the last lines of `paths.decisionLog`.
+{{#qoder}}
+- `memory`: `repo` (`.claude/memory`) with file dates. Ignore `agent` and `linked`: they describe Claude Code's
+  memory folder.
+{{/qoder}}
+{{^qoder}}
 - `memory`: `repo` (`.claude/memory`) and `agent` (Claude Code's memory folder for this project) with file dates;
   `linked` when one is a junction to the other.
+{{/qoder}}
 - `studio`: rigor, workflow, stage, story counts, `inProgress`, `blocked`, `nextReadyStory`, `activeStory`.
 - `signals`: drift the CLI detects mechanically. You judge what each one means.
 
@@ -41,9 +49,15 @@ the checkpoint block, `git status --short`, `git log -10 --oneline`, the tail of
 
 ## Step 2: Read memory and logs
 Stop reading as soon as you can explain where the project stands.
+{{#qoder}}
+1. Memory: when `memory.repo` exists, read `.claude/memory/MEMORY.md`. Open only the files whose description touches
+   the checkpoint's task or the likely next step: goals, current work, user preferences and feedback.
+{{/qoder}}
+{{^qoder}}
 1. Memory: Claude Code already loaded the agent folder's `MEMORY.md`. When `memory.repo` exists and is not linked,
    read `.claude/memory/MEMORY.md` too. Open only the files whose description touches the checkpoint's task or the
    likely next step: goals, current work, user preferences and feedback.
+{{/qoder}}
 2. The whole session-state file when `Blocked on` or `Open questions` is not empty, or the block is thin. Entries
    below the block (`## Session <date>`) are the narrative of earlier sessions; read the latest one.
 3. For the last run whose verdict is not `pass`: the summary and open items of its `report.md`, nothing more.

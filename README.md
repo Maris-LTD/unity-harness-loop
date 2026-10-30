@@ -1,6 +1,6 @@
 # unity-harness-loop
 
-A verification loop for Unity projects worked on by AI coding agents. One CLI (`unity-harness`) does the checks; thin plugins make **Claude Code** and **Google Antigravity** use it.
+A verification loop for Unity projects worked on by AI coding agents. One CLI (`unity-harness`) does the checks; thin plugins make **Claude Code**, **Google Antigravity** and **Qoder** use it.
 
 | Check | What it does |
 |---|---|
@@ -142,6 +142,22 @@ run_workflow(
 )
 ```
 
+### 3c. Qoder plugin
+
+Qoder installs a local plugin directory:
+
+```bash
+git clone https://github.com/Maris-LTD/unity-harness-loop.git
+qoder plugins install ./unity-harness-loop/plugins/qoder --scope project
+```
+
+Or, from a project that already has the repo: `qoder plugins install ./plugins/qoder --scope project`.
+
+The Qoder build ships the same skills and subagents as the other two. Without installing the plugin, copy
+`plugins/qoder/skills/*` to the target project's `.qoder/skills/` and `plugins/qoder/agents/*` to `.qoder/agents/`.
+The automated `unity-dev` workflow runner and the stop-gate/read-only hooks are not ported to Qoder yet: drive
+`unity-dev` interactively and run `unity-harness studio protocol` once per session when a skill asks for it.
+
 ## Usage
 
 ```bash
@@ -162,6 +178,7 @@ shared/                    single source for skills, agents and workflows
 lib/studio-protocol.md     always-on studio rules (session-start hook, Antigravity rules/AGENTS.md)
 plugins/claude-code/       generated Claude Code plugin
 plugins/antigravity/       generated Antigravity plugin
+plugins/qoder/             generated Qoder plugin
 .claude-plugin/            Claude Code marketplace manifest (generated)
 scripts/build-plugins.js   regenerates plugins/ and the marketplace from shared/
 ```
